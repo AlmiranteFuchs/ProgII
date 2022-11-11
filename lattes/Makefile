@@ -1,18 +1,22 @@
-CFLAGS = -Wall -g  # gerar "warnings" detalhados e infos de depuração
- 
-objs = index.o  
-# regra default (primeira regra)
-all: index
- 
-# regras de ligacao
-index: $(objs)
- 
-# regras de compilação
-index.o: index.c   
-# remove arquivos temporários
+CFLAGS = -Wall -g
+LDFLAGS = -lm
+
+CC = gcc
+
+# arquivos-objeto
+	objects = index.o string_lib.o
+     
+all: index.o string_lib.o entities.o
+	$(CC) -o index index.o string_lib.o entities.o $(LDFLAGS)
+
+string_lib.o: libs/string_lib.c
+	$(CC) -c $(CFLAGS) libs/string_lib.c
+
+entities.o: src/entities.c
+	$(CC) -c $(CFLAGS) src/entities.c
+
+index.o: index.c
+	$(CC) -c $(CFLAGS) index.c
+
 clean:
-	-rm -f $(objs) *~
- 
-# remove tudo o que não for o código-fonte
-purge: clean
-	-rm -f index
+	rm -f $(objects) index

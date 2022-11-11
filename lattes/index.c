@@ -1,11 +1,18 @@
+// Author: B. Fuchs Santos da Silva 
+// Date: 2022-11-10
+// Description: LATTES 
+
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-#define LINESIZE 500000
+#include <dirent.h>
+#include "libs/string_lib.h"
 
-int parse_file_tag(char *filename);
+L_String* parse_dir(char *dir_name);
+char *parse_file(char *filename);
+int search_tag(char *filename, char *tag);
 void program_params(char **cvs, char **q_conf, char **q_period, int argc, char *argv[]);
 
 int main(int argc, char *argv[])
@@ -15,8 +22,25 @@ int main(int argc, char *argv[])
     char *q_period = NULL;
 
     program_params(&cvs, &q_conf, &q_period, argc, argv);
-
     // printf("flag_a = %s, flag_b = %s, value_c = %s\n", cvs, q_conf, q_period);
+
+    // String of all directory names
+    L_String *dir_names = parse_dir(cvs);
+
+    // For all directories
+    for (int i = 0; i < dir_names->pos; i++)
+    {
+        // String of all file names
+
+    }
+    
+
+    //char *file_content = parse_file(cvs);
+
+    //search_tag(file_content, "abaporu");
+    
+    //TODO: Free memory
+    str_clear(dir_names);
     return 0;
 }
 
@@ -43,8 +67,6 @@ void program_params(char **cvs, char **q_conf, char **q_period, int argc, char *
         default:
             fprintf(stderr, "Usage: %s -a -b -c value\n", argv[0]);
             exit(1);
-
-            parse_file_tag(argv[1]);
         }
     }
 
@@ -57,6 +79,32 @@ void program_params(char **cvs, char **q_conf, char **q_period, int argc, char *
         fprintf(stderr, "Parâmetros insuficientes, uso: %s -d <diretorio com os CVs> -c <arquivo com a lista Qualis Conf> -p <arquivo com a lista Qualis Periódicos>\n", argv[0]);
         exit(1);
     }
+}
+
+L_String* parse_dir(char *dir_name)
+{
+    DIR *dir;
+    struct dirent *lsdir;
+
+    dir = opendir(dir_name);
+
+    if (dir == NULL)
+    {
+        fprintf(stderr, "Erro ao abrir o diretório %s\n", dir_name);
+        exit(1);
+    }
+
+    L_String* dir_names = str_create();
+    while ((lsdir = readdir(dir)) != NULL)
+    {
+        if (lsdir->d_type == DT_REG)
+        {
+            str_push(lsdir->d_name, dir_names);
+        }
+    }
+
+    closedir(dir);
+    return dir_names;
 }
 
 // Reads file and sets to array
@@ -94,10 +142,13 @@ char *parse_file(char *filename)
     return file_content;
 }
 
-int parse_file_tag(char *file_content)
+int search_tag(char *file_content, char *str_target)
 {
     // Search substring
-    char *tag_ = "DETALHAMENTO-DO-ARTIGO";
+    char *tag = "DETALHAMENTO-DO-ARTIGO";
+
+    printf("%s\n", str_target);
+    return 1;
 
     char *tag_ptr = strstr(file_content, tag);
     if (tag_ptr == NULL)
