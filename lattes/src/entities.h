@@ -5,9 +5,8 @@
 #ifndef ENTITIES_H
 #define ENTITIES_H
 
-//Prototype of struct
-//typedef enum t_data_type t_data_type;
-
+// Prototype of struct
+// typedef enum t_data_type t_data_type;
 
 // inumerate the types of data
 typedef enum
@@ -16,32 +15,43 @@ typedef enum
     PUBLICATION
 } t_data_type;
 
+// Data object
 typedef struct
 {
+    int id;
     char *c_name;
     char *c_code;
     int c_year;
 
-    t_data_type c_type;             // 0 = Conference, 1 = Publication
-    //t_researcher *researchers_list; // List of researchers with this data
-    //int researchers_count;          // Number of researchers with this data
+    t_data_type c_type; // 0 = Conference, 1 = Publication
 
 } t_abstract_data;
 
 // Researcher object
 typedef struct
 {
-    char *name;
     int id;
-    t_abstract_data *conferences_list;
-    t_abstract_data *publications_list;
-    int conferences_count;
+    char *name;
+
     int publications_count;
+    int conferences_count;
+
 } t_researcher;
 
+// Intermediary object
+typedef struct
+{
+    int id;
+    int id_resercher;
+    int id_data;
+} t_reserch_data;
 
-
-
+// Data object, responsible to link the researcher with the data
+typedef struct
+{
+    t_reserch_data *data;
+    int cardinality;
+} t_data;
 
 // Eu poderia usar uma lista genérica mas não quero ;')
 
@@ -54,8 +64,12 @@ t_abstract_data *ent_create_abstract_data(char *c_name, char *c_code, int c_year
 // Destroy a abstract data
 void ent_destroy_abstract_data(t_abstract_data *abstract_data);
 // Add a conference to a researcher
-void ent_add_conference(t_researcher *researcher, t_abstract_data *conference);
-// Add a publication to a researcher
-void ent_add_publication(t_researcher *researcher, t_abstract_data *publication);
+t_reserch_data *ent_create_relation(t_data *data, t_researcher *researcher, t_abstract_data *abstract_data, int id);
+// Creates a empty relation
+t_data *ent_create_data();
+// Push new register to the data
+void ent_push_data(t_data *data, t_reserch_data *reserch_data);
+// Destroy a relation
+void ent_destroy_data(t_data *data);
 
 #endif

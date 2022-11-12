@@ -1,6 +1,6 @@
-// Author: B. Fuchs Santos da Silva 
+// Author: B. Fuchs Santos da Silva
 // Date: 2022-11-10
-// Description: LATTES 
+// Description: LATTES
 
 #include <ctype.h>
 #include <stdio.h>
@@ -10,8 +10,8 @@
 #include <dirent.h>
 #include "libs/string_lib.h"
 
-L_String* parse_dir(char *dir_name);
-char *parse_file(char *filename);
+L_String *parse_dir(char *dir_name);
+char *parse_file(char *filename, char *cvs);
 int search_tag(char *filename, char *tag);
 void program_params(char **cvs, char **q_conf, char **q_period, int argc, char *argv[]);
 
@@ -31,15 +31,14 @@ int main(int argc, char *argv[])
     for (int i = 0; i < dir_names->pos; i++)
     {
         // String of all file names
+        char *file_content = parse_file(dir_names->str[i], cvs);
+        
+        // Logic
 
+        free(file_content);
     }
-    
 
-    //char *file_content = parse_file(cvs);
-
-    //search_tag(file_content, "abaporu");
-    
-    //TODO: Free memory
+    // TODO: Free memory
     str_clear(dir_names);
     return 0;
 }
@@ -81,7 +80,7 @@ void program_params(char **cvs, char **q_conf, char **q_period, int argc, char *
     }
 }
 
-L_String* parse_dir(char *dir_name)
+L_String *parse_dir(char *dir_name)
 {
     DIR *dir;
     struct dirent *lsdir;
@@ -94,7 +93,7 @@ L_String* parse_dir(char *dir_name)
         exit(1);
     }
 
-    L_String* dir_names = str_create();
+    L_String *dir_names = str_create();
     while ((lsdir = readdir(dir)) != NULL)
     {
         if (lsdir->d_type == DT_REG)
@@ -108,13 +107,19 @@ L_String* parse_dir(char *dir_name)
 }
 
 // Reads file and sets to array
-char *parse_file(char *filename)
+char *parse_file(char *filename, char *cvs)
 {
     // Reading file
     FILE *file_ptr;
 
+    // Concatenating the path
+    char *path = malloc(strlen(cvs) + strlen(filename) + 2);
+    strcpy(path, cvs);
+    strcat(path, "/");
+    strcat(path, filename);
+
     // Read file
-    file_ptr = fopen(filename, "r");
+    file_ptr = fopen(path, "r");
     if (file_ptr == NULL)
     {
         printf("Erro ao abrir o arquivo\n");
@@ -139,6 +144,8 @@ char *parse_file(char *filename)
 
     // Close file
     fclose(file_ptr);
+
+    free(path);
     return file_content;
 }
 

@@ -9,22 +9,21 @@
 
 t_researcher *ent_create_researcher(char *name, int id)
 {
-
     // Allocates memory for the object
     t_researcher *r = (t_researcher *)malloc(sizeof(t_researcher));
-
-    // Set name
-    r->name = (char *)malloc(sizeof(char) * (strlen(name) + 1));
-    strcpy(r->name, name);
 
     // Set id
     r->id = id;
 
-    // Set other attributes
-    r->publications_list = NULL;
-    r->conferences_list = NULL;
+    // Allocates memory for the name
+    r->name = (char *)malloc(sizeof(char) * (strlen(name) + 1));
+    // Copy name
+    strcpy(r->name, name);
 
+    // Set publications count
     r->publications_count = 0;
+
+    // Set conferences count
     r->conferences_count = 0;
 
     return r;
@@ -35,10 +34,6 @@ void ent_destroy_researcher(t_researcher *researcher)
     // Free name
     free(researcher->name);
 
-    // Free data
-    ent_destroy_abstract_data(researcher->publications_list);
-    ent_destroy_abstract_data(researcher->conferences_list);
-
     // Free object
     free(researcher);
 }
@@ -48,20 +43,23 @@ t_abstract_data *ent_create_abstract_data(char *c_name, char *c_code, int c_year
     // Allocates memory for the object
     t_abstract_data *a = (t_abstract_data *)malloc(sizeof(t_abstract_data));
 
-    // Set conference name
+    // Set id
+    a->id = 0;
+
+    // Allocates memory for the name
     a->c_name = (char *)malloc(sizeof(char) * (strlen(c_name) + 1));
+    // Copy name
     strcpy(a->c_name, c_name);
 
-    // Set conference code
+    // Allocates memory for the code
     a->c_code = (char *)malloc(sizeof(char) * (strlen(c_code) + 1));
+    // Copy code
     strcpy(a->c_code, c_code);
 
-    // Set conference year
+    // Set year
     a->c_year = c_year;
 
-    // Set other attributes
-    // a->researchers_list = NULL;
-    // a->researchers_count = 0;
+    // Set data type
     a->c_type = c_data_type;
 
     return a;
@@ -69,30 +67,76 @@ t_abstract_data *ent_create_abstract_data(char *c_name, char *c_code, int c_year
 
 void ent_destroy_abstract_data(t_abstract_data *abstract_data)
 {
-    // Free conference name
+    // Free name
     free(abstract_data->c_name);
 
-    // Free conference code
+    // Free code
     free(abstract_data->c_code);
 
     // Free object
     free(abstract_data);
 }
 
-void ent_add_conference(t_researcher *researcher, t_abstract_data *conference)
+t_data *ent_create_data()
 {
-    // Add conference to researcher
-    researcher->conferences_list = (t_abstract_data *)realloc(researcher->conferences_list, sizeof(t_abstract_data) * (researcher->conferences_count + 1));
-    researcher->conferences_list[researcher->conferences_count] = *conference;
-    researcher->conferences_count++;
+    // Allocates memory for the object
+    t_data *d = (t_data *)malloc(sizeof(t_data));
+
+    // Set cardinality
+    d->cardinality = 0;
+
+    // Set data
+    d->data = NULL;
+
+    return d;
 }
 
-void ent_add_publication(t_researcher *researcher, t_abstract_data *publication)
+void ent_push_data(t_data *data, t_reserch_data *reserch_data)
 {
-    // Add publication to researcher
-    researcher->publications_list = (t_abstract_data *)realloc(researcher->publications_list, sizeof(t_abstract_data) * (researcher->publications_count + 1));
-    researcher->publications_list[researcher->publications_count] = *publication;
-    researcher->publications_count++;
+    // Allocates memory for the object
+    data->data = (t_reserch_data *)realloc(data->data, sizeof(t_reserch_data) * (data->cardinality + 1));
+
+    // Set id
+    data->data[data->cardinality] = *reserch_data;
+
+    // Increment cardinality
+    data->cardinality++;
 }
 
+t_reserch_data *ent_create_relation(t_data *data, t_researcher *researcher, t_abstract_data *abstract_data, int id)
+{
+    // Allocates memory for the object
+    t_reserch_data *r = (t_reserch_data *)malloc(sizeof(t_reserch_data));
 
+    // Set id
+    r->id = id;
+
+    // Set researcher
+    r->id_resercher = researcher->id;
+
+    // Increment researcher publications count
+    if (abstract_data->c_type == PUBLICATION)
+    {
+        researcher->publications_count++;
+    }
+    // Increment researcher conferences count
+    else
+    {
+        researcher->conferences_count++;
+    }
+
+    // Set abstract data
+    r->id_data = abstract_data->id;
+
+    // Push relation to db
+    ent_push_data(data, r);
+    return r;
+}
+
+void ent_destroy_data(t_data *data){
+    // Free data
+    free(data->data);
+
+    // Free object
+    free(data);
+}
