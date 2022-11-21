@@ -4,16 +4,19 @@ LDFLAGS = -lm
 CC = gcc
 
 # arquivos-objeto
-	objects = index.o string_lib.o
+	objects = index.o libs/string_lib.o libs/linked_lib.o src/entities.o
      
-all: index.o string_lib.o entities.o
-	$(CC) -o index index.o string_lib.o entities.o $(LDFLAGS)
+all: $(objects)
+	$(CC) -o index $(objects) $(LDFLAGS)
 
 string_lib.o: libs/string_lib.c
 	$(CC) -c $(CFLAGS) libs/string_lib.c
 
 entities.o: src/entities.c
 	$(CC) -c $(CFLAGS) src/entities.c
+
+linked_lib.o: libs/linked_lib.c
+	$(CC) -c $(CFLAGS) libs/linked_lib.c
 
 index.o: index.c
 	$(CC) -c $(CFLAGS) index.c

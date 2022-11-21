@@ -6,137 +6,333 @@
 #include <stdlib.h>
 #include <string.h>
 #include "entities.h"
+#include "../libs/linked_lib.h"
 
-t_researcher *ent_create_researcher(char *name, int id)
+/**
+ * Database functions
+ */
+
+database *create_database()
 {
-    // Allocates memory for the object
-    t_researcher *r = (t_researcher *)malloc(sizeof(t_researcher));
+    // Create a database
+    database *db = (database *)malloc(sizeof(database));
 
-    // Set id
+    // Create the lists
+    db->data_perid_db = create_list();
+    db->data_conf_db = create_list();
+    db->researcher_db = create_list();
+    db->researcher_data = create_list();
+
+    // Set the cardinality
+    db->cardinality = 0;
+
+    return db;
+}
+
+void destroy_database(database *db)
+{
+    // Destroy the lists
+    destroy_list(db->data_perid_db);
+    destroy_list(db->data_conf_db);
+    destroy_list(db->researcher_db);
+    destroy_list(db->researcher_data);
+
+    // Destroy the database
+    free(db);
+}
+
+int insert_data_database(database *db, abstract_data *data)
+{
+    // Check if the data is valid
+    if (data == NULL)
+    {
+        return 0;
+    }
+
+    // TODO: Check if the researcher already exists
+
+    // Check if the data is a conference
+    if (data->c_type == CONFERENCE)
+    {
+        // Insert the data in the conference list
+        db->conference_count++;
+        insert_list(db->data_conf_db, data, db->conference_count);
+    }
+    else
+    {
+        // Insert the data in the periodical list
+        db->period_count++;
+        insert_list(db->data_perid_db, data, db->period_count);
+    }
+
+    // Increment the cardinality
+    db->cardinality++;
+
+    return 1;
+}
+
+int insert_researcher_database(database *db, researcher *r)
+{
+    // Check if the researcher is valid
+    if (r == NULL)
+    {
+        return 0;
+    }
+
+    // TODO: Check if the researcher already exists
+
+    // Insert the researcher in the researcher list
+    db->researcher_count++;
+    insert_list(db->researcher_db, r, db->researcher_count);
+
+    // Increment the cardinality
+    db->cardinality++;
+
+    return 1;
+}
+
+int insert_researcher_data_database(database *db, researcher_data *rd)
+{
+    // Check if the researcher_data is valid
+    if (rd == NULL)
+    {
+        return 0;
+    }
+
+    // Insert the researcher_data in the researcher_data list
+    insert_list(db->researcher_data, rd, rd->id);
+
+    // Increment the cardinality
+    db->cardinality++;
+
+    return 1;
+}
+
+/**
+ * Consult functions
+ */
+
+// Returns research by id
+researcher *get_researcher_by_id(database *db, int id)
+{
+    // Get the researcher
+    researcher *r = (researcher *)search_list(db->researcher_db, id)->data;
+
+    // Check if the researcher exists
+    if (r == NULL)
+    {
+        return NULL;
+    }
+
+    return r;
+}
+
+abstract_data *get_data_by_id(database *db, data_type data_type, int id)
+{
+    // Get the data
+
+    if (data_type == CONFERENCE)
+    {
+        abstract_data *data = (abstract_data *)search_list(db->data_conf_db, id)->data;
+
+        // Check if the data exists
+        if (data == NULL)
+        {
+            return NULL;
+        }
+
+        return data;
+    }
+    else
+    {
+        abstract_data *data = (abstract_data *)search_list(db->data_perid_db, id)->data;
+
+        // Check if the data exists
+        if (data == NULL)
+        {
+            return NULL;
+        }
+
+        return data;
+    }
+}
+
+list_t *get_data_of_researcher_id(database *db, data_type data_type, int id_researcher)
+{
+    // List of data
+    list_t *data_of_researcher = create_list();
+
+    // Get the researcher_data
+    node_t *node = db->researcher_data->head;
+
+    // Iterate over the researcher_data
+    while (node != NULL)
+    {
+        // Get the researcher_data
+        researcher_data *rd = (researcher_data *)node->data;
+
+        // Check if the researcher_data is valid
+        if (rd != NULL)
+        {
+            // Check if the researcher_data is of the researcher and data type specified
+            if ((rd->id_researcher == id_researcher) && (rd->data_type == data_type))
+            {
+                // Get the data
+                abstract_data *data = get_data_by_id(db, rd->data_type, rd->id_data);
+
+                // Check if the data is valid
+                if (data != NULL)
+                {
+                    // Insert the data in the list
+                    insert_list(data_of_researcher, data, data->id);
+                }
+            }
+        }
+
+        // Get the next node
+        node = node->next;
+    }
+
+    return data_of_researcher;
+}
+
+list_t *get_researchers_of_data_id(database *db, data_type data_type, int id_data)
+{
+    // List of researchers
+    list_t *researchers_of_data = create_list();
+
+    // Get the researcher_data
+    node_t *node = db->researcher_data->head;
+
+    // Iterate over the researcher_data
+    while (node != NULL)
+    {
+        // Get the researcher_data
+        researcher_data *rd = (researcher_data *)node->data;
+
+        // Check if the researcher_data is valid
+        if (rd != NULL)
+        {
+            // Check if the researcher_data is of the researcher and data type specified
+            if ((rd->id_data == id_data) && (rd->data_type == data_type))
+            {
+                // Get the researcher
+                researcher *r = get_researcher_by_id(db, rd->id_researcher);
+
+                // Check if the researcher is valid
+                if (r != NULL)
+                {
+                    // Insert the researcher in the list
+                    insert_list(researchers_of_data, r, r->id);
+                }
+            }
+        }
+
+        // Get the next node
+        node = node->next;
+    }
+
+    return researchers_of_data;
+}
+
+/**
+ * Researcher functions
+ */
+
+researcher *create_researcher(int id, char *name)
+{
+    // Create a researcher
+    researcher *r = (researcher *)malloc(sizeof(researcher));
+
+    // Set the id
     r->id = id;
 
-    // Allocates memory for the name
+    // Set the name
     r->name = (char *)malloc(sizeof(char) * (strlen(name) + 1));
-    // Copy name
     strcpy(r->name, name);
 
-    // Set publications count
+    // Set the publications count
     r->publications_count = 0;
 
-    // Set conferences count
+    // Set the conferences count
     r->conferences_count = 0;
 
     return r;
 }
 
-void ent_destroy_researcher(t_researcher *researcher)
+void delete_researcher(researcher *researcher)
 {
-    // Free name
+    // Free the name
     free(researcher->name);
 
-    // Free object
+    // Free the researcher
     free(researcher);
 }
 
-t_abstract_data *ent_create_abstract_data(char *c_name, char *c_code, int c_year, t_data_type c_data_type)
+/**
+ * Data functions
+ */
+
+abstract_data *create_data(int id, char *c_name, char *c_code, int c_year, data_type c_type)
 {
-    // Allocates memory for the object
-    t_abstract_data *a = (t_abstract_data *)malloc(sizeof(t_abstract_data));
+    // Create a data
+    abstract_data *data = (abstract_data *)malloc(sizeof(abstract_data));
 
-    // Set id
-    a->id = 0;
+    // Set the id
+    data->id = id;
 
-    // Allocates memory for the name
-    a->c_name = (char *)malloc(sizeof(char) * (strlen(c_name) + 1));
-    // Copy name
-    strcpy(a->c_name, c_name);
+    // Set the name
+    data->c_name = (char *)malloc(sizeof(char) * (strlen(c_name) + 1));
+    strcpy(data->c_name, c_name);
 
-    // Allocates memory for the code
-    a->c_code = (char *)malloc(sizeof(char) * (strlen(c_code) + 1));
-    // Copy code
-    strcpy(a->c_code, c_code);
+    // Set the code
+    data->c_code = (char *)malloc(sizeof(char) * (strlen(c_code) + 1));
+    strcpy(data->c_code, c_code);
 
-    // Set year
-    a->c_year = c_year;
+    // Set the year
+    data->c_year = c_year;
 
-    // Set data type
-    a->c_type = c_data_type;
+    // Set the type
+    data->c_type = c_type;
 
-    return a;
+    return data;
 }
 
-void ent_destroy_abstract_data(t_abstract_data *abstract_data)
+void delete_data(abstract_data *data)
 {
-    // Free name
-    free(abstract_data->c_name);
+    // Free the name
+    free(data->c_name);
 
-    // Free code
-    free(abstract_data->c_code);
+    // Free the code
+    free(data->c_code);
 
-    // Free object
-    free(abstract_data);
-}
-
-t_data *ent_create_data()
-{
-    // Allocates memory for the object
-    t_data *d = (t_data *)malloc(sizeof(t_data));
-
-    // Set cardinality
-    d->cardinality = 0;
-
-    // Set data
-    d->data = NULL;
-
-    return d;
-}
-
-void ent_push_data(t_data *data, t_reserch_data *reserch_data)
-{
-    // Allocates memory for the object
-    data->data = (t_reserch_data *)realloc(data->data, sizeof(t_reserch_data) * (data->cardinality + 1));
-
-    // Set id
-    data->data[data->cardinality] = *reserch_data;
-
-    // Increment cardinality
-    data->cardinality++;
-}
-
-t_reserch_data *ent_create_relation(t_data *data, t_researcher *researcher, t_abstract_data *abstract_data, int id)
-{
-    // Allocates memory for the object
-    t_reserch_data *r = (t_reserch_data *)malloc(sizeof(t_reserch_data));
-
-    // Set id
-    r->id = id;
-
-    // Set researcher
-    r->id_resercher = researcher->id;
-
-    // Increment researcher publications count
-    if (abstract_data->c_type == PUBLICATION)
-    {
-        researcher->publications_count++;
-    }
-    // Increment researcher conferences count
-    else
-    {
-        researcher->conferences_count++;
-    }
-
-    // Set abstract data
-    r->id_data = abstract_data->id;
-
-    // Push relation to db
-    ent_push_data(data, r);
-    return r;
-}
-
-void ent_destroy_data(t_data *data){
-    // Free data
-    free(data->data);
-
-    // Free object
+    // Free the data
     free(data);
+}
+
+/**
+ * Researcher data functions
+ */
+
+researcher_data *create_relation(int id_data, int id_researcher, data_type data_type)
+{
+    // Create a relation
+    researcher_data *rd = (researcher_data *)malloc(sizeof(researcher_data));
+
+    // Set the id
+    rd->id_data = id_data;
+
+    // Set the id
+    rd->id_researcher = id_researcher;
+
+    // Set the data type
+    rd->data_type = data_type;
+
+    return rd;
+}
+
+void delete_relation(researcher_data *rd)
+{
+    // Free the relation
+    free(rd);
 }

@@ -9,6 +9,8 @@
 #include <string.h>
 #include <dirent.h>
 #include "libs/string_lib.h"
+#include "libs/linked_lib.h"
+#include "src/entities.h"
 
 L_String *parse_dir(char *dir_name);
 char *parse_file(char *filename, char *cvs);
@@ -17,30 +19,47 @@ void program_params(char **cvs, char **q_conf, char **q_period, int argc, char *
 
 int main(int argc, char *argv[])
 {
-    char *cvs = NULL;
-    char *q_conf = NULL;
-    char *q_period = NULL;
 
-    program_params(&cvs, &q_conf, &q_period, argc, argv);
-    // printf("flag_a = %s, flag_b = %s, value_c = %s\n", cvs, q_conf, q_period);
+    // Create DB
+    database *db = create_database();
 
-    // String of all directory names
-    L_String *dir_names = parse_dir(cvs);
+    // Create data
+    abstract_data *data = create_data(0, "Data", "Teste", 2022, CONFERENCE);
 
-    // For all directories
-    for (int i = 0; i < dir_names->pos; i++)
-    {
-        // String of all file names
-        char *file_content = parse_file(dir_names->str[i], cvs);
-        
-        // Logic
+    // Insert data in DB
+    insert_data_database(db, data);
 
-        free(file_content);
-    }
+    // Create Researcher
+    researcher *res = create_researcher(0, "Nome do Pesquisador");
 
-    // TODO: Free memory
-    str_clear(dir_names);
-    return 0;
+    // Create Researcher Data
+
+
+    // char *cvs = NULL;
+    // char *q_conf = NULL;
+    // char *q_period = NULL;
+
+
+    // // String of all directory names
+    // L_String *dir_names = parse_dir(cvs);
+
+    // // For all directories
+    // for (int i = 0; i < dir_names->pos; i++)
+    // {
+    //     // String of all file names
+    //     char *file_content = parse_file(dir_names->str[i], cvs);
+
+    //     // Logic
+
+    //     char *file_content = parse_file(dir_names->str[i], cvs);
+    //             // Logic
+
+    //     free(file_content);
+    // }
+
+    // // TODO: Free memory
+    // str_clear(dir_names);
+    // return 0;
 }
 
 // Parse the command line parameters
