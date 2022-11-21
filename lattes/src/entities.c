@@ -29,7 +29,7 @@ database *create_database()
     return db;
 }
 
-void destroy_database(database *db)
+void delete_database(database *db)
 {
     // Destroy the lists
     destroy_list(db->data_perid_db);
@@ -55,14 +55,14 @@ int insert_data_database(database *db, abstract_data *data)
     if (data->c_type == CONFERENCE)
     {
         // Insert the data in the conference list
+        insert_list(db->data_conf_db, data, data->id);
         db->conference_count++;
-        insert_list(db->data_conf_db, data, db->conference_count);
     }
     else
     {
         // Insert the data in the periodical list
+        insert_list(db->data_perid_db, data, data->id);
         db->period_count++;
-        insert_list(db->data_perid_db, data, db->period_count);
     }
 
     // Increment the cardinality
@@ -82,8 +82,8 @@ int insert_researcher_database(database *db, researcher *r)
     // TODO: Check if the researcher already exists
 
     // Insert the researcher in the researcher list
+    insert_list(db->researcher_db, r, r->id);
     db->researcher_count++;
-    insert_list(db->researcher_db, r, db->researcher_count);
 
     // Increment the cardinality
     db->cardinality++;
@@ -99,11 +99,37 @@ int insert_researcher_data_database(database *db, researcher_data *rd)
         return 0;
     }
 
+    // Validates the researcher
+    researcher *r = get_researcher_by_id(db, rd->id_researcher);
+    if (r == NULL)
+    {
+        return 0;
+    }
+    // Incremet the researcher count
+    if (rd->data_type == CONFERENCE)
+    {
+        r->conferences_count++;
+    }
+    else
+    {
+        r->publications_count++;
+    }
+
+    // Validates the data
+    abstract_data *data = get_data_by_id(db, rd->data_type, rd->id_data);
+    if (data == NULL)
+    {
+        return 0;
+    }
+
     // Insert the researcher_data in the researcher_data list
     insert_list(db->researcher_data, rd, rd->id);
 
     // Increment the cardinality
     db->cardinality++;
+
+    free(r);
+    free(data);
 
     return 1;
 }
@@ -235,6 +261,71 @@ list_t *get_researchers_of_data_id(database *db, data_type data_type, int id_dat
     return researchers_of_data;
 }
 
+researcher *get_researcher_by_name(database *db, char *name)
+{
+    // Get the researcher
+    node_t *node = db->researcher_db->head;
+
+    // Iterate over the researcher
+    while (node != NULL)
+    {
+        // Get the researcher
+        researcher *r = (researcher *)node->data;
+
+        // Check if the researcher is valid
+        if (r != NULL)
+        {
+            // Check if the researcher is the one specified
+            if (strcmp(r->name, name) == 0)
+            {
+                return r;
+            }
+        }
+
+        // Get the next node
+        node = node->next;
+    }
+
+    return NULL;
+}
+
+abstract_data *get_data_by_name(database *db, data_type data_type, char *name)
+{
+    // Get the data
+    node_t *node;
+
+    if (data_type == CONFERENCE)
+    {
+        node = db->data_conf_db->head;
+    }
+    else
+    {
+        node = db->data_perid_db->head;
+    }
+
+    // Iterate over the data
+    while (node != NULL)
+    {
+        // Get the data
+        abstract_data *data = (abstract_data *)node->data;
+
+        // Check if the data is valid
+        if (data != NULL)
+        {
+            // Check if the data is the one specified
+            if (strcmp(data->c_name, name) == 0)
+            {
+                return data;
+            }
+        }
+
+        // Get the next node
+        node = node->next;
+    }
+
+    return NULL;
+}
+
 /**
  * Researcher functions
  */
@@ -327,6 +418,8 @@ researcher_data *create_relation(int id_data, int id_researcher, data_type data_
 
     // Set the data type
     rd->data_type = data_type;
+
+    // Set the count of researchers
 
     return rd;
 }

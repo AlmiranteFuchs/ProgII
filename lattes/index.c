@@ -24,21 +24,46 @@ int main(int argc, char *argv[])
     database *db = create_database();
 
     // Create data
-    abstract_data *data = create_data(0, "Data", "Teste", 2022, CONFERENCE);
-
-    // Insert data in DB
+    abstract_data *data = create_data(db->conference_count, "Data", "Teste", 2022, CONFERENCE);
     insert_data_database(db, data);
 
+    abstract_data *data2 = create_data(db->conference_count, "Data2", "Teste2", 2022, CONFERENCE);
+    insert_data_database(db, data2);
+
+    abstract_data *data3 = create_data(db->conference_count, "Data3", "Teste3", 2022, CONFERENCE);
+    insert_data_database(db, data3);
+
     // Create Researcher
-    researcher *res = create_researcher(0, "Nome do Pesquisador");
+    researcher *res = create_researcher(db->researcher_count, "Nome do Pesquisador");
+    researcher *res2 = create_researcher(db->researcher_count, "Nome do Pesquisador2");
+    
+    
+    insert_researcher_database(db, res);
+    insert_researcher_database(db, res2);
+
+
+    // Create researcher_data
+    researcher_data *res_data = create_relation(0, 0, CONFERENCE);
+    researcher_data *res_data2 = create_relation(1, 0, CONFERENCE);
+    researcher_data *res_data3 = create_relation(2, 1, CONFERENCE);
+
+    // Insert researcher_data in DB
+    insert_researcher_data_database(db, res_data);
+    insert_researcher_data_database(db, res_data2);
+    insert_researcher_data_database(db, res_data3);
+
+    // Printf
+    printf("data by name data3: %s\n", get_data_by_name(db, CONFERENCE, "Data3")->c_name);
+    printf("Researcher by name Nome do Pesquisador: %s\n", get_researcher_by_name(db, "Nome do Pesquisador2")->name);
+
+
+    return 1;
 
     // Create Researcher Data
-
 
     // char *cvs = NULL;
     // char *q_conf = NULL;
     // char *q_period = NULL;
-
 
     // // String of all directory names
     // L_String *dir_names = parse_dir(cvs);
