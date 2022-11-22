@@ -144,6 +144,8 @@ researcher *get_researcher_by_id(database *db, int id)
     // Get the researcher
     researcher *r = (researcher *)search_list(db->researcher_db, id)->data;
 
+    printf("FUCK MY ASS : %d\n", r->id);
+
     // Check if the researcher exists
     if (r == NULL)
     {

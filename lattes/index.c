@@ -14,77 +14,42 @@
 
 L_String *parse_dir(char *dir_name);
 char *parse_file(char *filename, char *cvs);
-int search_tag(char *filename, char *tag);
+char *get_tag_value(char *filename, char *tag);
 void program_params(char **cvs, char **q_conf, char **q_period, int argc, char *argv[]);
+void parse_cvs_to_data(database *db, char *cvs_file_content);
+void treat_cvs_files(char *cvs, database *db);
+void treat_data_files(char *filename, data_type data_type, database *db);
+void treat_period_files(char *q_period, database *db);
 
 int main(int argc, char *argv[])
 {
+    //./lattes -d <diretorio com os CVs> -c <arquivo com a lista Qualis Conf> -p <arquivo com a lista Qualis Periódicos>
 
-    // Create DB
+    // Program parameters
+    char *cvs = NULL;
+    char *q_conf = NULL;
+    char *q_period = NULL;
+
+    // All data of application
     database *db = create_database();
 
-    // Create data
-    abstract_data *data = create_data(db->conference_count, "Data", "Teste", 2022, CONFERENCE);
-    insert_data_database(db, data);
+    // Set the program params
+    program_params(&cvs, &q_conf, &q_period, argc, argv);
 
-    abstract_data *data2 = create_data(db->conference_count, "Data2", "Teste2", 2022, CONFERENCE);
-    insert_data_database(db, data2);
+    // Treat conference files
+    treat_data_files(q_conf, CONFERENCE, db);
 
-    abstract_data *data3 = create_data(db->conference_count, "Data3", "Teste3", 2022, CONFERENCE);
-    insert_data_database(db, data3);
+    // Treat period files
+    treat_data_files(q_period, PUBLICATION, db);
 
-    // Create Researcher
-    researcher *res = create_researcher(db->researcher_count, "Nome do Pesquisador");
-    researcher *res2 = create_researcher(db->researcher_count, "Nome do Pesquisador2");
-    
-    
-    insert_researcher_database(db, res);
-    insert_researcher_database(db, res2);
+    // Treat cvs files
+    treat_cvs_files(cvs, db);
 
+    printf("Researcher: %d, name: %s\n", get_researcher_by_id(db, 0)->id, get_researcher_by_id(db, 0)->name);
 
-    // Create researcher_data
-    researcher_data *res_data = create_relation(0, 0, CONFERENCE);
-    researcher_data *res_data2 = create_relation(1, 0, CONFERENCE);
-    researcher_data *res_data3 = create_relation(2, 1, CONFERENCE);
+    // TODO: Free memory
 
-    // Insert researcher_data in DB
-    insert_researcher_data_database(db, res_data);
-    insert_researcher_data_database(db, res_data2);
-    insert_researcher_data_database(db, res_data3);
-
-    // Printf
-    printf("data by name data3: %s\n", get_data_by_name(db, CONFERENCE, "Data3")->c_name);
-    printf("Researcher by name Nome do Pesquisador: %s\n", get_researcher_by_name(db, "Nome do Pesquisador2")->name);
-
-
-    return 1;
-
-    // Create Researcher Data
-
-    // char *cvs = NULL;
-    // char *q_conf = NULL;
-    // char *q_period = NULL;
-
-    // // String of all directory names
-    // L_String *dir_names = parse_dir(cvs);
-
-    // // For all directories
-    // for (int i = 0; i < dir_names->pos; i++)
-    // {
-    //     // String of all file names
-    //     char *file_content = parse_file(dir_names->str[i], cvs);
-
-    //     // Logic
-
-    //     char *file_content = parse_file(dir_names->str[i], cvs);
-    //             // Logic
-
-    //     free(file_content);
-    // }
-
-    // // TODO: Free memory
-    // str_clear(dir_names);
-    // return 0;
+    return 0;
 }
 
 // Parse the command line parameters
@@ -151,22 +116,36 @@ L_String *parse_dir(char *dir_name)
 }
 
 // Reads file and sets to array
-char *parse_file(char *filename, char *cvs)
+char *parse_file(char *filename, char *pathname)
 {
     // Reading file
     FILE *file_ptr;
 
-    // Concatenating the path
-    char *path = malloc(strlen(cvs) + strlen(filename) + 2);
-    strcpy(path, cvs);
-    strcat(path, "/");
-    strcat(path, filename);
+    char *path = malloc(strlen(pathname) + strlen(filename) + 2);
+
+    // If pathname
+    if (strlen(pathname) > 0)
+    {
+        strcpy(path, pathname);
+
+        // Concatenating the path
+        // Check if the last char is a slash
+        if (path[strlen(path) - 1] != '/')
+        {
+            strcat(path, "/");
+        }
+        strcat(path, filename);
+    }
+    else
+    {
+        strcpy(path, filename);
+    }
 
     // Read file
     file_ptr = fopen(path, "r");
     if (file_ptr == NULL)
     {
-        printf("Erro ao abrir o arquivo\n");
+        printf("Erro ao abrir o arquivo: %s\n", path);
         exit(0);
     }
 
@@ -193,26 +172,129 @@ char *parse_file(char *filename, char *cvs)
     return file_content;
 }
 
-int search_tag(char *file_content, char *str_target)
+char *get_tag_value(char *file_content, char *tag)
 {
     // Search substring
-    char *tag = "DETALHAMENTO-DO-ARTIGO";
-
-    printf("%s\n", str_target);
-    return 1;
+    // char *tag = "DETALHAMENTO-DO-ARTIGO";
 
     char *tag_ptr = strstr(file_content, tag);
     if (tag_ptr == NULL)
     {
         printf("Não foi encontrado a tag\n");
-        exit(0);
+        return NULL;
     }
 
     // Offsets file_content after tag
     tag_ptr = tag_ptr + strlen(tag);
 
-    // Print content
-    printf("%s\n", tag_ptr);
+    // Removes '"' and = tag
+    tag_ptr++;
+    tag_ptr++;
 
-    return 0;
+    // Reads until '"'
+    char *tag_value = malloc(sizeof(char) * 1);
+    int i = 0;
+    while (*tag_ptr != '"')
+    {
+        tag_value[i] = *tag_ptr;
+        tag_ptr++;
+
+        // Reallocs memory
+        tag_value = realloc(tag_value, sizeof(char) * (i + 2));
+        i++;
+    }
+    tag_value[i] = '\0';
+
+    // Print size
+    return tag_value;
+}
+
+// Logic data + relations --> database
+void parse_cvs_to_data(database *db, char *cvs_file_content)
+{
+    // Search the name of the researcher
+    char *name = get_tag_value(cvs_file_content, "DADOS-GERAIS NOME-COMPLETO");
+
+    printf("Nome: %s\n", name);
+
+    // New researcher
+    researcher *res = create_researcher(db->researcher_count, name);
+
+    // Insert researcher in database
+    insert_researcher_database(db, res);
+
+    // Get researcher data
+
+    // Free memory
+    free(name);
+    delete_researcher(res);
+}
+
+// Params to file --> Logic data
+void treat_cvs_files(char *cvs, database *db)
+{
+    // File content of cv
+    char *cvs_file_content = NULL;
+
+    // String of all directory names of cvs files
+    L_String *dir_names = parse_dir(cvs);
+
+    // For all directories
+    for (int i = 0; i < dir_names->pos; i++)
+    {
+        char *filename = dir_names->str[i];
+
+        // Checks if the file is a .xml
+        if (strstr(filename, ".xml") != NULL)
+        {
+            // Parse the file
+            cvs_file_content = parse_file(filename, cvs);
+            // Call logic to data
+            parse_cvs_to_data(db, cvs_file_content);
+        }
+    }
+
+    free(cvs_file_content);
+    str_clear(dir_names);
+}
+
+// Params to file --> Logic ata
+void treat_data_files(char *filename, data_type data_type, database *db)
+{
+    // File content of cv
+    char *q_conf_file_content = NULL;
+
+    // Parse the file
+    q_conf_file_content = parse_file(filename, "");
+
+    // Copy of file
+    char *q_conf_file_content_copy = q_conf_file_content;
+
+    // For each line
+    char *line = NULL;
+    while ((line = strtok(q_conf_file_content_copy, "\n")) != NULL)
+    {
+        // printf("%s\n", line);
+
+        // Offsets q_conf_file_content after line
+        q_conf_file_content_copy = q_conf_file_content_copy + strlen(line) + 1;
+
+        // Save last 2 chars
+        char *code = malloc(sizeof(char) * 3);
+        code[0] = line[strlen(line) - 2];
+        code[1] = line[strlen(line) - 1];
+        code[2] = '\0';
+
+        // Remove last 2 chars
+        line[strlen(line) - 2] = '\0';
+
+        // Create new conference
+        abstract_data *conf = create_data(db->conference_count, line, code, 2022, data_type);
+
+        // Insert conference in database
+        insert_data_database(db, conf);
+    }
+
+    // Free memory
+    free(q_conf_file_content);
 }

@@ -28,8 +28,10 @@ node_t *create_node(void *data, int data_id)
     node_t *node = (node_t *)malloc(sizeof(node_t));
 
     // Set pos
-    node->data = data; // Pointer to data, malloqued in the main
     node->data_id = data_id;
+
+    // Set data
+    node->data = data;
 
     node->next = NULL;
     node->prev = NULL;
