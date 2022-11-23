@@ -45,8 +45,6 @@ int main(int argc, char *argv[])
     // Treat cvs files
     treat_cvs_files(cvs, db);
 
-    printf("Researcher: %d, name: %s\n", get_researcher_by_id(db, 0)->id, get_researcher_by_id(db, 0)->name);
-
     // TODO: Free memory
 
     return 0;
@@ -212,10 +210,14 @@ char *get_tag_value(char *file_content, char *tag)
 // Logic data + relations --> database
 void parse_cvs_to_data(database *db, char *cvs_file_content)
 {
-    // Search the name of the researcher
-    char *name = get_tag_value(cvs_file_content, "DADOS-GERAIS NOME-COMPLETO");
+    // Tags
+    char *name_tag = "DADOS-GERAIS NOME-COMPLETO";
+    char* period_tag = "DETALHAMENTO-DO-ARTIGO TITULO-DO-PERIODICO-OU-REVISTA"; // Wrong
+    char* conference_tag = "DADOS-BASICOS-DA-PARTICIPACAO-EM-CONGRESSO"; // Wrong
 
-    printf("Nome: %s\n", name);
+
+    // Search the name of the researcher
+    char *name = get_tag_value(cvs_file_content, name_tag);
 
     // New researcher
     researcher *res = create_researcher(db->researcher_count, name);
@@ -223,11 +225,11 @@ void parse_cvs_to_data(database *db, char *cvs_file_content)
     // Insert researcher in database
     insert_researcher_database(db, res);
 
-    // Get researcher data
+    // TODO: Create researcher data
+    // Periodic publications
 
     // Free memory
     free(name);
-    delete_researcher(res);
 }
 
 // Params to file --> Logic data

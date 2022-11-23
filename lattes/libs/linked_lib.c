@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "linked_lib.h"
+#include "../src/entities.h"
 
 // Create a new List
 list_t *create_list()
@@ -29,9 +30,15 @@ node_t *create_node(void *data, int data_id)
 
     // Set pos
     node->data_id = data_id;
-
     // Set data
     node->data = data;
+
+    //researcher *r = (researcher *)(node)->data;
+
+    // printf("Debug %d\n>: ", r->id);
+    //printf("Debug %s\n>: ", r->name);
+    
+    
 
     node->next = NULL;
     node->prev = NULL;
