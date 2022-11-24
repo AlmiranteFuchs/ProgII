@@ -21,6 +21,8 @@ void treat_cvs_files(char *cvs, database *db);
 void treat_data_files(char *filename, data_type data_type, database *db);
 void treat_period_files(char *q_period, database *db);
 
+L_String *get_all_tags_value(char *file_content, char *tag, char *prop);
+
 int main(int argc, char *argv[])
 {
     //./lattes -d <diretorio com os CVs> -c <arquivo com a lista Qualis Conf> -p <arquivo com a lista Qualis Periódicos>
@@ -45,6 +47,30 @@ int main(int argc, char *argv[])
     // Treat cvs files
     treat_cvs_files(cvs, db);
 
+    // Get all data from researcher
+    researcher *r = get_researcher_by_id(db, 1);
+
+    //Print the researcher
+    printf("Researcher: %s\n", r->name);
+
+    list_t *data = get_data_of_researcher_id(db, CONFERENCE, r->id);
+
+    // Corvert to data
+    node_t *node = data->head;
+
+    // Print all data
+    while (node != NULL)
+    {
+        abstract_data *data = (abstract_data *)node->data;
+        printf("Data: %s", data->c_name);
+        printf(" %s\n", data->c_code);
+        node = node->next;
+    }
+
+    printf("Size: %d\n", data->size);
+
+    // Print the data
+    //print_list(data);
     // TODO: Free memory
 
     return 0;
@@ -207,29 +233,183 @@ char *get_tag_value(char *file_content, char *tag)
     return tag_value;
 }
 
+L_String *get_all_tags_value(char *file_content, char *tag, char *prop)
+{
+    // Copy of file_content ptr
+    char *file_content_ptr = file_content;
+
+    // Create a list of strings
+    L_String *list = str_create();
+
+    // While tag is found
+    while ((file_content_ptr = strstr(file_content_ptr, tag)) != NULL)
+    {
+        // Search substring prop in tag
+        char *prop_ptr = strstr(file_content_ptr, prop);
+        if (prop_ptr == NULL)
+        {
+            printf("Não foi encontrado a propriedade\n");
+            break;
+        }
+
+        // Offsets file_content after tag
+        prop_ptr = prop_ptr + strlen(prop);
+
+        // Removes '"' and = tag
+        prop_ptr += 2;
+
+        // Reads until '"'
+        char *prop_value = malloc(sizeof(char) * 1);
+        int i = 0;
+        while (*prop_ptr != '"')
+        {
+            prop_value[i] = *prop_ptr;
+            prop_ptr++;
+
+            // Reallocs memory
+            prop_value = realloc(prop_value, sizeof(char) * (i + 2));
+            i++;
+        }
+        prop_value[i] = '\0';
+
+        // Adds to list
+        str_push(prop_value, list);
+
+        // Offsets file_content_ptr
+        file_content_ptr = prop_ptr;
+    }
+
+    return list;
+}
+
 // Logic data + relations --> database
 void parse_cvs_to_data(database *db, char *cvs_file_content)
 {
     // Tags
-    char *name_tag = "DADOS-GERAIS NOME-COMPLETO";
-    char* period_tag = "DETALHAMENTO-DO-ARTIGO TITULO-DO-PERIODICO-OU-REVISTA"; // Wrong
-    char* conference_tag = "DADOS-BASICOS-DA-PARTICIPACAO-EM-CONGRESSO"; // Wrong
+    char *name_tag = "DADOS-GERAIS";
+    char *name_prop = "NOME-COMPLETO";
 
+    // Periods
+    char *period_tag = "DETALHAMENTO-DO-ARTIGO"; // Revista...
+    char *period_prop = "TITULO-DO-PERIODICO-OU-REVISTA";
+    char *period_year_tag = "DADOS-BASICOS-DO-ARTIGO";
+    char *period_year_prop = "ANO-DO-ARTIGO";
+
+    // Conferences
+    char *conference_tag = "DETALHAMENTO-DA-PARTICIPACAO-EM-CONGRESSO";
+    char *conference_prop = "NOME-DO-EVENTO";
+    char *conference_year_tag = "DADOS-BASICOS-DA-PARTICIPACAO-EM-CONGRESSO";
+    char *conference_year_prop = "ANO";
+
+    /***
+     * Tag searching
+     */
 
     // Search the name of the researcher
-    char *name = get_tag_value(cvs_file_content, name_tag);
+    L_String *researcher_list = get_all_tags_value(cvs_file_content, name_tag, name_prop);
+
+    // Get just the first
+    char *researcher_name = malloc(sizeof(char) * strlen(researcher_list->str[0]));
+    strcpy(researcher_name, researcher_list->str[0]);
+
+    // Clear researcher list
+    str_clear(researcher_list);
 
     // New researcher
-    researcher *res = create_researcher(db->researcher_count, name);
+    int res_id = db->researcher_count;
+    researcher *res = create_researcher(res_id, researcher_name);
 
     // Insert researcher in database
     insert_researcher_database(db, res);
 
-    // TODO: Create researcher data
-    // Periodic publications
 
-    // Free memory
-    free(name);
+
+    // TODO: Migrate this to function
+    // Periods name list
+    L_String *periods = get_all_tags_value(cvs_file_content, period_tag, period_prop);
+
+    // Periods year list
+    L_String *periods_year = get_all_tags_value(cvs_file_content, period_year_tag, period_year_prop);
+
+    // Conferences name list
+    L_String *conferences = get_all_tags_value(cvs_file_content, conference_tag, conference_prop);
+
+    // Conferences year list
+    L_String *conferences_year = get_all_tags_value(cvs_file_content, conference_year_tag, conference_year_prop);
+
+    /***
+     * Creating data
+     */
+
+    //Periods
+    for (int i = 0; i < periods->pos; i++)
+    {
+        // 1. Check if period exists in data base
+        // 2. If exists get id and create a relation
+        // 3. If not exists create a period and a relation
+
+        // Check if period exists in data base
+        abstract_data* period = get_data_by_name(db, PUBLICATION, periods->str[i]);
+        if(period == NULL)
+        {
+            // Create a period
+            int period_id = db->period_count;
+            period = create_data(period_id, periods->str[i], "D", atoi(periods_year->str[i]), PUBLICATION);
+
+            // Create a relation between researcher and period
+            researcher_data *res_period = create_relation(period_id, res_id, PUBLICATION);
+
+            // Insert period in database
+            insert_data_database(db, period);
+
+            // Insert relation in database
+            insert_researcher_data_database(db, res_period);
+        }else{
+            // Create a relation between researcher and period
+            researcher_data *res_period = create_relation(period->id, res_id, PUBLICATION);
+
+            // Edit period year
+            period->c_year = atoi(periods_year->str[i]);
+
+            // Insert relation in database
+            insert_researcher_data_database(db, res_period);
+        }
+    }
+
+    // Conferences
+    for (int i = 0; i < conferences->pos; i++)
+    {
+        // 1. Check if conference exists in data base
+        // 2. If exists get id and create a relation
+        // 3. If not exists create a conference and a relation
+
+        // Check if conference exists in data base
+        abstract_data* conference = get_data_by_name(db, CONFERENCE, conferences->str[i]);
+        if(conference == NULL)
+        {
+            // Create a conference
+            int conference_id = db->conference_count;
+            conference = create_data(conference_id, conferences->str[i], "D", atoi(conferences_year->str[i]), CONFERENCE);
+
+            // Create a relation between researcher and conference
+            researcher_data *res_conference = create_relation(conference_id, res_id, CONFERENCE);
+
+            // Insert conference in database
+            insert_data_database(db, conference);
+
+            // Insert relation in database
+            insert_researcher_data_database(db, res_conference);
+        }else{
+            // Create a relation between researcher and conference
+            researcher_data *res_conference = create_relation(conference->id, res_id, CONFERENCE);
+
+            // Edit conference year
+            conference->c_year = atoi(conferences_year->str[i]);
+
+            // Insert relation in database
+            insert_researcher_data_database(db, res_conference);
+        }
+    }
 }
 
 // Params to file --> Logic data

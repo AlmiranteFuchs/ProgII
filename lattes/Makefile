@@ -1,5 +1,8 @@
-CFLAGS = -Wall -g
+CFLAGS = -Wall -g 
 LDFLAGS = -lm
+
+debug: CFLAGS += -DDEBUG -g
+debug: all
 
 CC = gcc
 

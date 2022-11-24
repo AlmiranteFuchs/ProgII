@@ -128,9 +128,6 @@ int insert_researcher_data_database(database *db, researcher_data *rd)
     // Increment the cardinality
     db->cardinality++;
 
-    free(r);
-    free(data);
-
     return 1;
 }
 
