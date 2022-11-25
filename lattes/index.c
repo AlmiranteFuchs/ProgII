@@ -44,16 +44,29 @@ int main(int argc, char *argv[])
     // Treat period files
     treat_data_files(q_period, PUBLICATION, db);
 
+    abstract_data *fuckme = get_data_by_name(db, PUBLICATION, "SIAM JOURNAL ON DISCRETE MATHEMATICS (PRINT) ");
+    if (fuckme != NULL)
+    {
+        printf("Data: %s\n", fuckme->c_name);
+    }
+
+    return 0;
+
     // Treat cvs files
     treat_cvs_files(cvs, db);
 
     // Get all data from researcher
-    researcher *r = get_researcher_by_id(db, 1);
+    researcher *r = get_researcher_by_id(db, 0);
 
-    //Print the researcher
+    // Print the researcher
     printf("Researcher: %s\n", r->name);
 
     list_t *data = get_data_of_researcher_id(db, CONFERENCE, r->id);
+    printf("Conference data: %d\n", data->size);
+
+    list_t *data_conf = get_data_of_researcher_id(db, PUBLICATION, r->id);
+    printf("Publication data: %d\n", data_conf->size);
+
 
     // Corvert to data
     node_t *node = data->head;
@@ -67,10 +80,8 @@ int main(int argc, char *argv[])
         node = node->next;
     }
 
-    printf("Size: %d\n", data->size);
-
     // Print the data
-    //print_list(data);
+    // print_list(data);
     // TODO: Free memory
 
     return 0;
@@ -270,10 +281,14 @@ L_String *get_all_tags_value(char *file_content, char *tag, char *prop)
             prop_value = realloc(prop_value, sizeof(char) * (i + 2));
             i++;
         }
-        prop_value[i] = '\0';
 
-        // Adds to list
-        str_push(prop_value, list);
+        // Check if prop_value is in list already
+        if (!str_contains(prop_value, list))
+        {
+            // Adds to list
+            prop_value[i] = '\0';
+            str_push(prop_value, list);
+        }
 
         // Offsets file_content_ptr
         file_content_ptr = prop_ptr;
@@ -322,8 +337,6 @@ void parse_cvs_to_data(database *db, char *cvs_file_content)
     // Insert researcher in database
     insert_researcher_database(db, res);
 
-
-
     // TODO: Migrate this to function
     // Periods name list
     L_String *periods = get_all_tags_value(cvs_file_content, period_tag, period_prop);
@@ -341,7 +354,7 @@ void parse_cvs_to_data(database *db, char *cvs_file_content)
      * Creating data
      */
 
-    //Periods
+    // Periods
     for (int i = 0; i < periods->pos; i++)
     {
         // 1. Check if period exists in data base
@@ -349,8 +362,8 @@ void parse_cvs_to_data(database *db, char *cvs_file_content)
         // 3. If not exists create a period and a relation
 
         // Check if period exists in data base
-        abstract_data* period = get_data_by_name(db, PUBLICATION, periods->str[i]);
-        if(period == NULL)
+        abstract_data *period = get_data_by_name(db, PUBLICATION, periods->str[i]);
+        if (period == NULL)
         {
             // Create a period
             int period_id = db->period_count;
@@ -364,7 +377,13 @@ void parse_cvs_to_data(database *db, char *cvs_file_content)
 
             // Insert relation in database
             insert_researcher_data_database(db, res_period);
-        }else{
+        }
+        else
+        {
+            printf("Periodo já existe\n");
+            printf("Name: %s\n", period->c_name);
+            printf("Code: %s\n", period->c_code);
+
             // Create a relation between researcher and period
             researcher_data *res_period = create_relation(period->id, res_id, PUBLICATION);
 
@@ -384,8 +403,8 @@ void parse_cvs_to_data(database *db, char *cvs_file_content)
         // 3. If not exists create a conference and a relation
 
         // Check if conference exists in data base
-        abstract_data* conference = get_data_by_name(db, CONFERENCE, conferences->str[i]);
-        if(conference == NULL)
+        abstract_data *conference = get_data_by_name(db, CONFERENCE, conferences->str[i]);
+        if (conference == NULL)
         {
             // Create a conference
             int conference_id = db->conference_count;
@@ -399,7 +418,9 @@ void parse_cvs_to_data(database *db, char *cvs_file_content)
 
             // Insert relation in database
             insert_researcher_data_database(db, res_conference);
-        }else{
+        }
+        else
+        {
             // Create a relation between researcher and conference
             researcher_data *res_conference = create_relation(conference->id, res_id, CONFERENCE);
 
@@ -471,7 +492,7 @@ void treat_data_files(char *filename, data_type data_type, database *db)
         line[strlen(line) - 2] = '\0';
 
         // Create new conference
-        abstract_data *conf = create_data(db->conference_count, line, code, 2022, data_type);
+        abstract_data *conf = create_data((data_type == CONFERENCE ? db->conference_count : db->period_count), line, code, 2022, data_type);
 
         // Insert conference in database
         insert_data_database(db, conf);

@@ -46,6 +46,17 @@ void str_push(char *str, L_String *string)
     string->pos++;
 }
 
+int str_contains(char *str, L_String *L_string){
+    for (int i = 0; i < L_string->pos; i++)
+    {
+        if (strcmp(L_string->str[i], str) == 0)
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 void str_out(L_String *string)
 {
     for (int i = 0; i < string->pos; i++)

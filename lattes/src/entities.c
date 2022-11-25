@@ -291,6 +291,9 @@ abstract_data *get_data_by_name(database *db, data_type data_type, char *name)
     // Get the data
     node_t *node;
 
+    // name to lowercase
+    char *name_lower = to_lower(name);
+
     if (data_type == CONFERENCE)
     {
         node = db->data_conf_db->head;
@@ -309,6 +312,8 @@ abstract_data *get_data_by_name(database *db, data_type data_type, char *name)
         // Check if the data is valid
         if (data != NULL)
         {
+
+
             // Check if the data is the one specified
             if (strcmp(data->c_name, name) == 0)
             {
