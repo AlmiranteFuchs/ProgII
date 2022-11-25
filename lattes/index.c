@@ -44,14 +44,6 @@ int main(int argc, char *argv[])
     // Treat period files
     treat_data_files(q_period, PUBLICATION, db);
 
-    abstract_data *fuckme = get_data_by_name(db, PUBLICATION, "SIAM JOURNAL ON DISCRETE MATHEMATICS (PRINT) ");
-    if (fuckme != NULL)
-    {
-        printf("Data: %s\n", fuckme->c_name);
-    }
-
-    return 0;
-
     // Treat cvs files
     treat_cvs_files(cvs, db);
 
@@ -66,7 +58,6 @@ int main(int argc, char *argv[])
 
     list_t *data_conf = get_data_of_researcher_id(db, PUBLICATION, r->id);
     printf("Publication data: %d\n", data_conf->size);
-
 
     // Corvert to data
     node_t *node = data->head;
@@ -283,15 +274,17 @@ L_String *get_all_tags_value(char *file_content, char *tag, char *prop)
         }
 
         // Check if prop_value is in list already
-        if (!str_contains(prop_value, list))
-        {
-            // Adds to list
-            prop_value[i] = '\0';
-            str_push(prop_value, list);
-        }
+        // if (!str_contains(prop_value, list))
+        // {
+        // Adds to list
+        prop_value[i] = '\0';
+        str_push(str_to_lower(prop_value), list);
+        // }
 
         // Offsets file_content_ptr
         file_content_ptr = prop_ptr;
+
+        free(prop_value);
     }
 
     return list;
@@ -365,6 +358,7 @@ void parse_cvs_to_data(database *db, char *cvs_file_content)
         abstract_data *period = get_data_by_name(db, PUBLICATION, periods->str[i]);
         if (period == NULL)
         {
+
             // Create a period
             int period_id = db->period_count;
             period = create_data(period_id, periods->str[i], "D", atoi(periods_year->str[i]), PUBLICATION);
@@ -377,12 +371,10 @@ void parse_cvs_to_data(database *db, char *cvs_file_content)
 
             // Insert relation in database
             insert_researcher_data_database(db, res_period);
+
         }
         else
         {
-            printf("Periodo já existe\n");
-            printf("Name: %s\n", period->c_name);
-            printf("Code: %s\n", period->c_code);
 
             // Create a relation between researcher and period
             researcher_data *res_period = create_relation(period->id, res_id, PUBLICATION);
@@ -491,8 +483,12 @@ void treat_data_files(char *filename, data_type data_type, database *db)
         // Remove last 2 chars
         line[strlen(line) - 2] = '\0';
 
+        // str to lower
+
         // Create new conference
-        abstract_data *conf = create_data((data_type == CONFERENCE ? db->conference_count : db->period_count), line, code, 2022, data_type);
+        abstract_data *conf = create_data((data_type == CONFERENCE ? db->conference_count : db->period_count), str_to_lower(line), str_to_lower(code), 2022, data_type);
+
+        free(code);
 
         // Insert conference in database
         insert_data_database(db, conf);

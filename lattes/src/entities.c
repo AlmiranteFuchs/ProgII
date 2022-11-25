@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "entities.h"
+#include "../libs/string_lib.h"
 #include "../libs/linked_lib.h"
 
 /**
@@ -291,9 +292,6 @@ abstract_data *get_data_by_name(database *db, data_type data_type, char *name)
     // Get the data
     node_t *node;
 
-    // name to lowercase
-    char *name_lower = to_lower(name);
-
     if (data_type == CONFERENCE)
     {
         node = db->data_conf_db->head;
@@ -303,6 +301,9 @@ abstract_data *get_data_by_name(database *db, data_type data_type, char *name)
         node = db->data_perid_db->head;
     }
 
+    int smaller_distance = 1000000; // Used for the Levenshtein distance
+    int current;
+    abstract_data *closest_node = NULL;
     // Iterate over the data
     while (node != NULL)
     {
@@ -313,11 +314,21 @@ abstract_data *get_data_by_name(database *db, data_type data_type, char *name)
         if (data != NULL)
         {
 
-
-            // Check if the data is the one specified
+            // Try strcmp first
             if (strcmp(data->c_name, name) == 0)
-            {
+            {   
                 return data;
+            }
+
+            // Terrible way to do it, but it works
+            current = str_compare_distance(data->c_name, name, strlen(name) / 2.5);
+            if (current != -1)
+            {
+                if (current < smaller_distance)
+                {
+                    smaller_distance = current;
+                    closest_node = data;
+                }
             }
         }
 
@@ -325,7 +336,7 @@ abstract_data *get_data_by_name(database *db, data_type data_type, char *name)
         node = node->next;
     }
 
-    return NULL;
+    return closest_node;
 }
 
 /**

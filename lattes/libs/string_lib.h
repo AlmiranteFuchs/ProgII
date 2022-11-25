@@ -28,8 +28,8 @@ void str_out(L_String *L_string);
 // Not list functions but useful
 // Returns the string to lowercase
 char *str_to_lower(char *str);
-// Compare two strings 
-char *str_compare_distance(char *str);
+// Compare two strings distance, returns distance or 0 if higher than the max_distance (Levenshtein distance) https://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#C
+int str_compare_distance(char *str, char *str2, int max_distance);
 
 
 #endif
