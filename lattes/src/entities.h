@@ -75,6 +75,8 @@ int insert_researcher_data_database(database *db, researcher_data *rd); // Inser
 list_t *get_data_of_researcher_id(database *db, data_type data_type, int id_researcher); // Get all data from a researcher
 list_t *get_researchers_of_data_id(database *db, data_type data_type, int id_data);      // Get all researchers from a data
 
+list_t *filter_data_by_code(list_t *list, char *code); // Get all data from a code
+
 researcher *get_researcher_by_id(database *db, int id_researcher);             // Get a researcher by id
 abstract_data *get_data_by_id(database *db, data_type data_type, int id_data); // Get a data by id
 
