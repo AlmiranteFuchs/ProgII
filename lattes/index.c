@@ -39,14 +39,15 @@ int main(int argc, char *argv[])
     program_params(&cvs, &q_conf, &q_period, argc, argv);
 
     // Treat conference files
-    treat_data_files(q_conf, CONFERENCE, db);
+    // treat_data_files(q_conf, CONFERENCE, db);
 
     // Treat period files
-    treat_data_files(q_period, PUBLICATION, db);
+    // treat_data_files(q_period, PUBLICATION, db);
 
     // Treat cvs files
     treat_cvs_files(cvs, db);
 
+    return 0;
     // Get all data from researcher
     researcher *r = get_researcher_by_id(db, 0);
 
@@ -131,12 +132,33 @@ L_String *parse_dir(char *dir_name)
     L_String *dir_names = str_create();
     while ((lsdir = readdir(dir)) != NULL)
     {
+
         if (lsdir->d_type == DT_REG)
         {
             str_push(lsdir->d_name, dir_names);
         }
-    }
+        else
+        {
+            if (lsdir->d_type == DT_DIR && strcmp(lsdir->d_name, ".") != 0 && strcmp(lsdir->d_name, "..") != 0)
+            {
+                printf("DIR: %s\n", lsdir->d_name);
+                
+                // strcat fucks up the memory
+                char* new_dir = malloc(sizeof(char) * (strlen(dir_name) + strlen(lsdir->d_name) + 2));
+                strcpy(new_dir, dir_name);
+                strcat(new_dir, "/");
+                strcat(new_dir, lsdir->d_name);
+                L_String *new_dir_names = parse_dir(new_dir);
 
+                for (int i = 0; i < new_dir_names->pos; i++)
+                {
+                    str_push(new_dir_names->str[i], dir_names);
+                }
+
+                str_clear(new_dir_names);
+            }
+        }
+    }
     closedir(dir);
     return dir_names;
 }
@@ -371,7 +393,6 @@ void parse_cvs_to_data(database *db, char *cvs_file_content)
 
             // Insert relation in database
             insert_researcher_data_database(db, res_period);
-
         }
         else
         {
@@ -438,6 +459,9 @@ void treat_cvs_files(char *cvs, database *db)
     for (int i = 0; i < dir_names->pos; i++)
     {
         char *filename = dir_names->str[i];
+
+        printf("Reading file: %s\n", filename);
+        continue;
 
         // Checks if the file is a .xml
         if (strstr(filename, ".xml") != NULL)
