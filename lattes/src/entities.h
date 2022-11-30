@@ -22,6 +22,9 @@ typedef struct
     char *c_code;
     int c_year;
 
+    int from_qualis; // 0 - not from qualis, 1 - from qualis
+    int data_count;  // number of times the data shows up in general
+
     data_type c_type; // 0 = Conference, 1 = Publication
 
 } abstract_data;
@@ -42,6 +45,8 @@ typedef struct
     int id;
     int id_data;
     int id_researcher;
+
+    int data_count; // number of times the data shows up in the researcher
 
     data_type data_type;
 
@@ -75,17 +80,18 @@ int insert_researcher_data_database(database *db, researcher_data *rd); // Inser
 list_t *get_data_of_researcher_id(database *db, data_type data_type, int id_researcher); // Get all data from a researcher
 list_t *get_researchers_of_data_id(database *db, data_type data_type, int id_data);      // Get all researchers from a data
 
-list_t *filter_data_by_code(list_t *list, char *code); // Get all data from a code
+void filter_data_by_props(list_t *list, char *code, char *name, int year); // Get all data from a code
 
-researcher *get_researcher_by_id(database *db, int id_researcher);             // Get a researcher by id
-abstract_data *get_data_by_id(database *db, data_type data_type, int id_data); // Get a data by id
+researcher *get_researcher_by_id(database *db, int id_researcher);                                      // Get a researcher by id
+abstract_data *get_data_by_id(database *db, data_type data_type, int id_data);                          // Get a data by id
+researcher_data *get_relation_by_id(database *db, int id_researcher, int id_data, data_type data_type); // Get a researcher_data by id
 
 researcher *get_researcher_by_name(database *db, char *name);                   // Get a researcher by name
 abstract_data *get_data_by_name(database *db, data_type data_type, char *name); // Get a data by name
 
 // Data
-abstract_data *create_data(int id, char *c_name, char *c_code, int c_year, data_type c_type); // Create a data
-void delete_data(abstract_data *data);                                                        // Delete a data
+abstract_data *create_data(int id, char *c_name, char *c_code, int c_year, data_type c_type, int from_qualis); // Create a data
+void delete_data(abstract_data *data);                                                                         // Delete a data
 
 // Researcher
 researcher *create_researcher(int id, char *name); // Create a researcher

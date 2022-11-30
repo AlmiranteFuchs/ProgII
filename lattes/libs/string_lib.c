@@ -70,6 +70,18 @@ char *str_to_lower(char *str)
     return new_str;
 }
 
+char *str_to_upper(char *str)
+{
+    char *new_str = (char *)malloc(sizeof(char) * (strlen(str) + 1));
+    strcpy(new_str, str);
+
+    for (int i = 0; i < strlen(new_str); i++)
+    {
+        new_str[i] = toupper(new_str[i]);
+    }
+    return new_str;
+}
+
 #define MIN3(a, b, c) ((a) < (b) ? ((a) < (c) ? (a) : (c)) : ((b) < (c) ? (b) : (c)))
 // levenshtein algorithm, returns the distance between two strings, -1 if higher than the max_distance https://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#C
 int str_compare_distance(char *s1, char *s2, int max_distance)

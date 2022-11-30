@@ -7,19 +7,19 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-#include <dirent.h>
 #include "libs/string_lib.h"
 #include "libs/linked_lib.h"
 #include "src/entities.h"
+#include "utils/dir_lib.h"
 
-L_String *parse_dir(char *dir_name);
-char *parse_file(char *filename, char *cvs);
-char *get_tag_value(char *filename, char *tag);
 void program_params(char **cvs, char **q_conf, char **q_period, int argc, char *argv[]);
 void parse_cvs_to_data(database *db, char *cvs_file_content);
 void treat_cvs_files(char *cvs, database *db);
 void treat_data_files(char *filename, data_type data_type, database *db);
 void treat_period_files(char *q_period, database *db);
+
+// List functions
+void group_data_by_code(list_t *data, char *code);
 
 L_String *get_all_tags_value(char *file_content, char *tag, char *prop);
 
@@ -39,44 +39,150 @@ int main(int argc, char *argv[])
     program_params(&cvs, &q_conf, &q_period, argc, argv);
 
     // Treat conference files
-    // treat_data_files(q_conf, CONFERENCE, db);
+    printf("Processando Qualis Conference Files...");
+    treat_data_files(q_conf, CONFERENCE, db);
+    printf(" OK\n");
 
     // Treat period files
-    // treat_data_files(q_period, PUBLICATION, db);
+    printf("Processando Qualis Period Files...");
+    treat_data_files(q_period, PUBLICATION, db);
+    printf(" OK\n");
 
     // Treat cvs files
+    printf("Processando CVs Files...");
+    printf("\n");
     treat_cvs_files(cvs, db);
+    printf(" OK\n\n");
 
-    return 0;
-    // Get all data from researcher
-    researcher *r = get_researcher_by_id(db, 0);
+    //
+    // INITIAL SETUP OK
+    //
+    printf("-------------------# Data #---------------------\n\n");
 
-    // Print the researcher
-    printf("Researcher: %s\n", r->name);
+    // 1) Apresentar a produção sumarizada do grupo por ordem de periódicos discriminando os estratos;
+    list_t *researchers = NULL;
+    list_t *group_periods = create_list();
+    list_t *group_conferences = create_list();
+    node_t *node = NULL;
 
-    list_t *data = get_data_of_researcher_id(db, CONFERENCE, r->id);
-    printf("Conference data: %d\n", data->size);
+    // Get all researchers
+    researchers = db->researcher_db;
 
-    list_t *data_conf = get_data_of_researcher_id(db, PUBLICATION, r->id);
-    printf("Publication data: %d\n", data_conf->size);
-
-    // Corvert to data
-    node_t *node = data->head;
-
-    // Print all data
+    // For each researcher, get researcher_data
+    node = researchers->head;
     while (node != NULL)
     {
-        abstract_data *data = (abstract_data *)node->data;
-        printf("Data: %s", data->c_name);
-        printf(" %s\n", data->c_code);
+        researcher *r = (researcher *)(node)->data;
+
+        list_t *periods = get_data_of_researcher_id(db, PUBLICATION, r->id);
+        list_t *conferences = get_data_of_researcher_id(db, CONFERENCE, r->id);
+
+        node_t *generic_node = NULL;
+
+        // For each period, insert unique in group_periods
+        generic_node = periods->head;
+        while (generic_node != NULL)
+        {
+            abstract_data *p = (abstract_data *)(generic_node)->data;
+
+            insert_list_unique(group_periods, p, p->id);
+
+            generic_node = generic_node->next;
+        }
+
+        // For each conference, insert unique in group_conferences
+        generic_node = conferences->head;
+        while (generic_node != NULL)
+        {
+            abstract_data *c = (abstract_data *)(generic_node)->data;
+
+            insert_list_unique(group_conferences, c, c->id);
+
+            generic_node = generic_node->next;
+        }
+
         node = node->next;
     }
 
-    // Print the data
-    // print_list(data);
-    // TODO: Free memory
+    // Print stratum 
+    printf("...::: Produção sumarizada do grupo por ordem de periódicos discriminando os estratos :::...\n\n");
+    group_data_by_code(group_periods, "a1");
+    printf("\n");
+    group_data_by_code(group_periods, "a2");
+    printf("\n");
+    group_data_by_code(group_periods, "a3");
+    printf("\n");
+    group_data_by_code(group_periods, "a4");
+    printf("\n");
+    group_data_by_code(group_periods, "b1");
+    printf("\n");
+    group_data_by_code(group_periods, "b2");
+    printf("\n");
+    group_data_by_code(group_periods, "b3");
+    printf("\n");
+    group_data_by_code(group_periods, "b4");
+    printf("\n");
+    group_data_by_code(group_periods, "c");
+    printf("\nNão qualificado: ");
+    group_data_by_code(group_periods, "d");
 
+    printf("\n\n...::: Produção sumarizada do grupo por ordem de conferências discriminando os estratos :::...\n\n");
+    group_data_by_code(group_conferences, "a1");
+    printf("\n");
+    group_data_by_code(group_conferences, "a2");
+    printf("\n");
+    group_data_by_code(group_conferences, "a3");
+    printf("\n");
+    group_data_by_code(group_conferences, "a4");
+    printf("\n");
+    group_data_by_code(group_conferences, "b1");
+    printf("\n");
+    group_data_by_code(group_conferences, "b2");
+    printf("\n");
+    group_data_by_code(group_conferences, "b3");
+    printf("\n");
+    group_data_by_code(group_conferences, "b4");
+    printf("\n");
+    group_data_by_code(group_conferences, "c");
+    printf("\nNão qualificado: ");
+    group_data_by_code(group_conferences, "d");
+
+
+    // TODO: free all data
     return 0;
+}
+
+// Print group periods by code and stratum
+void group_data_by_code(list_t *data, char *code)
+{
+    // New list to store filtered periods
+    list_t *filtered_group_periods = NULL;
+
+    // Node for iteration
+    node_t *node = NULL;
+
+    // Copy periods to filtered_group_periods
+    filtered_group_periods = copy_list(data);
+
+    // Filter periods by property
+    filter_data_by_props(filtered_group_periods, code, NULL, -1);
+
+    char *code_upper = str_to_upper(code);
+    printf("Estrato %s:\n", code_upper);
+
+    // For each period, print
+    node = filtered_group_periods->head;
+    while (node != NULL)
+    {
+        abstract_data *p = (abstract_data *)(node)->data;
+
+        printf("%s: %d\n", p->c_name, p->data_count);
+
+        node = node->next;
+    }
+
+    free(code_upper);
+    destroy_list(filtered_group_periods);
 }
 
 // Parse the command line parameters
@@ -114,202 +220,6 @@ void program_params(char **cvs, char **q_conf, char **q_period, int argc, char *
         fprintf(stderr, "Parâmetros insuficientes, uso: %s -d <diretorio com os CVs> -c <arquivo com a lista Qualis Conf> -p <arquivo com a lista Qualis Periódicos>\n", argv[0]);
         exit(1);
     }
-}
-
-L_String *parse_dir(char *dir_name)
-{
-    DIR *dir;
-    struct dirent *lsdir;
-
-    dir = opendir(dir_name);
-
-    if (dir == NULL)
-    {
-        fprintf(stderr, "Erro ao abrir o diretório %s\n", dir_name);
-        exit(1);
-    }
-
-    L_String *dir_names = str_create();
-    while ((lsdir = readdir(dir)) != NULL)
-    {
-
-        if (lsdir->d_type == DT_REG)
-        {
-            str_push(lsdir->d_name, dir_names);
-        }
-        else
-        {
-            if (lsdir->d_type == DT_DIR && strcmp(lsdir->d_name, ".") != 0 && strcmp(lsdir->d_name, "..") != 0)
-            {
-                printf("DIR: %s\n", lsdir->d_name);
-                
-                // strcat fucks up the memory
-                char* new_dir = malloc(sizeof(char) * (strlen(dir_name) + strlen(lsdir->d_name) + 2));
-                strcpy(new_dir, dir_name);
-                strcat(new_dir, "/");
-                strcat(new_dir, lsdir->d_name);
-                L_String *new_dir_names = parse_dir(new_dir);
-
-                for (int i = 0; i < new_dir_names->pos; i++)
-                {
-                    str_push(new_dir_names->str[i], dir_names);
-                }
-
-                str_clear(new_dir_names);
-            }
-        }
-    }
-    closedir(dir);
-    return dir_names;
-}
-
-// Reads file and sets to array
-char *parse_file(char *filename, char *pathname)
-{
-    // Reading file
-    FILE *file_ptr;
-
-    char *path = malloc(strlen(pathname) + strlen(filename) + 2);
-
-    // If pathname
-    if (strlen(pathname) > 0)
-    {
-        strcpy(path, pathname);
-
-        // Concatenating the path
-        // Check if the last char is a slash
-        if (path[strlen(path) - 1] != '/')
-        {
-            strcat(path, "/");
-        }
-        strcat(path, filename);
-    }
-    else
-    {
-        strcpy(path, filename);
-    }
-
-    // Read file
-    file_ptr = fopen(path, "r");
-    if (file_ptr == NULL)
-    {
-        printf("Erro ao abrir o arquivo: %s\n", path);
-        exit(0);
-    }
-
-    // Get size of file
-    fseek(file_ptr, 0, SEEK_END);
-    long file_size = ftell(file_ptr);
-    rewind(file_ptr);
-
-    // Allocs array of char of file_size
-    char *file_content = (char *)malloc(sizeof(char) * file_size);
-    if (file_content == NULL)
-    {
-        printf("Erro ao alocar memória\n");
-        exit(0);
-    }
-
-    // Read file to array
-    fread(file_content, sizeof(char), file_size, file_ptr);
-
-    // Close file
-    fclose(file_ptr);
-
-    free(path);
-    return file_content;
-}
-
-char *get_tag_value(char *file_content, char *tag)
-{
-    // Search substring
-    // char *tag = "DETALHAMENTO-DO-ARTIGO";
-
-    char *tag_ptr = strstr(file_content, tag);
-    if (tag_ptr == NULL)
-    {
-        printf("Não foi encontrado a tag\n");
-        return NULL;
-    }
-
-    // Offsets file_content after tag
-    tag_ptr = tag_ptr + strlen(tag);
-
-    // Removes '"' and = tag
-    tag_ptr++;
-    tag_ptr++;
-
-    // Reads until '"'
-    char *tag_value = malloc(sizeof(char) * 1);
-    int i = 0;
-    while (*tag_ptr != '"')
-    {
-        tag_value[i] = *tag_ptr;
-        tag_ptr++;
-
-        // Reallocs memory
-        tag_value = realloc(tag_value, sizeof(char) * (i + 2));
-        i++;
-    }
-    tag_value[i] = '\0';
-
-    // Print size
-    return tag_value;
-}
-
-L_String *get_all_tags_value(char *file_content, char *tag, char *prop)
-{
-    // Copy of file_content ptr
-    char *file_content_ptr = file_content;
-
-    // Create a list of strings
-    L_String *list = str_create();
-
-    // While tag is found
-    while ((file_content_ptr = strstr(file_content_ptr, tag)) != NULL)
-    {
-        // Search substring prop in tag
-        char *prop_ptr = strstr(file_content_ptr, prop);
-        if (prop_ptr == NULL)
-        {
-            printf("Não foi encontrado a propriedade\n");
-            break;
-        }
-
-        // Offsets file_content after tag
-        prop_ptr = prop_ptr + strlen(prop);
-
-        // Removes '"' and = tag
-        prop_ptr += 2;
-
-        // Reads until '"'
-        char *prop_value = malloc(sizeof(char) * 1);
-        int i = 0;
-        while (*prop_ptr != '"')
-        {
-            prop_value[i] = *prop_ptr;
-            prop_ptr++;
-
-            // Reallocs memory
-            prop_value = realloc(prop_value, sizeof(char) * (i + 2));
-            i++;
-        }
-
-        // Check if prop_value is in list already
-        // if (!str_contains(prop_value, list))
-        // {
-        // Adds to list
-        prop_value[i] = '\0';
-        str_push(str_to_lower(prop_value), list);
-        // }
-
-        // Offsets file_content_ptr
-        file_content_ptr = prop_ptr;
-
-        free(prop_value);
-    }
-
-    return list;
 }
 
 // Logic data + relations --> database
@@ -383,7 +293,10 @@ void parse_cvs_to_data(database *db, char *cvs_file_content)
 
             // Create a period
             int period_id = db->period_count;
-            period = create_data(period_id, periods->str[i], "D", atoi(periods_year->str[i]), PUBLICATION);
+            period = create_data(period_id, periods->str[i], "d", atoi(periods_year->str[i]), PUBLICATION, 0);
+
+            // Data general count
+            period->data_count = 1;
 
             // Create a relation between researcher and period
             researcher_data *res_period = create_relation(period_id, res_id, PUBLICATION);
@@ -396,15 +309,31 @@ void parse_cvs_to_data(database *db, char *cvs_file_content)
         }
         else
         {
+            // Check if relation already exists, if exists increment count
+            researcher_data *res_period = get_relation_by_id(db, res_id, period->id, PUBLICATION);
 
-            // Create a relation between researcher and period
-            researcher_data *res_period = create_relation(period->id, res_id, PUBLICATION);
+            if (res_period == NULL)
+            {
+                // Create a relation between researcher and period
+                res_period = create_relation(period->id, res_id, PUBLICATION);
 
-            // Edit period year
-            period->c_year = atoi(periods_year->str[i]);
+                // Edit period year
+                period->c_year = atoi(periods_year->str[i]);
 
-            // Insert relation in database
-            insert_researcher_data_database(db, res_period);
+                // Insert relation in database
+                insert_researcher_data_database(db, res_period);
+
+                // Increment period count
+                period->data_count++;
+            }
+            else
+            {
+                // Increment count only if data is not from qualis
+                if (period->from_qualis == 0)
+                {
+                    res_period->data_count++;
+                }
+            }
         }
     }
 
@@ -421,7 +350,7 @@ void parse_cvs_to_data(database *db, char *cvs_file_content)
         {
             // Create a conference
             int conference_id = db->conference_count;
-            conference = create_data(conference_id, conferences->str[i], "D", atoi(conferences_year->str[i]), CONFERENCE);
+            conference = create_data(conference_id, conferences->str[i], "d", atoi(conferences_year->str[i]), CONFERENCE, 0);
 
             // Create a relation between researcher and conference
             researcher_data *res_conference = create_relation(conference_id, res_id, CONFERENCE);
@@ -434,14 +363,31 @@ void parse_cvs_to_data(database *db, char *cvs_file_content)
         }
         else
         {
-            // Create a relation between researcher and conference
-            researcher_data *res_conference = create_relation(conference->id, res_id, CONFERENCE);
+            // Check if relation already exists, if exists increment count
+            researcher_data *res_conference = get_relation_by_id(db, res_id, conference->id, CONFERENCE);
 
-            // Edit conference year
-            conference->c_year = atoi(conferences_year->str[i]);
+            if (res_conference == NULL)
+            {
+                // Create a relation between researcher and conference
+                res_conference = create_relation(conference->id, res_id, CONFERENCE);
 
-            // Insert relation in database
-            insert_researcher_data_database(db, res_conference);
+                // Edit conference year
+                conference->c_year = atoi(conferences_year->str[i]);
+
+                // Insert relation in database
+                insert_researcher_data_database(db, res_conference);
+
+                // Increment general data show up
+                conference->data_count++;
+            }
+            else
+            {
+                // Increment count if data is not from qualis
+                if (conference->from_qualis == 0)
+                {
+                    res_conference->data_count++;
+                }
+            }
         }
     }
 }
@@ -459,9 +405,6 @@ void treat_cvs_files(char *cvs, database *db)
     for (int i = 0; i < dir_names->pos; i++)
     {
         char *filename = dir_names->str[i];
-
-        printf("Reading file: %s\n", filename);
-        continue;
 
         // Checks if the file is a .xml
         if (strstr(filename, ".xml") != NULL)
@@ -504,13 +447,13 @@ void treat_data_files(char *filename, data_type data_type, database *db)
         code[1] = line[strlen(line) - 1];
         code[2] = '\0';
 
-        // Remove last 2 chars
-        line[strlen(line) - 2] = '\0';
+        // Remove last 3 chars
+        line[strlen(line) - 3] = '\0';
 
         // str to lower
 
         // Create new conference
-        abstract_data *conf = create_data((data_type == CONFERENCE ? db->conference_count : db->period_count), str_to_lower(line), str_to_lower(code), 2022, data_type);
+        abstract_data *conf = create_data((data_type == CONFERENCE ? db->conference_count : db->period_count), str_to_lower(line), str_to_lower(code), 2022, data_type, 1);
 
         free(code);
 

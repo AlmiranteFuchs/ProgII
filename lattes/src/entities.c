@@ -72,6 +72,29 @@ int insert_data_database(database *db, abstract_data *data)
     return 1;
 }
 
+researcher_data *get_relation_by_id(database *db, int id_researcher, int id_data, data_type data_type){
+    // Create a new node
+    node_t *node = db->researcher_data->head;
+
+    // Iterate over the list
+    while (node != NULL)
+    {
+        // Get the researcher_data
+        researcher_data *rd = (researcher_data *)node->data;
+
+        // Check if the researcher_data is the one we are looking for
+        if (rd->id_researcher == id_researcher && rd->id_data == id_data && rd->data_type == data_type)
+        {
+            return rd;
+        }
+
+        // Go to the next node
+        node = node->next;
+    }
+
+    return NULL;
+}
+
 int insert_researcher_database(database *db, researcher *r)
 {
     // Check if the researcher is valid
@@ -316,7 +339,7 @@ abstract_data *get_data_by_name(database *db, data_type data_type, char *name)
 
             // Try strcmp first
             if (strcmp(data->c_name, name) == 0)
-            {   
+            {
                 return data;
             }
 
@@ -337,6 +360,47 @@ abstract_data *get_data_by_name(database *db, data_type data_type, char *name)
     }
 
     return closest_node;
+}
+
+// Iterates over the list and removes the node without specified prop
+void filter_data_by_props(list_t *list, char *code, char *name, int year)
+{
+    // Iterate over the list
+    node_t *node = list->head;
+
+    while (node != NULL)
+    {
+        // Get the data
+        abstract_data *data = (abstract_data *)node->data;
+
+        // Check if the data is valid
+        if (data != NULL)
+        {
+            // Check if the data is of the specified code
+            if ((code != NULL) && (strcmp(data->c_code, code) != 0))
+            {
+                // Remove the node
+                remove_list(list, data->id);
+            }
+            else if ((name != NULL) && (strcmp(data->c_name, name) != 0))
+            {
+                // Remove the node
+                remove_list(list, node->data_id);
+            }
+            else if ((year != -1) && (data->c_year != year))
+            {
+                // Remove the node
+                remove_list(list, node->data_id);
+            }
+            else
+            {
+                //printf("Not removing anything\n");
+            }
+        }
+
+        // Get the next node
+        node = node->next;
+    }
 }
 
 /**
@@ -377,7 +441,7 @@ void delete_researcher(researcher *researcher)
  * Data functions
  */
 
-abstract_data *create_data(int id, char *c_name, char *c_code, int c_year, data_type c_type)
+abstract_data *create_data(int id, char *c_name, char *c_code, int c_year, data_type c_type, int from_qualis)
 {
     // Create a data
     abstract_data *data = (abstract_data *)malloc(sizeof(abstract_data));
@@ -398,6 +462,12 @@ abstract_data *create_data(int id, char *c_name, char *c_code, int c_year, data_
 
     // Set the type
     data->c_type = c_type;
+
+    // Set the count 
+    data->data_count = 0;
+
+    // Set the from_qualis
+    data->from_qualis = from_qualis;
 
     return data;
 }

@@ -1,0 +1,56 @@
+Opening: qualis-conf2.txt/
+Opening: qualis-periodicos2.txt/
+Opening: kohayakawa2.xml/curriculos
+Researchers: 1 registered
+Researcher: yoshiharu kohayakawa
+Publication data: 34
+
+
+ All data: 
+Data: acm transactions on algorithms  a2
+Data: advances in mathematics (new york. 1965)  a2
+Data: algorithmica  a3
+Data: "combinatorics, probability & computing (print)"  a4
+Data: communications of the acm  a1
+Data: discrete applied mathematics  a3
+Data: discrete mathematics  a4
+Data: discrete mathematics and theoretical computer science (online)  b2
+Data: european journal of combinatorics (print)  a3
+Data: graphs and combinatorics  b2
+Data: journal of combinatorial theory. series b (print)  a2
+Data: journal of genomics  c
+Data: journal of graphics tools  c
+Data: journal of modern mathematics frontier  c
+Data: journal of statistical physics  a3
+Data: journal of the operational research society  a1
+Data: proceedings of the american mathematical society  a3
+Data: proceedings of the national academy of sciences of the united states of america  a1
+Data: random structures & algorithms (print)  a3
+Data: siam journal on discrete mathematics (print)  a4
+Data: siberian mathematical journal  a4
+Data: the annals of applied probability  a2
+Data: the electronic journal of combinatorics  a4
+Data: theoretical computer science  a4
+Data: mediterranean journal of mathematics  a3
+Data: annals of mathematics  a1
+Data: siam journal on computing  a1
+Data: combinatorica D
+Data: acta arithmetica D
+Data: combinatorica (budapest. print) D
+Data: rairo. informatique thï¿½orique et applications D
+Data: internet mathematics (print) D
+Data: mathematical proceedings of the cambridge philosophical society D
+Data: journal of the london mathematical society-second series D
+
+
+ Filtered by 'a3' data: 
+Size: 34
+Done: 34 iterations
+Removed: 27
+Data: algorithmica  a3
+Data: discrete applied mathematics  a3
+Data: european journal of combinatorics (print)  a3
+Data: journal of statistical physics  a3
+Data: proceedings of the american mathematical society  a3
+Data: random structures & algorithms (print)  a3
+Data: mediterranean journal of mathematics  a3

@@ -22,6 +22,23 @@ list_t *create_list()
     return list;
 }
 
+// Copies a list
+list_t *copy_list(list_t *list)
+{
+    // Allocates memory for the object
+    list_t *new_list = create_list();
+
+    // For every node in the list create a new node and insert in the new list
+    node_t *node = list->head;
+    while (node != NULL)
+    {
+        insert_list(new_list, node->data, node->data_id);
+        node = node->next;
+    }
+
+    return new_list;
+}
+
 // Create a new Node
 node_t *create_node(void *data, int data_id)
 {
@@ -33,12 +50,10 @@ node_t *create_node(void *data, int data_id)
     // Set data
     node->data = data;
 
-    //researcher *r = (researcher *)(node)->data;
+    // researcher *r = (researcher *)(node)->data;
 
     // printf("Debug %d\n>: ", r->id);
-    //printf("Debug %s\n>: ", r->name);
-    
-    
+    // printf("Debug %s\n>: ", r->name);
 
     node->next = NULL;
     node->prev = NULL;
@@ -92,6 +107,16 @@ void insert_list(list_t *list, void *data, int data_id)
         }
     }
     list->size++;
+}
+
+// Insert a new Node in the List, ordered by data_id, if the data_id is unique
+void insert_list_unique(list_t *list, void *data, int data_id)
+{
+    // If the data_id is unique
+    if (search_list(list, data_id) == NULL)
+    {
+        insert_list(list, data, data_id);
+    }
 }
 
 // Search a Node in the List by data_id, binary search
@@ -149,10 +174,6 @@ void remove_list(list_t *list, int data_id)
     {
         // Search the node
         node_t *node = search_list(list, data_id);
-        printf("Node found: %d\n", node->data_id);
-
-        printf("Next: %d\n", node->next->data_id);
-        printf("Prev: %d\n", node->prev->data_id);
 
         // If the node is not in the list
         if (node == NULL)
@@ -170,6 +191,10 @@ void remove_list(list_t *list, int data_id)
                 {
                     list->head->prev = NULL;
                 }
+                else
+                {
+                    list->tail = NULL;
+                }
             }
             // If the node is the tail
             else if (node == list->tail)
@@ -179,6 +204,10 @@ void remove_list(list_t *list, int data_id)
                 {
                     list->tail->next = NULL;
                 }
+                else
+                {
+                    list->head = NULL;
+                }
             }
             // If the node is in the middle
             else
@@ -187,7 +216,7 @@ void remove_list(list_t *list, int data_id)
                 node->next->prev = node->prev;
             }
             // Free the node
-            free(node);
+            // free(node);
             list->size--;
         }
     }
@@ -216,7 +245,7 @@ int size_list(list_t *list)
     return list->size;
 }
 
-// Destroy Node 
+// Destroy Node
 void destroy_node(node_t *node)
 {
     free(node);
