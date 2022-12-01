@@ -19,7 +19,9 @@ void treat_data_files(char *filename, data_type data_type, database *db);
 void treat_period_files(char *q_period, database *db);
 
 // List functions
-void group_data_by_code(list_t *data, char *code);
+void print_data_by_code(list_t *data, char *code);
+int count_data_of_researcher_with_id(database *db, char *code, data_type data_type, researcher *r);
+int count_data_of_group_with_year(list_t *group_data, char *code, int year);
 
 L_String *get_all_tags_value(char *file_content, char *tag, char *prop);
 
@@ -59,11 +61,13 @@ int main(int argc, char *argv[])
     //
     printf("-------------------# Data #---------------------\n\n");
 
-    // 1) Apresentar a produção sumarizada do grupo por ordem de periódicos discriminando os estratos;
+    // Principal get loop
     list_t *researchers = NULL;
     list_t *group_periods = create_list();
     list_t *group_conferences = create_list();
     node_t *node = NULL;
+
+    list_t *years = create_list();
 
     // Get all researchers
     researchers = db->researcher_db;
@@ -83,9 +87,12 @@ int main(int argc, char *argv[])
         generic_node = periods->head;
         while (generic_node != NULL)
         {
-            abstract_data *p = (abstract_data *)(generic_node)->data;
+            abstract_data *p = (abstract_data *)(generic_node)->data; // This parses all data to abstract_data of researcher each loop
 
-            insert_list_unique(group_periods, p, p->id);
+            insert_list_unique(group_periods, p, p->id); // All periods of all researchers, with no copies of data
+
+            // Insert unique year
+            insert_list_unique(years, NULL, p->c_year);
 
             generic_node = generic_node->next;
         }
@@ -94,9 +101,12 @@ int main(int argc, char *argv[])
         generic_node = conferences->head;
         while (generic_node != NULL)
         {
-            abstract_data *c = (abstract_data *)(generic_node)->data;
+            abstract_data *c = (abstract_data *)(generic_node)->data; // This parses all data to abstract_data of researcher each loop
 
-            insert_list_unique(group_conferences, c, c->id);
+            insert_list_unique(group_conferences, c, c->id); // All conferences of all researchers, with no copies of data
+
+            // Insert unique year
+            insert_list_unique(years, NULL, c->c_year);
 
             generic_node = generic_node->next;
         }
@@ -104,56 +114,199 @@ int main(int argc, char *argv[])
         node = node->next;
     }
 
-    // Print stratum 
-    printf("...::: Produção sumarizada do grupo por ordem de periódicos discriminando os estratos :::...\n\n");
-    group_data_by_code(group_periods, "a1");
-    printf("\n");
-    group_data_by_code(group_periods, "a2");
-    printf("\n");
-    group_data_by_code(group_periods, "a3");
-    printf("\n");
-    group_data_by_code(group_periods, "a4");
-    printf("\n");
-    group_data_by_code(group_periods, "b1");
-    printf("\n");
-    group_data_by_code(group_periods, "b2");
-    printf("\n");
-    group_data_by_code(group_periods, "b3");
-    printf("\n");
-    group_data_by_code(group_periods, "b4");
-    printf("\n");
-    group_data_by_code(group_periods, "c");
-    printf("\nNão qualificado: ");
-    group_data_by_code(group_periods, "d");
+    // All possible data codes
+    L_String *codes = str_create();
+    str_push("a1", codes);
+    str_push("a2", codes);
+    str_push("a3", codes);
+    str_push("a4", codes);
+    str_push("b1", codes);
+    str_push("b2", codes);
+    str_push("b3", codes);
+    str_push("b4", codes);
+    str_push("c", codes);
+    str_push("d", codes);
 
+    // Print stratum Per
+    printf("\n\n...::: Produção sumarizada do grupo por ordem de periódicos discriminando os estratos :::...\n\n");
+
+    // For each code
+    for (int i = 0; i < codes->pos; i++)
+    {
+        print_data_by_code(group_periods, codes->str[i]);
+        printf("\n");
+    }
+
+    // Print stratum Conf
     printf("\n\n...::: Produção sumarizada do grupo por ordem de conferências discriminando os estratos :::...\n\n");
-    group_data_by_code(group_conferences, "a1");
-    printf("\n");
-    group_data_by_code(group_conferences, "a2");
-    printf("\n");
-    group_data_by_code(group_conferences, "a3");
-    printf("\n");
-    group_data_by_code(group_conferences, "a4");
-    printf("\n");
-    group_data_by_code(group_conferences, "b1");
-    printf("\n");
-    group_data_by_code(group_conferences, "b2");
-    printf("\n");
-    group_data_by_code(group_conferences, "b3");
-    printf("\n");
-    group_data_by_code(group_conferences, "b4");
-    printf("\n");
-    group_data_by_code(group_conferences, "c");
-    printf("\nNão qualificado: ");
-    group_data_by_code(group_conferences, "d");
 
+    // For each code
+    for (int i = 0; i < codes->pos; i++)
+    {
+        print_data_by_code(group_conferences, codes->str[i]);
+        printf("\n");
+    }
+
+    // Print stratum Per Researcher
+    printf("\n\n...::: produção dos pesquisadores do grupo por ordem de autoria discriminando os estratos; Em periódicos. Em conferências :::...\n\n");
+
+    // For each researcher
+    node = researchers->head;
+
+    while (node != NULL)
+    {
+        researcher *r = (researcher *)(node)->data;
+
+        printf("Pesquisador: %s\n", r->name);
+        printf(".:+-----------+-------------+:.\n");
+        printf(" | Periódicos | Conferências |\n");
+        printf(".:+-----------+-------------+:.\n");
+
+        // For each code
+        for (int i = 0; i < codes->pos; i++)
+        {
+            int count_per = count_data_of_researcher_with_id(db, codes->str[i], PUBLICATION, r);
+            int count_conf = count_data_of_researcher_with_id(db, codes->str[i], CONFERENCE, r);
+
+            char *code_upper = str_to_upper(codes->str[i]);
+            // If code is one digit, add a space to align
+            if (strlen(codes->str[i]) == 1)
+            {
+                printf(" | %s:  %d      |   %s:  %d      |\n", code_upper, count_per, code_upper, count_conf);
+            }
+            else
+            {
+                printf(" | %s: %d      |   %s: %d      |\n", code_upper, count_per, code_upper, count_conf);
+            }
+
+            free(code_upper);
+        }
+
+        printf(".:+------------+------------+:.\n\n");
+
+        node = node->next;
+    }
+    // Print stratum Per year
+    printf("\n\n...::: produção sumarizada do grupo por ano discriminando os estratos; Em periódicos; Em conferências :::...\n\n");
+
+    // For each year, starting last to first
+    node = years->tail;
+
+    while (node != NULL)
+    {
+        int year = node->data_id;
+
+        printf("Ano: %d\n", year);
+        printf(".:+-----------+-------------+:.\n");
+        printf(" | Periódicos | Conferências |\n");
+        printf(".:+-----------+-------------+:.\n");
+
+        // For each code
+        for (int i = 0; i < codes->pos; i++)
+        {
+            int count_per = count_data_of_group_with_year(group_periods, codes->str[i], year);
+            int count_conf = count_data_of_group_with_year(group_conferences, codes->str[i], year);
+
+            char *code_upper = str_to_upper(codes->str[i]);
+            // If code is one digit, add a space to align
+            if (strlen(codes->str[i]) == 1)
+            {
+                printf(" | %s:  %d      |   %s:  %d      |\n", code_upper, count_per, code_upper, count_conf);
+            }
+            else
+            {
+                printf(" | %s: %d      |   %s: %d      |\n", code_upper, count_per, code_upper, count_conf);
+            }
+
+            free(code_upper);
+        }
+
+        printf(".:+------------+------------+:.\n\n");
+
+        node = node->prev;
+    }
+
+    printf("\n\n...::: Listar aqueles periódicos e eventos classificados no nível C  :::...\n\n");
+    printf("Periódicos no estrato C:\n");
+
+    // Create copies of lists to not modify original
+    list_t *group_periods_copy = copy_list(group_periods);
+    list_t *group_conferences_copy = copy_list(group_conferences);
+
+    // Filter
+    filter_data_by_props(group_periods_copy, "c", NULL, -1);
+    filter_data_by_props(group_conferences_copy, "c", NULL, -1);
+
+    // Print
+    node_t *node_periods = group_periods_copy->head;
+    while (node_periods != NULL)
+    {
+        abstract_data *p = (abstract_data *)(node_periods)->data;
+        printf("\t - %s\n", p->c_name);
+        node_periods = node_periods->next;
+    }
+
+    printf("\nConferências no estrato C:\n");
+
+    node_t *node_conferences = group_conferences_copy->head;
+    while (node_conferences != NULL)
+    {
+        abstract_data *c = (abstract_data *)(node_conferences)->data;
+        printf("\t - %s\n", c->c_name);
+        node_conferences = node_conferences->next;
+    }
+
+    destroy_list(group_periods_copy);
+    destroy_list(group_conferences_copy);
+
+    printf("\n\n...::: Listar os periódicos e eventos não classificados :::...\n\n");
+
+    printf("Periódicos não classificados:\n");
+    group_periods_copy = copy_list(group_periods);
+    group_conferences_copy = copy_list(group_conferences);
+
+    // Filter
+    filter_data_by_props(group_periods_copy, "d", NULL, -1);
+    filter_data_by_props(group_conferences_copy, "d", NULL, -1);
+
+    // Print
+    node_periods = group_periods_copy->head;
+    while (node_periods != NULL)
+    {
+        abstract_data *p = (abstract_data *)(node_periods)->data;
+        printf("\t - %s\n", p->c_name);
+        node_periods = node_periods->next;
+    }
+
+    printf("\nConferências não classificados:\n");
+
+    node_conferences = group_conferences_copy->head;
+    while (node_conferences != NULL)
+    {
+        abstract_data *c = (abstract_data *)(node_conferences)->data;
+        printf("\t - %s\n", c->c_name);
+        node_conferences = node_conferences->next;
+    }
+    printf("\n");
+
+    // # FREE #
+    destroy_list(group_periods_copy);
+    destroy_list(group_conferences_copy);
+
+    destroy_list(group_periods);
+    destroy_list(group_conferences);
+
+    destroy_list(years);
+    str_clear(codes);
+
+    delete_database(db);
 
     // TODO: free all data
     return 0;
 }
 
 // Print group periods by code and stratum
-void group_data_by_code(list_t *data, char *code)
+void print_data_by_code(list_t *data, char *code)
 {
     // New list to store filtered periods
     list_t *filtered_group_periods = NULL;
@@ -176,7 +329,7 @@ void group_data_by_code(list_t *data, char *code)
     {
         abstract_data *p = (abstract_data *)(node)->data;
 
-        printf("%s: %d\n", p->c_name, p->data_count);
+        printf("\t%s: %d\n", p->c_name, p->data_count);
 
         node = node->next;
     }
@@ -184,6 +337,50 @@ void group_data_by_code(list_t *data, char *code)
     free(code_upper);
     destroy_list(filtered_group_periods);
 }
+
+// Prints all data of a researcher by code
+int count_data_of_researcher_with_id(database *db, char *code, data_type data_type, researcher *r)
+{
+    // New list to store filtered periods
+    list_t *filtered_data = NULL;
+
+    // Copy periods to filtered_data
+    filtered_data = get_data_of_researcher_id(db, data_type, r->id);
+
+    // Filter periods by property
+    filter_data_by_props(filtered_data, code, NULL, -1);
+
+    int code_total_data = filtered_data->size;
+
+    destroy_list(filtered_data);
+
+    return code_total_data;
+}
+
+// Prints all data by year
+int count_data_of_group_with_year(list_t *group_data, char *code, int year)
+{
+    // New list to store filtered periods
+    list_t *filtered_data = NULL;
+
+    // Copy periods to filtered_data
+    filtered_data = copy_list(group_data);
+
+    // I've tried to make this modular but iterating over nods and removing them in the same time is a pain, so just filter one at a time
+    // Filter periods by code
+    filter_data_by_props(filtered_data, code, NULL, -1);
+
+    // Filter periods by year
+    filter_data_by_props(filtered_data, NULL, NULL, year);
+
+    int year_total_data = filtered_data->size;
+
+    destroy_list(filtered_data);
+
+    return year_total_data;
+}
+
+// Print data by code and stratum of researcher
 
 // Parse the command line parameters
 void program_params(char **cvs, char **q_conf, char **q_period, int argc, char *argv[])
