@@ -13,116 +13,75 @@
 // Define min
 #define min(a, b) ((a) < (b) ? (a) : (b))
 
-int avl_tree_height(avl_node *node)
-{
-    // Simple failsafe if node null
-    return node == NULL ? 0 : node->height;
-}
 //
 // AVL Operations
 //
 // Create a new AVL Tree
+// Eu refiz essa biblioteca 5 vezes
 avl_node *avl_create(int key)
 {
-    // Create a new node
-    avl_node *new = (avl_node *)malloc(sizeof(avl_node));
+    avl_node *node = NULL;
 
-    // Properties
-    new->key = key;
-    new->height = 1;
-    new->left_child = NULL;
-    new->right_child = NULL;
-    new->parent = NULL;
-
-    return new;
-}
-// Rotate the AVL Tree to the right
-avl_node *avl_tree_rotate_right(avl_node *y)
-{
-    avl_node *x = y->left_child;
-    avl_node *T2 = x->right_child;
-
-    // Perform rotation
-    x->right_child = y;
-    y->left_child = T2;
-
-    // Update heights
-    y->height = max(avl_tree_height(y->left_child), avl_tree_height(y->right_child)) + 1;
-    x->height = max(avl_tree_height(x->left_child), avl_tree_height(x->right_child)) + 1;
-
-    // Return new root
-    return x;
-}
-
-// Rotate the AVL Tree to the left
-avl_node *avl_tree_rotate_left(avl_node *x)
-{
-    avl_node *y = x->right_child;
-    avl_node *T2 = y->left_child;
-
-    // Perform rotation
-    y->left_child = x;
-    x->right_child = T2;
-
-    // Update heights
-    x->height = max(avl_tree_height(x->left_child), avl_tree_height(x->right_child)) + 1;
-    y->height = max(avl_tree_height(y->left_child), avl_tree_height(y->right_child)) + 1;
-
-    // Return new root
-    return y;
-}
-
-// Balance factor
-int avl_tree_balance_factor(avl_node *node)
-{
-    if (node == NULL)
-        return 0;
-    return avl_tree_height(node->left_child) - avl_tree_height(node->right_child);
-}
-
-// Insert a new Node in the AVL Tree
-avl_node *avl_insert(avl_node *node, int key)
-{
-
-    // Find position
-    if (node == NULL)
-        return (avl_create(key));
-
-    if (key < node->key)
-        // Insert in left subtree
-        node->left_child = avl_insert(node->left_child, key);
-    else if (key > node->key)
-        // Insert in right subtree
-        node->right_child = avl_insert(node->right_child, key);
-    else
-        // Leaf insertion
-        return node;
-
-    // Balance the tree
-    node->height = 1 + max(avl_tree_height(node->left_child), avl_tree_height(node->right_child));
-
-    int balance = avl_tree_balance_factor(node);
-
-    // Left Left Case
-    if (balance < -1 && key > node->right_child->key)
-        return avl_tree_rotate_left(node);
-
-    // Right Right Case
-    if (balance < -1 && key < node->right_child->key)
+    // Allocate memory for the node
+    if ((node = (avl_node *)malloc(sizeof(avl_node))) == NULL)
     {
-        node->right_child = avl_tree_rotate_right(node->right_child);
-        return avl_tree_rotate_left(node);
+        perror("Could not allocate memory for the node");
+        return NULL;
     }
 
-    // Left Right Case
-    if (balance > 1 && key < node->left_child->key)
-        return avl_tree_rotate_right(node);
+    // Set the node properties
+    node->key = key;
+    node->left_child = NULL;
+    node->right_child = NULL;
+    node->parent = NULL;
+    node->height = 0;
 
-    // Right Left Case
-    if (balance > 1 && key > node->left_child->key)
+    return node;
+}
+
+// Insert the node
+avl_node *avl_insert(avl_node *node, int key)
+{
+    // Base case of recursion
+    if (node == NULL)
     {
-        node->left_child = avl_tree_rotate_left(node->left_child);
-        return avl_tree_rotate_right(node);
+        return avl_create(key);
+    }
+
+    if (key > node->key)
+        node->right_child = avl_insert(node->right_child, key);
+    else if (key < node->key)
+        node->left_child = avl_insert(node->left_child, key);
+    else
+        return node;
+
+    // Update the height
+    node->height = 1 + max(avl_height(node->left_child), avl_height(node->right_child));
+
+    int bal = avl_balance_factor(node);
+    if (bal > 1)
+    {
+        if (key < node->left_child->key)
+        {
+            return avl_rot_right(node);
+        }
+        else
+        {
+            node->left_child = avl_rot_left(node->left_child);
+            return avl_rot_right(node);
+        }
+    }
+    else if (bal < -1)
+    {
+        if (key > node->right_child->key)
+        {
+            return avl_rot_left(node);
+        }
+        else
+        {
+            node->right_child = avl_rot_right(node->right_child);
+            return avl_rot_left(node);
+        }
     }
 
     return node;
@@ -144,37 +103,226 @@ avl_node *avl_search(avl_node *node, int key)
         return node;
 }
 
+// Height
+int avl_height(avl_node *node)
+{
+    return node == NULL ? -1 : node->height;
+}
+
+// Balance Factor
+int avl_balance_factor(avl_node *node)
+{
+    if (node == NULL)
+        return 0;
+    return avl_height(node->left_child) - avl_height(node->right_child);
+}
+
+// Remove node
+avl_node *avl_remove(avl_node *remove, int key)
+{
+    // Base case
+    if (remove == NULL)
+        return remove;
+
+    // Search for the node
+    if (key < remove->key)
+        remove->left_child = avl_remove(remove->left_child, key);
+    else if (key > remove->key)
+        remove->right_child = avl_remove(remove->right_child, key);
+    else
+    {
+        // Node with only one child or no child
+        if ((remove->left_child == NULL) || (remove->right_child == NULL))
+        {
+            avl_node *temp = NULL;
+            if (remove->left_child != NULL)
+                temp = remove->left_child;
+            else
+                temp = remove->right_child;
+
+            if (temp == NULL)
+            {
+                // No child case
+                temp = remove;
+                remove = NULL;
+            }
+            else
+            {
+                // One child case, copy the child to the node
+                *remove = *temp;
+            }
+
+            // Free the memory
+            free(temp);
+        }
+        else
+        {
+            // Node with two children
+            avl_node *temp = avl_max(remove->left_child);
+            remove->key = temp->key;
+            remove->left_child = avl_remove(remove->left_child, temp->key);
+        }
+    }
+
+    if (remove == NULL)
+        return remove;
+
+    // Update the height
+    remove->height = max(avl_height(remove->left_child), avl_height(remove->right_child)) + 1;
+
+    // Verifica o fator de balanceamento entre os dois filhos do nó.
+    int bal = avl_balance_factor(remove);
+    if (bal > 1)
+    {
+        if (avl_balance_factor(remove->left_child) >= 0)
+        {
+            // Left Left Case
+            return avl_rot_right(remove);
+        }
+        else
+        {
+            // Left Right Case
+            remove->left_child = avl_rot_left(remove->left_child);
+            return avl_rot_right(remove);
+        }
+    }
+    else if (bal < -1)
+    {
+        if (avl_balance_factor(remove->right_child) <= 0)
+        {
+            // Right Right Case
+            return avl_rot_left(remove);
+        }
+        else
+        {
+            // Right Left Case
+            remove->right_child = avl_rot_right(remove->right_child);
+            return avl_rot_left(remove);
+        }
+    }
+
+    // Return the node
+    return remove;
+}
+
+// Rotate to the right
+avl_node *avl_rot_right(avl_node *y)
+{
+    avl_node *x = y->left_child;
+    avl_node *T2 = x->right_child;
+
+    // Perform rotation
+    x->right_child = y;
+    y->left_child = T2;
+
+    // Update heights
+    y->height = max(avl_height(y->left_child), avl_height(y->right_child)) + 1;
+    x->height = max(avl_height(x->left_child), avl_height(x->right_child)) + 1;
+
+    // Return new root
+    return x;
+}
+
+// Rotate to the left
+avl_node *avl_rot_left(avl_node *x)
+{
+    avl_node *y = x->right_child;
+    avl_node *T2 = y->left_child;
+
+    // Perform rotation
+    y->left_child = x;
+    x->right_child = T2;
+
+    // Update heights
+    x->height = max(avl_height(x->left_child), avl_height(x->right_child)) + 1;
+    y->height = max(avl_height(y->left_child), avl_height(y->right_child)) + 1;
+
+    // Return new root
+    return y;
+}
+
+// Max of subtree
+avl_node *avl_max(avl_node *node)
+{
+    avl_node *current = node;
+
+    // Loop down to find the rightmost leaf
+    while (current->right_child != NULL)
+        current = current->right_child;
+
+    return current;
+}
+
+// Min of subtree
+avl_node *avl_min(avl_node *node)
+{
+    avl_node *current = node;
+
+    // Loop down to find the leftmost leaf
+    while (current->left_child != NULL)
+        current = current->left_child;
+
+    return current;
+}
 
 // Print Functions
-void avl_print_pre_order(avl_node *root)
+void avl_print_pre_order(avl_node *node, int level)
 {
-    if (root == NULL)
+    if (node != NULL)
     {
-        return;
+        printf("%d ", node->key);
+        avl_print_pre_order(node->left_child, level + 1);
+        avl_print_pre_order(node->right_child, level + 1);
     }
-    printf("%d,%d\n", root->key, root->height - 1);
-    avl_print_pre_order(root->left_child);
-    avl_print_pre_order(root->right_child);
 }
 
-void avl_print_in_order(avl_node *root)
+void avl_print_in_order(avl_node *root, int level)
 {
-    if (root == NULL)
+    // This was the reason I had to remake this lib 5 times, I forgot to add the level parameter and was printing height instead of level
+    if (root)
     {
-        return;
+        avl_print_in_order(root->left_child, level + 1);
+        printf("%d,%d\n", root->key, level);
+        avl_print_in_order(root->right_child, level + 1);
     }
-    avl_print_in_order(root->left_child);
-    printf("%d,%d\n", root->key, root->height - 1);
-    avl_print_in_order(root->right_child);
 }
 
-void avl_print_post_order(avl_node *root)
+void avl_print_post_order(avl_node *root, int level)
 {
-    if (root == NULL)
+    if (root)
     {
-        return;
+        avl_print_post_order(root->left_child, level + 1);
+        avl_print_post_order(root->right_child, level + 1);
+        printf("%d,%d\n", root->key, level);
     }
-    avl_print_post_order(root->left_child);
-    avl_print_post_order(root->right_child);
-    printf("%d,%d\n", root->key, root->height - 1);
 }
+
+// Untested
+// Successor
+avl_node *avl_successor(avl_node *node){
+    if(node->right_child != NULL){
+        return avl_min(node->right_child);
+    }
+    avl_node *y = node->parent;
+    while(y != NULL && node == y->right_child){
+        node = y;
+        y = y->parent;
+    }
+    return y;
+}
+
+// Predecessor
+avl_node *avl_predecessor(avl_node *node){
+    if(node->left_child != NULL){
+        return avl_max(node->left_child);
+    }
+    avl_node *y = node->parent;
+    while(y != NULL && node == y->left_child){
+        node = y;
+        y = y->parent;
+    }
+    return y;
+}
+
+
+
