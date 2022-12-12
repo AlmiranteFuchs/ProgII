@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "linked_lib.h": "c",
+        "string_lib.h": "c"
+    }
+}
