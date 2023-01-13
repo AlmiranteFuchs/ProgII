@@ -1,0 +1,18 @@
+[GFX1-]: glxtest: VA-API test failed: failed to initialise VAAPI connection.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+[GFX1-]: glxtest: VA-API test failed: failed to initialise VAAPI connection.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+[2023-01-13T18:34:42Z ERROR glean_core::metrics::ping] Invalid reason code startup for ping newtab
+[2023-01-13T18:34:59Z ERROR mp4parse] Found 2 nul bytes in "\0\0"
+[2023-01-13T18:35:00Z ERROR mp4parse] Found 2 nul bytes in "\0\0"
+[2023-01-13T18:35:00Z ERROR mp4parse] Found 2 nul bytes in "\0\0"
+[2023-01-13T18:35:00Z ERROR mp4parse] Found 2 nul bytes in "\0\0"
+[2023-01-13T19:34:25Z ERROR mp4parse] Found 2 nul bytes in "\0\0"
+[2023-01-13T19:34:25Z ERROR mp4parse] Found 2 nul bytes in "\0\0"
+[2023-01-13T19:34:25Z ERROR mp4parse] Found 2 nul bytes in "\0\0"
+[2023-01-13T19:34:25Z ERROR mp4parse] Found 2 nul bytes in "\0\0"

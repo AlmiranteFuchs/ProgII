@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" class="js" lang="pt-br"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"><style type="text/css">span.iconify, i.iconify, iconify-icon { display: inline-block; width: 1em; }</style>
+    <meta charset="UTF-8">
+    <title>prog2:jogo_grafico [Prof. Carlos Maziero]</title>
+    <script>(function(H){H.className=H.className.replace(/\bno-js\b/,'js')})(document.documentElement)</script>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="shortcut icon" href="https://wiki.inf.ufpr.br/maziero/lib/exe/fetch.php?media=favicon.ico">
+<link rel="apple-touch-icon" href="https://wiki.inf.ufpr.br/maziero/lib/tpl/bootstrap3/images/apple-touch-icon.png">
+<meta name="generator" content="DokuWiki">
+<meta name="robots" content="index,follow">
+<meta name="keywords" content="prog2,jogo_grafico">
+<link rel="search" type="application/opensearchdescription+xml" href="https://wiki.inf.ufpr.br/maziero/lib/exe/opensearch.php" title="Prof. Carlos Maziero">
+<link rel="start" href="https://wiki.inf.ufpr.br/maziero/">
+<link rel="contents" href="https://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:jogo_grafico&amp;do=index" title="Índice">
+<link rel="manifest" href="https://wiki.inf.ufpr.br/maziero/lib/exe/manifest.php">
+<link rel="alternate" type="application/rss+xml" title="Alterações recentes" href="https://wiki.inf.ufpr.br/maziero/feed.php">
+<link rel="alternate" type="application/rss+xml" title="Domínio atual" href="https://wiki.inf.ufpr.br/maziero/feed.php?mode=list&amp;ns=prog2">
+<link rel="alternate" type="text/html" title="HTML simples" href="https://wiki.inf.ufpr.br/maziero/doku.php?do=export_xhtml&amp;id=prog2:jogo_grafico">
+<link rel="alternate" type="text/plain" title="Marcação wiki" href="https://wiki.inf.ufpr.br/maziero/doku.php?do=export_raw&amp;id=prog2:jogo_grafico">
+<link rel="canonical" href="https://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:jogo_grafico">
+<link rel="stylesheet" href="prog2%20jogo_grafico%20[Prof.%20Carlos%20Maziero]_arquivos/css.css">
+<!--[if gte IE 9]><!-->
+<script>/*<![CDATA[*/var NS='prog2';var JSINFO = {"bootstrap3":{"mode":"show","toc":[],"config":{"collapsibleSections":0,"fixedTopNavbar":1,"showSemanticPopup":0,"sidebarOnNavbar":0,"tagsOnTop":0,"tocAffix":0,"tocCollapseOnScroll":0,"tocCollapsed":0,"tocLayout":"default","useAnchorJS":0,"useAlternativeToolbarIcons":0}},"id":"prog2:jogo_grafico","namespace":"prog2","ACT":"show","useHeadingNavigation":0,"useHeadingContent":0};
+/*!]]>*/</script>
+<script src="prog2%20jogo_grafico%20[Prof.%20Carlos%20Maziero]_arquivos/jquery.js" defer="defer"></script>
+<script src="prog2%20jogo_grafico%20[Prof.%20Carlos%20Maziero]_arquivos/js.js" defer="defer"></script>
+<!--<![endif]-->
+<style type="text/css">@media screen { body { margin-top: 80px; }  #dw__toc.affix { top: 70px; position: fixed !important; } }</style>
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script type="text/javascript" src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+<script type="text/javascript" src="prog2%20jogo_grafico%20[Prof.%20Carlos%20Maziero]_arquivos/iconify.js" async="true"></script></head>
+<body class="flatly dokuwiki mode_show tpl_bootstrap3 dw-table-width" data-page-id="prog2:jogo_grafico"><div class="dokuwiki">
+    <header id="dokuwiki__header" class="dw-container dokuwiki container">
+    <!-- navbar -->
+<nav id="dw__navbar" class="navbar navbar-fixed-top navbar-default" role="navigation">
+
+    <div class="dw-container container">
+
+        <div class="navbar-header">
+
+            <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <a class="navbar-brand d-flex align-items-center" href="https://wiki.inf.ufpr.br/maziero/doku.php?id=start" accesskey="h" title="Prof. Carlos Maziero"><img id="dw__logo" class="pull-left h-100 mr-4" alt="Prof. Carlos Maziero" src="prog2%20jogo_grafico%20[Prof.%20Carlos%20Maziero]_arquivos/logo.png"><div class="pull-right"><div id="dw__title">Prof. Carlos Maziero</div></div></a>
+        </div>
+
+        <div class="collapse navbar-collapse">
+
+            
+            
+            <div class="navbar-right" id="dw__navbar_items">
+
+                <!-- navbar-searchform -->
+<form action="/maziero/doku.php?id=prog2:jogo_grafico" accept-charset="utf-8" class="navbar-form navbar-left search" id="dw__search" method="get" role="search">
+    <div class="input-group">
+        <input id="qsearch" autocomplete="off" type="search" placeholder="Pesquisar" accesskey="f" name="q" class="form-control" title="[F]">
+        <div class="input-group-btn">
+            <button class="btn btn-default" type="submit" title="Pesquisar">
+                <svg xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24" class="iconify" data-icon="mdi:magnify" style="vertical-align: -0.125em; transform: rotate(360deg);"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5l-1.5 1.5l-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16A6.5 6.5 0 0 1 3 9.5A6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14S14 12 14 9.5S12 5 9.5 5z" fill="currentColor"></path></svg>            </button>
+        </div>
+
+    </div>
+    <input type="hidden" name="do" value="search">
+</form>
+<!-- /navbar-searchform -->
+<!-- theme-switcher -->
+<ul class="nav navbar-nav" id="dw__themes">
+    <li class="dropdown">
+
+        <a href="" class="dropdown-toggle" data-toggle="dropdown" data-target="#" role="button" aria-haspopup="true" aria-expanded="false">
+            <svg xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24" class="iconify" data-icon="mdi:palette" style="vertical-align: -0.125em; transform: rotate(360deg);"><path d="M17.5 12a1.5 1.5 0 0 1-1.5-1.5A1.5 1.5 0 0 1 17.5 9a1.5 1.5 0 0 1 1.5 1.5a1.5 1.5 0 0 1-1.5 1.5m-3-4A1.5 1.5 0 0 1 13 6.5A1.5 1.5 0 0 1 14.5 5A1.5 1.5 0 0 1 16 6.5A1.5 1.5 0 0 1 14.5 8m-5 0A1.5 1.5 0 0 1 8 6.5A1.5 1.5 0 0 1 9.5 5A1.5 1.5 0 0 1 11 6.5A1.5 1.5 0 0 1 9.5 8m-3 4A1.5 1.5 0 0 1 5 10.5A1.5 1.5 0 0 1 6.5 9A1.5 1.5 0 0 1 8 10.5A1.5 1.5 0 0 1 6.5 12M12 3a9 9 0 0 0-9 9a9 9 0 0 0 9 9a1.5 1.5 0 0 0 1.5-1.5c0-.39-.15-.74-.39-1c-.23-.27-.38-.62-.38-1a1.5 1.5 0 0 1 1.5-1.5H16a5 5 0 0 0 5-5c0-4.42-4.03-8-9-8z" fill="currentColor"></path></svg> <span class="hidden-lg hidden-md hidden-sm">Temas</span> <span class="caret"></span>
+        </a>
+
+        <ul class="dropdown-menu" aria-labelledby="themes">
+            <li class="dropdown-header">
+                <svg xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24" class="iconify" data-icon="mdi:palette" style="vertical-align: -0.125em; transform: rotate(360deg);"><path d="M17.5 12a1.5 1.5 0 0 1-1.5-1.5A1.5 1.5 0 0 1 17.5 9a1.5 1.5 0 0 1 1.5 1.5a1.5 1.5 0 0 1-1.5 1.5m-3-4A1.5 1.5 0 0 1 13 6.5A1.5 1.5 0 0 1 14.5 5A1.5 1.5 0 0 1 16 6.5A1.5 1.5 0 0 1 14.5 8m-5 0A1.5 1.5 0 0 1 8 6.5A1.5 1.5 0 0 1 9.5 5A1.5 1.5 0 0 1 11 6.5A1.5 1.5 0 0 1 9.5 8m-3 4A1.5 1.5 0 0 1 5 10.5A1.5 1.5 0 0 1 6.5 9A1.5 1.5 0 0 1 8 10.5A1.5 1.5 0 0 1 6.5 12M12 3a9 9 0 0 0-9 9a9 9 0 0 0 9 9a1.5 1.5 0 0 0 1.5-1.5c0-.39-.15-.74-.39-1c-.23-.27-.38-.62-.38-1a1.5 1.5 0 0 1 1.5-1.5H16a5 5 0 0 0 5-5c0-4.42-4.03-8-9-8z" fill="currentColor"></path></svg> Temas            </li>
+            <li>
+                <a onclick="DokuCookie.setValue('bootswatchTheme', 'default');" href="https://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:jogo_grafico&amp;bootswatch-theme=default">Default</a>
+            </li>
+            <li class="dropdown-header">
+                <svg xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24" class="iconify" data-icon="mdi:palette" style="vertical-align: -0.125em; transform: rotate(360deg);"><path d="M17.5 12a1.5 1.5 0 0 1-1.5-1.5A1.5 1.5 0 0 1 17.5 9a1.5 1.5 0 0 1 1.5 1.5a1.5 1.5 0 0 1-1.5 1.5m-3-4A1.5 1.5 0 0 1 13 6.5A1.5 1.5 0 0 1 14.5 5A1.5 1.5 0 0 1 16 6.5A1.5 1.5 0 0 1 14.5 8m-5 0A1.5 1.5 0 0 1 8 6.5A1.5 1.5 0 0 1 9.5 5A1.5 1.5 0 0 1 11 6.5A1.5 1.5 0 0 1 9.5 8m-3 4A1.5 1.5 0 0 1 5 10.5A1.5 1.5 0 0 1 6.5 9A1.5 1.5 0 0 1 8 10.5A1.5 1.5 0 0 1 6.5 12M12 3a9 9 0 0 0-9 9a9 9 0 0 0 9 9a1.5 1.5 0 0 0 1.5-1.5c0-.39-.15-.74-.39-1c-.23-.27-.38-.62-.38-1a1.5 1.5 0 0 1 1.5-1.5H16a5 5 0 0 0 5-5c0-4.42-4.03-8-9-8z" fill="currentColor"></path></svg> Bootswatch Themes
+            </li>
+                        <li>
+                <a onclick="DokuCookie.setValue('bootswatchTheme', 'cerulean');" href="https://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:jogo_grafico&amp;bootswatch-theme=cerulean">Cerulean</a>
+            </li>
+                        <li>
+                <a onclick="DokuCookie.setValue('bootswatchTheme', 'cosmo');" href="https://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:jogo_grafico&amp;bootswatch-theme=cosmo">Cosmo</a>
+            </li>
+                        <li>
+                <a onclick="DokuCookie.setValue('bootswatchTheme', 'cyborg');" href="https://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:jogo_grafico&amp;bootswatch-theme=cyborg">Cyborg</a>
+            </li>
+                        <li>
+                <a onclick="DokuCookie.setValue('bootswatchTheme', 'darkly');" href="https://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:jogo_grafico&amp;bootswatch-theme=darkly">Darkly</a>
+            </li>
+                        <li class="active">
+                <a onclick="DokuCookie.setValue('bootswatchTheme', 'flatly');" href="https://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:jogo_grafico&amp;bootswatch-theme=flatly">Flatly</a>
+            </li>
+                        <li>
+                <a onclick="DokuCookie.setValue('bootswatchTheme', 'journal');" href="https://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:jogo_grafico&amp;bootswatch-theme=journal">Journal</a>
+            </li>
+                        <li>
+                <a onclick="DokuCookie.setValue('bootswatchTheme', 'lumen');" href="https://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:jogo_grafico&amp;bootswatch-theme=lumen">Lumen</a>
+            </li>
+                        <li>
+                <a onclick="DokuCookie.setValue('bootswatchTheme', 'paper');" href="https://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:jogo_grafico&amp;bootswatch-theme=paper">Paper</a>
+            </li>
+                        <li>
+                <a onclick="DokuCookie.setValue('bootswatchTheme', 'readable');" href="https://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:jogo_grafico&amp;bootswatch-theme=readable">Readable</a>
+            </li>
+                        <li>
+                <a onclick="DokuCookie.setValue('bootswatchTheme', 'sandstone');" href="https://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:jogo_grafico&amp;bootswatch-theme=sandstone">Sandstone</a>
+            </li>
+                        <li>
+                <a onclick="DokuCookie.setValue('bootswatchTheme', 'simplex');" href="https://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:jogo_grafico&amp;bootswatch-theme=simplex">Simplex</a>
+            </li>
+                        <li>
+                <a onclick="DokuCookie.setValue('bootswatchTheme', 'solar');" href="https://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:jogo_grafico&amp;bootswatch-theme=solar">Solar</a>
+            </li>
+                        <li>
+                <a onclick="DokuCookie.setValue('bootswatchTheme', 'slate');" href="https://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:jogo_grafico&amp;bootswatch-theme=slate">Slate</a>
+            </li>
+                        <li>
+                <a onclick="DokuCookie.setValue('bootswatchTheme', 'spacelab');" href="https://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:jogo_grafico&amp;bootswatch-theme=spacelab">Spacelab</a>
+            </li>
+                        <li>
+                <a onclick="DokuCookie.setValue('bootswatchTheme', 'superhero');" href="https://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:jogo_grafico&amp;bootswatch-theme=superhero">Superhero</a>
+            </li>
+                        <li>
+                <a onclick="DokuCookie.setValue('bootswatchTheme', 'united');" href="https://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:jogo_grafico&amp;bootswatch-theme=united">United</a>
+            </li>
+                        <li>
+                <a onclick="DokuCookie.setValue('bootswatchTheme', 'yeti');" href="https://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:jogo_grafico&amp;bootswatch-theme=yeti">Yeti</a>
+            </li>
+                    </ul>
+
+    </li>
+</ul>
+<!-- /theme-switcher -->
+
+                <ul class="nav navbar-nav">
+
+                    
+                                        <li>
+                        <span class="dw__actions dw-action-icon">
+                        <a href="https://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:jogo_grafico&amp;do=login&amp;sectok=" title="Entrar" rel="nofollow" class="menuitem login btn btn-default navbar-btn"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M10 17.25V14H3v-4h7V6.75L15.25 12 10 17.25M8 2h9a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-4h2v4h9V4H8v4H6V4a2 2 0 0 1 2-2z"></path></svg><span class="sr-only"> Entrar</span></a>                        </span>
+                    </li>
+                    
+                </ul>
+
+                
+                
+            </div>
+
+        </div>
+    </div>
+</nav>
+<!-- navbar -->
+    </header>
+
+    <a name="dokuwiki__top" id="dokuwiki__top"></a>
+
+    <main role="main" class="dw-container pb-5 dokuwiki container">
+
+        <div id="dokuwiki__pageheader">
+
+            
+            <!-- breadcrumbs -->
+<nav id="dw__breadcrumbs" class="small">
+
+    <hr>
+
+    
+        <div class="dw__breadcrumbs hidden-print">
+        <ol class="breadcrumb"><li>Visitou</li><li class="active"><a href="https://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:jogo_grafico" title="prog2:jogo_grafico">jogo_grafico</a></li></ol>    </div>
+    
+    <hr>
+
+</nav>
+<!-- /breadcrumbs -->
+
+            <p class="text-right">
+                            </p>
+
+            <div id="dw__msgarea" class="small">
+                            </div>
+
+        </div>
+
+        <div class="row">
+
+            <!-- sidebar -->
+<aside id="dokuwiki__aside" class="dw__sidebar col-sm-3 col-md-2 hidden-print">
+    <div class="dw-sidebar-content">
+        <div class="dw-sidebar-title hidden-lg hidden-md hidden-sm" data-toggle="collapse" data-target="#dokuwiki__aside .dw-sidebar-body">
+            <svg xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24" class="iconify" data-icon="mdi:view-list" style="vertical-align: -0.125em; transform: rotate(360deg);"><path d="M9 5v4h12V5M9 19h12v-4H9m0-1h12v-4H9M4 9h4V5H4m0 14h4v-4H4m0-1h4v-4H4v4z" fill="currentColor"></path></svg> Barra lateral        </div>
+        <div class="dw-sidebar-body collapse in small">
+            <h3 class="sectionedit1 page-header pb-3 mb-4 mt-5 page-header" id="main">Main</h3>
+<div class="level3">
+<ul class="nav  nav-pills nav-stacked">
+<li class="level1"> <a href="https://wiki.inf.ufpr.br/maziero/doku.php?id=start" class="wikilink1" title="start">Main page</a>
+</li>
+<li class="level1"> <a href="https://wiki.inf.ufpr.br/maziero/doku.php?id=short_biography" class="wikilink1" title="short_biography">Short biography</a>
+</li>
+</ul>
+
+</div>
+<!-- EDIT{&quot;target&quot;:&quot;section&quot;,&quot;name&quot;:&quot;Main&quot;,&quot;hid&quot;:&quot;main&quot;,&quot;codeblockOffset&quot;:0,&quot;secid&quot;:1,&quot;range&quot;:&quot;1-65&quot;} -->
+<h3 class="sectionedit2 page-header pb-3 mb-4 mt-5 page-header" id="teaching">Teaching</h3>
+<div class="level3">
+
+<p>
+(in Portuguese)
+</p>
+<ul class="nav  nav-pills nav-stacked">
+<li class="level1"> <a href="https://wiki.inf.ufpr.br/maziero/doku.php?id=so:start" class="wikilink1" title="so:start">Sistemas Operacionais</a>
+</li>
+<li class="level1"> <a href="https://wiki.inf.ufpr.br/maziero/doku.php?id=socm:start" class="wikilink1" title="socm:start">Livro de SO</a> 	
+</li>
+<li class="level1"> <a href="https://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:start" class="wikilink1" title="prog2:start">Programação 2</a>
+</li>
+<li class="level1"> <a href="https://wiki.inf.ufpr.br/maziero/doku.php?id=sc:start" class="wikilink1" title="sc:start">Segurança Computacional</a>
+</li>
+<li class="level1"> <a href="https://wiki.inf.ufpr.br/maziero/doku.php?id=disciplinas_antigas" class="wikilink1" title="disciplinas_antigas">Disciplinas antigas</a>
+</li>
+</ul>
+
+</div>
+<!-- EDIT{&quot;target&quot;:&quot;section&quot;,&quot;name&quot;:&quot;Teaching&quot;,&quot;hid&quot;:&quot;teaching&quot;,&quot;codeblockOffset&quot;:0,&quot;secid&quot;:2,&quot;range&quot;:&quot;66-281&quot;} -->
+<h3 class="sectionedit3 page-header pb-3 mb-4 mt-5 page-header" id="research">Research</h3>
+<div class="level3">
+<ul class="nav  nav-pills nav-stacked">
+<li class="level1"> <a href="https://wiki.inf.ufpr.br/maziero/doku.php?id=research:publications" class="wikilink1" title="research:publications">Publications</a>
+</li>
+<li class="level1"> <a href="https://wiki.inf.ufpr.br/maziero/doku.php?id=research:bases_de_artigos_online" class="wikilink1" title="research:bases_de_artigos_online">Online paper libraries</a>
+</li>
+<li class="level1"> <a href="http://wiki.inf.ufpr.br/larsis/doku.php?id=en:start" class="urlextern" title="http://wiki.inf.ufpr.br/larsis/doku.php?id=en:start" rel="ugc nofollow">Research Group</a>
+</li>
+</ul>
+
+</div>
+<!-- EDIT{&quot;target&quot;:&quot;section&quot;,&quot;name&quot;:&quot;Research&quot;,&quot;hid&quot;:&quot;research&quot;,&quot;codeblockOffset&quot;:0,&quot;secid&quot;:3,&quot;range&quot;:&quot;282-471&quot;} -->
+<h3 class="sectionedit4 page-header pb-3 mb-4 mt-5 page-header" id="other">Other</h3>
+<div class="level3">
+<ul class="nav  nav-pills nav-stacked">
+<li class="level1"> <a href="https://wiki.inf.ufpr.br/maziero/doku.php?id=software:simulation" class="wikilink1" title="software:simulation">Simulation library</a>
+</li>
+<li class="level1"> <a href="https://wiki.inf.ufpr.br/maziero/doku.php?id=software:latex" class="wikilink1" title="software:latex">Material about LaTeX</a>
+</li>
+<li class="level1"> <a href="https://wiki.inf.ufpr.br/maziero/doku.php?id=genealogy:start" class="wikilink1" title="genealogy:start">Genealogy</a>
+</li>
+<li class="level1"> <a href="https://wiki.inf.ufpr.br/maziero/doku.php?id=software:my_keys" class="wikilink1" title="software:my_keys">My keys</a>
+</li>
+</ul>
+
+</div>
+<!-- EDIT{&quot;target&quot;:&quot;section&quot;,&quot;name&quot;:&quot;Other&quot;,&quot;hid&quot;:&quot;other&quot;,&quot;codeblockOffset&quot;:0,&quot;secid&quot;:4,&quot;range&quot;:&quot;472-&quot;} -->        </div>
+    </div>
+</aside>
+<!-- /sidebar -->
+
+            <article id="dokuwiki__content" class="col-sm-9 col-md-10 " itemscope="" itemtype="http://schema.org/Article" itemref="dw__license">
+
+                
+<!-- page-tools -->
+<nav id="dw__pagetools" class="hidden-print">
+    <div class="tools panel panel-default affix-top">
+        <ul class="nav nav-stacked nav-pills text-muted">
+            <li class="action"><a href="https://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:jogo_grafico&amp;do=revisions" title="Revisões anteriores [o]" rel="nofollow" accesskey="o" class="menuitem revs"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M11 7v5.11l4.71 2.79.79-1.28-4-2.37V7m0-5C8.97 2 5.91 3.92 4.27 6.77L2 4.5V11h6.5L5.75 8.25C6.96 5.73 9.5 4 12.5 4a7.5 7.5 0 0 1 7.5 7.5 7.5 7.5 0 0 1-7.5 7.5c-3.27 0-6.03-2.09-7.06-5h-2.1c1.1 4.03 4.77 7 9.16 7 5.24 0 9.5-4.25 9.5-9.5A9.5 9.5 0 0 0 12.5 2z"></path></svg><span>Revisões anteriores</span></a></li><li class="action"><a href="https://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:jogo_grafico&amp;do=backlink" title="Links reversos" rel="nofollow" class="menuitem backlink"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M10.59 13.41c.41.39.41 1.03 0 1.42-.39.39-1.03.39-1.42 0a5.003 5.003 0 0 1 0-7.07l3.54-3.54a5.003 5.003 0 0 1 7.07 0 5.003 5.003 0 0 1 0 7.07l-1.49 1.49c.01-.82-.12-1.64-.4-2.42l.47-.48a2.982 2.982 0 0 0 0-4.24 2.982 2.982 0 0 0-4.24 0l-3.53 3.53a2.982 2.982 0 0 0 0 4.24m2.82-4.24c.39-.39 1.03-.39 1.42 0a5.003 5.003 0 0 1 0 7.07l-3.54 3.54a5.003 5.003 0 0 1-7.07 0 5.003 5.003 0 0 1 0-7.07l1.49-1.49c-.01.82.12 1.64.4 2.43l-.47.47a2.982 2.982 0 0 0 0 4.24 2.982 2.982 0 0 0 4.24 0l3.53-3.53a2.982 2.982 0 0 0 0-4.24.973.973 0 0 1 0-1.42z"></path></svg><span>Links reversos</span></a></li><li class="action"><a href="https://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:jogo_grafico&amp;do=export_pdf" title="Exportar para PDF" rel="nofollow" class="menuitem export_pdf"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M14 9h5.5L14 3.5V9M7 2h8l6 6v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2m4.93 10.44c.41.9.93 1.64 1.53 2.15l.41.32c-.87.16-2.07.44-3.34.93l-.11.04.5-1.04c.45-.87.78-1.66 1.01-2.4m6.48 3.81c.18-.18.27-.41.28-.66.03-.2-.02-.39-.12-.55-.29-.47-1.04-.69-2.28-.69l-1.29.07-.87-.58c-.63-.52-1.2-1.43-1.6-2.56l.04-.14c.33-1.33.64-2.94-.02-3.6a.853.853 0 0 0-.61-.24h-.24c-.37 0-.7.39-.79.77-.37 1.33-.15 2.06.22 3.27v.01c-.25.88-.57 1.9-1.08 2.93l-.96 1.8-.89.49c-1.2.75-1.77 1.59-1.88 2.12-.04.19-.02.36.05.54l.03.05.48.31.44.11c.81 0 1.73-.95 2.97-3.07l.18-.07c1.03-.33 2.31-.56 4.03-.75 1.03.51 2.24.74 3 .74.44 0 .74-.11.91-.3m-.41-.71l.09.11c-.01.1-.04.11-.09.13h-.04l-.19.02c-.46 0-1.17-.19-1.9-.51.09-.1.13-.1.23-.1 1.4 0 1.8.25 1.9.35M8.83 17c-.65 1.19-1.24 1.85-1.69 2 .05-.38.5-1.04 1.21-1.69l.48-.31m3.02-6.91c-.23-.9-.24-1.63-.07-2.05l.07-.12.15.05c.17.24.19.56.09 1.1l-.03.16-.16.82-.05.04z"></path></svg><span>Exportar para PDF</span></a></li><li class="action"><a href="#dokuwiki__top" title="Voltar ao topo [t]" rel="nofollow" accesskey="t" class="menuitem top"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path></svg><span>Voltar ao topo</span></a></li>        </ul>
+    </div>
+</nav>
+<!-- /page-tools -->
+
+                <div class="no-panel" itemprop="articleBody">
+                    <div class="page ">
+
+                        
+<div class="dw-content-page "><!-- content --><div class="dw-content"><h1 class="sectionedit1 page-header pb-3 mb-4 mt-5" id="jogo_grafico">Jogo gráfico</h1>
+<div class="level1">
+
+<p>
+<a href="https://wiki.inf.ufpr.br/maziero/lib/exe/detail.php?id=prog2%3Ajogo_grafico&amp;media=prog2:pong.gif" class="media" title="prog2:pong.gif"><img src="prog2%20jogo_grafico%20[Prof.%20Carlos%20Maziero]_arquivos/pong.gif" class="mediaright img-responsive" loading="lazy" title="Pong" alt="Pong"></a>
+</p>
+
+<p>
+O objetivo deste projeto é construir um jogo monousuário com interface gráfica 2D. O aluno deve escolher um destes jogos <sup><a href="#fn__1" id="fnt__1" class="fn_top">1)</a></sup>:
+</p>
+
+<p>
+Clássicos:
+</p>
+<ul class=" fix-media-list-overlap">
+<li class="level1"><div class="li"> <a href="https://www.arcade-museum.com/game_detail.php?game_id=10026" class="urlextern" title="https://www.arcade-museum.com/game_detail.php?game_id=10026" rel="ugc nofollow">Battle City</a></div>
+</li>
+<li class="level1"><div class="li"> <a href="https://en.wikipedia.org/wiki/Super_Mario_Bros." class="urlextern" title="https://en.wikipedia.org/wiki/Super_Mario_Bros." rel="ugc nofollow">Super Mario Bros</a></div>
+</li>
+<li class="level1"><div class="li"> <a href="https://en.wikipedia.org/wiki/Maziacs" class="urlextern" title="https://en.wikipedia.org/wiki/Maziacs" rel="ugc nofollow">Maziacs</a></div>
+</li>
+<li class="level1"><div class="li"> <a href="http://codeincomplete.com/projects/boulderdash" class="urlextern" title="http://codeincomplete.com/projects/boulderdash" rel="ugc nofollow">Boulder Dash</a></div>
+</li>
+<li class="level1"><div class="li"> <a href="https://en.wikipedia.org/wiki/Donkey_Kong_(video_game)" class="urlextern" title="https://en.wikipedia.org/wiki/Donkey_Kong_(video_game)" rel="ugc nofollow">Donkey Kong</a></div>
+</li>
+</ul>
+
+<p>
+Recentes:
+</p>
+<ul class=" fix-media-list-overlap">
+<li class="level1"><div class="li"> <a href="https://play.google.com/store/apps/details?id=com.ketchapp.ballz&amp;hl=pt-BR" class="urlextern" title="https://play.google.com/store/apps/details?id=com.ketchapp.ballz&amp;hl=pt-BR" rel="ugc nofollow">Ballz</a></div>
+</li>
+<li class="level1"><div class="li"> <a href="https://play.google.com/store/apps/details?id=de.stollenmayer.philipp.Pop_1_1_Android" class="urlextern" title="https://play.google.com/store/apps/details?id=de.stollenmayer.philipp.Pop_1_1_Android" rel="ugc nofollow">Okay?</a></div>
+</li>
+<li class="level1"><div class="li"> <a href="https://play.google.com/store/apps/details?id=com.robtopx.geometryjumplite" class="urlextern" title="https://play.google.com/store/apps/details?id=com.robtopx.geometryjumplite" rel="ugc nofollow">Geometry Dash</a></div>
+</li>
+<li class="level1"><div class="li"> <a href="https://play.google.com/store/apps/details?id=com.ketchapp.zigzaggame" class="urlextern" title="https://play.google.com/store/apps/details?id=com.ketchapp.zigzaggame" rel="ugc nofollow">ZigZag</a> (fazer em 2D)</div>
+</li>
+</ul>
+
+<p>
+Você pode propor outros jogos ao professor para análise.
+</p>
+
+</div>
+
+<h2 class="sectionedit2 page-header pb-3 mb-4 mt-5" id="requisitos">Requisitos</h2>
+<div class="level2">
+
+<p>
+Requisitos do jogo:
+</p>
+<ul class=" fix-media-list-overlap">
+<li class="level1"><div class="li"> Executar no Linux, em uma janela gráfica</div>
+</li>
+<li class="level1"><div class="li"> Interagir com o usuário através do teclado e/ou mouse</div>
+</li>
+<li class="level1"><div class="li"> Usar imagens coloridas (<em>sprites</em>), não somente formas geométricas (pode usar figuras prontas obtidas na Internet) </div>
+</li>
+<li class="level1"><div class="li"> Tocar sons nos principais eventos (pode usar sons prontos da Internet)</div>
+</li>
+<li class="level1"><div class="li"> Suportar ao menos <strong>três níveis</strong> com mapas, ações e/ou objetos diferentes</div>
+</li>
+<li class="level1"><div class="li"> Calcular a pontuação do jogador e manter um <em>score</em> persistente (salvo em disco) das melhores pontuações obtidas, apresentado ao usuário ao finalizar o jogo</div>
+</li>
+<li class="level1"><div class="li"> As teclas <code>h</code> ou <code>F1</code> abrem uma tela de ajuda com as instruções do jogo, nome do autor e outras informações</div>
+</li>
+<li class="level1"><div class="li"> Ter um <em><a href="https://en.wikipedia.org/wiki/Easter_egg_(media)" class="urlextern" title="https://en.wikipedia.org/wiki/Easter_egg_(media)" rel="ugc nofollow">Easter Egg</a></em> ou um <em>cheat code</em> (como o <a href="https://pt.wikipedia.org/wiki/C%C3%B3digo_Konami" class="urlextern" title="https://pt.wikipedia.org/wiki/C%C3%B3digo_Konami" rel="ugc nofollow">Código Konami</a>)</div>
+</li>
+<li class="level1"><div class="li"> Executar a 60 FPS (<em>frames per second</em>)</div>
+</li>
+</ul>
+
+<p>
+
+Requisitos do código:
+</p>
+<ul class=" fix-media-list-overlap">
+<li class="level1"><div class="li"> Ser desenvolvido em C padrão C99 (<code>-std=c99</code>, <code>-std=gnu99</code> ou <code>-std=gnu11</code>)</div>
+</li>
+<li class="level1"><div class="li"> Usar a biblioteca gráfica <strong>Allegro 5</strong> <sup><a href="#fn__2" id="fnt__2" class="fn_top">2)</a></sup></div>
+</li>
+<li class="level1"><div class="li"> Separar o código em vários arquivos <code>.c</code> e <code>.h</code> separados, respeitando as regras de <a href="https://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:organizacao_de_codigo" class="wikilink1" title="prog2:organizacao_de_codigo" data-wiki-id="prog2:organizacao_de_codigo">organização de código</a></div>
+</li>
+<li class="level1"><div class="li"> Usar <a href="https://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:alocacao_de_memoria" class="wikilink1" title="prog2:alocacao_de_memoria" data-wiki-id="prog2:alocacao_de_memoria">alocação de memória</a> dinâmica</div>
+</li>
+<li class="level1"><div class="li"> Usar <a href="https://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:estruturas" class="wikilink1" title="prog2:estruturas" data-wiki-id="prog2:estruturas">estruturas</a></div>
+</li>
+<li class="level1"><div class="li"> Compilar com o flag <code>-Wall</code> sem erros nem avisos</div>
+</li>
+<li class="level1 node"><div class="li"> Usar <a href="https://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:o_sistema_make" class="wikilink1" title="prog2:o_sistema_make" data-wiki-id="prog2:o_sistema_make">o sistema Make</a> para compilação, com ao menos os seguintes alvos:</div>
+<ul class=" fix-media-list-overlap">
+<li class="level2"><div class="li"> <code>all</code>: compila e gera o executável</div>
+</li>
+<li class="level2"><div class="li"> <code>clean</code>: remove os arquivos temporários (mantém o executável)</div>
+</li>
+<li class="level2"><div class="li"> <code>purge</code>: remove tudo, deixando somente os fontes</div>
+</li>
+</ul>
+</li>
+<li class="level1"><div class="li"> Todos os arquivos que não forem código-fonte (imagens, sons, fontes, mapas, …) devem ser colocados em um subdiretório <code>resources/</code> dentro do diretório do código.</div>
+</li>
+</ul>
+
+<p>
+Critérios de avaliação
+</p>
+<ul class=" fix-media-list-overlap">
+<li class="level1"><div class="li"> cumprimento dos requisitos acima</div>
+</li>
+<li class="level1"><div class="li"> fidelidade ao jogo original</div>
+</li>
+<li class="level1"><div class="li"> qualidade do código (estrutura, clareza, comentários, endentação)</div>
+</li>
+</ul>
+
+</div>
+
+<h2 class="sectionedit3 page-header pb-3 mb-4 mt-5" id="a_biblioteca_allegro">A biblioteca Allegro</h2>
+<div class="level2">
+
+<p>
+A biblioteca gráfica <a href="http://liballeg.org/" class="urlextern" title="http://liballeg.org/" rel="ugc nofollow">Allegro</a>
+ permite a manipulação de gráficos simples e áudio, sendo bem adaptada 
+para a construção de jogos 2D. É uma biblioteca mais simples e limitada 
+que a famosa biblioteca <a href="https://www.libsdl.org/" class="urlextern" title="https://www.libsdl.org" rel="ugc nofollow">SDL</a>, sendo mais adequada para iniciantes e para projetos menores.
+</p>
+
+<p>
+Algumas de suas características:
+</p>
+<ul class=" fix-media-list-overlap">
+<li class="level1"><div class="li"> multiplataforma: Linux, Windows, MacOS, Android, iOS</div>
+</li>
+<li class="level1"><div class="li"> pode ser usada em C e outras linguagens</div>
+</li>
+<li class="level1"><div class="li"> usa aceleração gráfica (através de OpenGL ou DirectX)</div>
+</li>
+<li class="level1"><div class="li"> manipulação de áudio e vídeo</div>
+</li>
+<li class="level1"><div class="li"> leitura de mouse, teclado e joystick</div>
+</li>
+</ul>
+
+<p>
+Instalação da biblioteca Allegro 5 em Linux (Ubuntu, Mint, Debian):
+</p>
+<pre class="code">sudo apt-get install liballegro5-dev</pre>
+
+<p>
+Uso:
+</p>
+<ul class=" fix-media-list-overlap">
+<li class="level1"><div class="li"> <a href="https://liballeg.org/" class="urlextern" title="https://liballeg.org" rel="ugc nofollow">Página principal</a></div>
+</li>
+<li class="level1"><div class="li"> <a href="https://liballeg.org/a5docs/trunk" class="urlextern" title="https://liballeg.org/a5docs/trunk" rel="ugc nofollow">Referência das funções</a></div>
+</li>
+<li class="level1"><div class="li"> <a href="https://github.com/liballeg/allegro_wiki/wiki/Allegro-Vivace" class="urlextern" title="https://github.com/liballeg/allegro_wiki/wiki/Allegro-Vivace" rel="ugc nofollow">Tutorial de jogo em Allegro</a> <img src="prog2%20jogo_grafico%20[Prof.%20Carlos%20Maziero]_arquivos/smile.svg" class="icon smiley" alt=":-)"></div>
+</li>
+<li class="level1"><div class="li"> <a href="https://www.allegro.cc/" class="urlextern" title="https://www.allegro.cc/" rel="ugc nofollow">Galeria de jogos</a></div>
+</li>
+</ul>
+
+<p>
+Bibliotecas gráficas como a Allegro e SDL operam usando um esquema interno de <strong>buffer duplo</strong>, ou seja, dois <em>buffers</em> gráficos distintos que são usados em conjunto:
+</p>
+<ul class=" fix-media-list-overlap">
+<li class="level1"><div class="li"> buffer<sub>1</sub>: <em>buffer</em> onde as operações gráficas são aplicadas</div>
+</li>
+<li class="level1"><div class="li"> buffer<sub>2</sub>: <em>buffer</em> cujo conteúdo é mostrado na tela</div>
+</li>
+</ul>
+
+<p>
+Esses <em>buffers</em> devem ser periodicamente alternados pelo programador (pseudocódigo):
+</p>
+<pre class="code">fill_color (black) ;  // operações feitas no buffer 1, não são visíveis
+draw (...) ;          // na tela neste momento.
+draw (...) ;
+...
+flip_buffers () ;     // troca buffer 1 com 2, mostrando o novo conteúdo</pre>
+
+<p>
+As técnicas des <a href="https://en.wikipedia.org/wiki/Multiple_buffering#Double_buffering_in_computer_graphics" class="urlextern" title="https://en.wikipedia.org/wiki/Multiple_buffering#Double_buffering_in_computer_graphics" rel="ugc nofollow">buffer duplo</a> e <a href="https://docs.oracle.com/javase/tutorial/extra/fullscreen/doublebuf.html" class="urlextern" title="https://docs.oracle.com/javase/tutorial/extra/fullscreen/doublebuf.html" rel="ugc nofollow">page flipping</a> são implementadas nativamente na biblioteca Allegro, fornecendo imagens mais estáveis e melhor desempenho gráfico.
+</p>
+
+</div>
+
+<h2 class="sectionedit4 page-header pb-3 mb-4 mt-5" id="estrutura_basica_de_um_jogo">Estrutura básica de um jogo</h2>
+<div class="level2">
+
+<p>
+A maioria dos jogos segue uma estrutura de código similar. O 
+funcionamento do jogo segue uma “máquina de estados” que define o 
+momento atual do jogo e um laço principal que implementa o jogo em si. 
+Ambos são explicados brevemente nesta seção.
+</p>
+
+</div>
+
+<h3 class="sectionedit5 page-header pb-3 mb-4 mt-5" id="estado_das_entidades">Estado das entidades</h3>
+<div class="level3">
+
+<p>
+Cada entidade do jogo (jogador, bola, etc) tem um conjunto de atributos que a representam, que normalmente é implementado em um <code>struct</code>. Por exemplo, no jogo <a href="https://pt.wikipedia.org/wiki/Pong" class="urlextern" title="https://pt.wikipedia.org/wiki/Pong" rel="ugc nofollow">Pong</a> a bola poderia ser representada pela seguinte estrutura:
+</p>
+<pre class="code c"><span class="co1">// estrutura de uma bola</span>
+<span class="kw4">typedef</span> <span class="kw4">struct</span>
+<span class="br0">{</span>
+  <span class="kw4">short</span> x<span class="sy0">,</span> y <span class="sy0">;</span>     <span class="co1">// posição atual</span>
+  <span class="kw4">short</span> sx<span class="sy0">,</span> sy <span class="sy0">;</span>   <span class="co1">// velocidade atual</span>
+  <span class="kw4">short</span> w<span class="sy0">,</span> h <span class="sy0">;</span>     <span class="co1">// dimensões</span>
+  color_t color <span class="sy0">;</span>  <span class="co1">// cor atual</span>
+<span class="br0">}</span>
+ball_t <span class="sy0">;</span>
+&nbsp;
+<span class="co1">// cria uma bola</span>
+ball_t ball <span class="sy0">;</span></pre>
+
+<p>
+Estruturas como essa devem ser construídas para cada entidade ativa do jogo.
+</p>
+
+</div>
+
+<h3 class="sectionedit6 page-header pb-3 mb-4 mt-5" id="maquina_de_estados">Máquina de estados</h3>
+<div class="level3">
+
+<p>
+O funcionamento do jogo é gerenciado através de uma <em>máquina de estados</em>.
+ Cada estado do jogo define o que deve ser feito naquele momento, as 
+transições possíveis entre estados e os eventos que levam de um estado a
+ outro. Por exemplo, a máquina de estados do jogo <a href="https://pt.wikipedia.org/wiki/Pong" class="urlextern" title="https://pt.wikipedia.org/wiki/Pong" rel="ugc nofollow">Pong</a> é composta dos seguintes estados:
+</p>
+<ul class=" fix-media-list-overlap">
+<li class="level1"><div class="li"> <strong>inicio</strong>: desenha a tela inicial do jogo e aguarda 5 segundos.</div>
+</li>
+<li class="level1"><div class="li"> <strong>servindo</strong>: põe a bola no centro e aguarda 2 segundos.</div>
+</li>
+<li class="level1"><div class="li"> <strong>jogando</strong>: implementa o jogo propriamente dito (laço principal).</div>
+</li>
+<li class="level1"><div class="li"> <strong>fim partida</strong>: um dos jogadores atingiu a pontuação máxima.</div>
+</li>
+<li class="level1"><div class="li"> <strong>fim jogo</strong>: o jogo encerra.</div>
+</li>
+</ul>
+
+<p>
+O relacionamento entre esses estados pode ser representado graficamente:
+</p>
+
+<p>
+<a href="https://wiki.inf.ufpr.br/maziero/lib/exe/detail.php?id=prog2%3Ajogo_grafico&amp;media=prog2:game-state-machine.png" class="media" title="prog2:game-state-machine.png"><img src="prog2%20jogo_grafico%20[Prof.%20Carlos%20Maziero]_arquivos/game-state-machine.png" class="mediacenter img-responsive" loading="lazy" alt=""></a>
+</p>
+
+<p>
+Essa máquina de estados pode ser facilmente implementada em C:
+</p>
+<pre class="code c"><span class="co1">// estados possíveis do jogo Pong</span>
+<span class="kw2">enum</span> <span class="br0">{</span>INICIO<span class="sy0">,</span> SERVINDO<span class="sy0">,</span> JOGANDO<span class="sy0">,</span> FIMPART<span class="sy0">,</span> FIMJOGO<span class="br0">}</span> state <span class="sy0">;</span>
+&nbsp;
+<span class="co1">// programa principal do jogo</span>
+<span class="kw4">int</span> main <span class="br0">(</span><span class="br0">)</span>
+<span class="br0">{</span>
+  state <span class="sy0">=</span> INICIO <span class="sy0">;</span>
+  <span class="kw1">for</span> <span class="br0">(</span><span class="sy0">;;</span><span class="br0">)</span>
+    <span class="kw1">switch</span> <span class="br0">(</span>state<span class="br0">)</span>
+    <span class="br0">{</span>
+      <span class="kw1">case</span> INICIO  <span class="sy0">:</span> state_init <span class="br0">(</span><span class="br0">)</span> <span class="sy0">;</span>  <span class="kw2">break</span> <span class="sy0">;</span>
+      <span class="kw1">case</span> SERVINDO<span class="sy0">:</span> state_serve <span class="br0">(</span><span class="br0">)</span> <span class="sy0">;</span> <span class="kw2">break</span> <span class="sy0">;</span>
+      <span class="kw1">case</span> JOGANDO <span class="sy0">:</span> state_play <span class="br0">(</span><span class="br0">)</span> <span class="sy0">;</span>  <span class="kw2">break</span> <span class="sy0">;</span>
+      <span class="kw1">case</span> FIMPART <span class="sy0">:</span> state_over <span class="br0">(</span><span class="br0">)</span> <span class="sy0">;</span>  <span class="kw2">break</span> <span class="sy0">;</span>
+      <span class="kw1">case</span> FIMJOGO <span class="sy0">:</span> state_close <span class="br0">(</span><span class="br0">)</span> <span class="sy0">;</span> <span class="kw2">break</span> <span class="sy0">;</span>
+      <span class="kw1">default</span><span class="sy0">:</span> <span class="kw2">break</span> <span class="sy0">;</span>
+    <span class="br0">}</span>
+<span class="br0">}</span></pre>
+
+<p>
+Dessa forma, as funções <code>state_init()</code> e demais são usadas para implementar o comportamento de cada etapa do jogo. A variável <code>state</code> pode ser modificada dentro dessas funções para trocar de estado conforme necessário.
+</p>
+
+</div>
+
+<h3 class="sectionedit7 page-header pb-3 mb-4 mt-5" id="o_laco_principal">O laço principal</h3>
+<div class="level3">
+
+<p>
+Durante o jogo propriamente dito, o programa deve continuamente ler as 
+entradas de dados (teclado, mouse, …), atualizar o estado dos jogadores e
+ demais entidades do jogo de acordo com essas entradas e desenhar a 
+tela. Esse comportamento é chamado o <strong>laço principal</strong> do jogo.
+</p>
+
+<p>
+O pseudocódigo a seguir dá um exemplo do laço principal do jogo Pong (simplificado):
+</p>
+<pre class="code">// define estado inicial das entidades 
+inicia_jogadores ()
+inicia_bola ()
+
+// laço principal
+faça
+  ler_entrada (teclado, mouse, ...)
+  atualiza_estado_jogadores ()
+  atualiza_estado_bola ()
+  desenha_tela ()
+até fim da partida</pre>
+
+<p>
+Esse ciclo deve ser repetido rapidamente (dezenas de vezes por segundo) para dar a impressão de fluidez do jogo.
+</p>
+
+<p>
+O <a href="https://github.com/liballeg/allegro_wiki/wiki/Allegro-Vivace" class="urlextern" title="https://github.com/liballeg/allegro_wiki/wiki/Allegro-Vivace" rel="ugc nofollow">tutorial de jogo da biblioteca Allegro</a> explica com detalhes o funcionamento do laço principal.
+</p>
+
+</div>
+
+<h3 class="sectionedit8 page-header pb-3 mb-4 mt-5" id="controle_da_taxa_de_quadros">Controle da taxa de quadros</h3>
+<div class="level3">
+
+<p>
+A tela do jogo deve ser atualizada com velocidade suficiente para dar 
+fluidez ao jogo. De preferência, a taxa de atualização da tela (taxa de 
+quadros por segundo ou <em>frame rate</em>) deve ser constante, para que a animação seja consistente.
+</p>
+
+<p>
+Em um jogo simples, a quantidade de cálculo a efetuar antes de cada 
+atualização de estado e de tela é geralmente pequena, se comparada à 
+capacidade de processamento do computador. Por isso, é interessante <strong>pausar a execução</strong> por alguns milissegundos a cada ciclo, para garantir uma taxa de quadros constante (e também diminuir o consumo de CPU).
+</p>
+
+<p>
+Uma forma de controlar a taxa de quadros é através de pausas (pseudocódigo):
+</p>
+<pre class="code">// taxa de quadros por segundo
+frame_rate = 60
+
+// duração de cada quadro, em ms
+t_quadro = 1000 / frame_rate
+
+// laço principal do jogo
+repita
+
+   t_inicio = relogio_ms ()
+
+  // processamento do jogo
+  ...
+
+  // espera um tempo para completar o quadro
+  t_final = relogio_ms ()
+  t_pausa = t_quadro - (t_final - t_inicio)
+  pausa_ms (t_pausa)
+
+até o fim da partida</pre>
+
+<p>
+Outra forma, que é usada frequentemente na Allegro 5, é a <strong>programação por eventos</strong>. Neste caso específico, programa-se um temporizador (<em>timer</em>) para gerar um evento a cada quadro; quando o evento ocorre, o processamento do jogo é feito:
+</p>
+<pre class="code">// taxa de quadros por segundo
+frame_rate = 60
+
+// duração de cada quadro, em ms
+t_quadro = 1000 / frame_rate
+
+// define timer (um evento a cada X ms)
+define_timer (t_quadro)
+
+// laço principal do jogo
+repita
+
+   // espera o próximo evento do timer
+   espera_evento (timer)
+
+  // processamento do jogo
+  ...
+
+até o fim da partida</pre>
+
+</div>
+
+<h3 class="sectionedit9 page-header pb-3 mb-4 mt-5" id="links">Links</h3>
+<div class="level3">
+
+<p>
+Desenvolvimento de jogos:
+</p>
+<ul class=" fix-media-list-overlap">
+<li class="level1"><div class="li"> <a href="https://www.youtube.com/playlist?list=PLWKjhJtqVAbluXJKKbCIb4xd7fcRkpzoz" class="urlextern" title="https://www.youtube.com/playlist?list=PLWKjhJtqVAbluXJKKbCIb4xd7fcRkpzoz" rel="ugc nofollow">CS50's Introduction to Game Development - Harvard</a> (assistir pelo menos as duas primeiras aulas)</div>
+</li>
+<li class="level1"><div class="li"> <a href="https://github.com/liballeg/allegro_wiki/wiki/Allegro-Vivace" class="urlextern" title="https://github.com/liballeg/allegro_wiki/wiki/Allegro-Vivace" rel="ugc nofollow">Tutorial de jogo da biblioteca Allegro</a></div>
+</li>
+<li class="level1"><div class="li"> <a href="https://web.archive.org/web/20161213145118/http://www.kathekonta.com:80/rlguide/" class="urlextern" title="https://web.archive.org/web/20161213145118/http://www.kathekonta.com:80/rlguide/" rel="ugc nofollow">Beginner's Guide to Roguelikes</a> (ler ao menos a parte 1)</div>
+</li>
+<li class="level1"><div class="li"> <a href="https://gameprogrammingpatterns.com/game-loop.html" class="urlextern" title="https://gameprogrammingpatterns.com/game-loop.html" rel="ugc nofollow">Game Loop</a></div>
+</li>
+<li class="level1"><div class="li"> Canal <a href="https://www.youtube.com/user/xan4545" class="urlextern" title="https://www.youtube.com/user/xan4545" rel="ugc nofollow">Jogos &amp; Programação</a> no Youtube</div>
+</li>
+</ul>
+
+<p>
+Sprites e sons:
+</p>
+<ul class=" fix-media-list-overlap">
+<li class="level1"><div class="li"> <a href="https://opengameart.org/" class="urlextern" title="https://opengameart.org" rel="ugc nofollow">Open Game Art</a></div>
+</li>
+<li class="level1"><div class="li"> <a href="http://github.grumdrig.com/jsfxr/" class="urlextern" title="http://github.grumdrig.com/jsfxr/" rel="ugc nofollow">JSFXR sound generator</a></div>
+</li>
+</ul>
+
+</div>
+<hr><div class="footnotes">
+<div class="fn"><sup><a href="#fnt__1" id="fn__1" class="fn_bot">1)</a></sup> 
+<div class="content">Diversos outros jogos foram desconsiderados porque existem muitas implementações prontas usando C e Allegro.</div></div>
+<div class="fn"><sup><a href="#fnt__2" id="fn__2" class="fn_bot">2)</a></sup> 
+<div class="content">Não é a mais poderosa, mas tem um bom compromisso entre funcionalidades e facilidade de uso.</div></div>
+</div>
+</div><!-- /content --></div>
+                    </div>
+                </div>
+
+                <div class="small text-right">
+
+                                        <span class="docInfo">
+                        <ul class="list-inline"><li><svg xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24" class="iconify text-muted" data-icon="mdi:file-document-outline" style="vertical-align: -0.125em; transform: rotate(360deg);"><path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6H6m0 2h7v5h5v11H6V4m2 8v2h8v-2H8m0 4v2h5v-2H8z" fill="currentColor"></path></svg> <span title="prog2/jogo_grafico.txt">prog2/jogo_grafico.txt</span></li><li><svg xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24" class="iconify text-muted" data-icon="mdi:calendar" style="vertical-align: -0.125em; transform: rotate(360deg);"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5v-5z" fill="currentColor"></path></svg> Última modificação: <span title="2022/12/08 16:59">2022/12/08 16:59</span></li><li class="text-muted">por <bdi>maziero</bdi></li></ul>                    </span>
+                    
+                    
+                </div>
+
+            </article>
+
+            
+        </div>
+
+    </main>
+
+    <footer id="dw__footer" class="dw-container py-5 dokuwiki container">
+        <!-- footer -->
+<div class="dw-container small container-fluid mx-5">
+
+    
+    <div class="footer-dw-title">
+                    </div>
+
+    <div class="footer-license row">
+        <hr>
+        <div id="dw__license" class="col-sm-6">
+                        <p>
+                <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.pt-br" title="CC Attribution-Noncommercial-Share Alike 4.0 International" target="" itemscope="" itemtype="http://schema.org/CreativeWork" itemprop="license" rel="license" class="license navbar-link"><img src="prog2%20jogo_grafico%20[Prof.%20Carlos%20Maziero]_arquivos/cc.png" alt="cc" width="24" height="24"> <img src="prog2%20jogo_grafico%20[Prof.%20Carlos%20Maziero]_arquivos/by.png" alt="by" width="24" height="24"> <img src="prog2%20jogo_grafico%20[Prof.%20Carlos%20Maziero]_arquivos/nc.png" alt="nc" width="24" height="24"> <img src="prog2%20jogo_grafico%20[Prof.%20Carlos%20Maziero]_arquivos/sa.png" alt="sa" width="24" height="24"> </a>            </p>
+            <p class="small">
+                Exceto onde for informado ao contrário, o conteúdo neste wiki está sob a seguinte licença:<br><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.pt-br" title="CC Attribution-Noncommercial-Share Alike 4.0 International" target="" itemscope="" itemtype="http://schema.org/CreativeWork" itemprop="license" rel="license" class="license navbar-link">CC Attribution-Noncommercial-Share Alike 4.0 International</a>            </p>
+                    </div>
+
+        <div class="col-sm-6">
+                    </div>
+
+    </div>
+
+</div>
+<!-- /footer -->
+    </footer>
+
+    <a href="#dokuwiki__top" class="back-to-top hidden-print btn btn-default" title="ir para o conteúdo" accesskey="t">
+        <svg xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24" class="iconify" data-icon="mdi:chevron-up" style="vertical-align: -0.125em; transform: rotate(360deg);"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6l-6 6l1.41 1.41z" fill="currentColor"></path></svg>    </a>
+
+    <div id="screen__mode">        <span class="visible-xs-block"></span>
+        <span class="visible-sm-block"></span>
+        <span class="visible-md-block"></span>
+        <span class="visible-lg-block"></span>
+    </div>
+
+    <img src="prog2%20jogo_grafico%20[Prof.%20Carlos%20Maziero]_arquivos/taskrunner.gif" alt="" width="2" height="1">
+</div>
+
+
+
+</body></html>
