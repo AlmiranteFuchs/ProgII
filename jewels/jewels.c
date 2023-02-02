@@ -3,27 +3,52 @@
 // Date: 13/01/2023
 // Version: 1.0
 
-//Default libraries
+// Default libraries
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 // Allegro
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_font.h>
-#include <stdbool.h>
+#include <allegro5/allegro_image.h>
+#include <allegro5/allegro_primitives.h>
+
+void must_init(bool test, const char *description)
+{
+    if (test)
+        return;
+
+    printf("couldn't initialize %s\n", description);
+    exit(1);
+}
 
 void test_function_alegro()
 {
-    printf("Initializing Alegro!\n");
-
-    al_init();
-    al_install_keyboard();
+    must_init(al_init(), "allegro");
+    must_init(al_install_keyboard(), "keyboard");
+    must_init(al_init_primitives_addon(), "primitives");
 
     ALLEGRO_TIMER *timer = al_create_timer(1.0 / 30.0);
+    must_init(timer, "timer");
+
     ALLEGRO_EVENT_QUEUE *queue = al_create_event_queue();
-    ALLEGRO_DISPLAY *disp = al_create_display(320, 200);
+    must_init(queue, "queue");
+
+    al_set_new_display_option(ALLEGRO_SAMPLE_BUFFERS, 1, ALLEGRO_SUGGEST);
+    al_set_new_display_option(ALLEGRO_SAMPLES, 8, ALLEGRO_SUGGEST);
+    al_set_new_bitmap_flags(ALLEGRO_MIN_LINEAR | ALLEGRO_MAG_LINEAR);
+
+    ALLEGRO_DISPLAY *disp = al_create_display(640, 480);
+    must_init(disp, "display");
+
     ALLEGRO_FONT *font = al_create_builtin_font();
+    must_init(font, "font");
+
+    must_init(al_init_image_addon(), "image addon");
+    ALLEGRO_BITMAP *mysha = al_load_bitmap("resources/sprites/mysha.png");
+    must_init(mysha, "mysha");
 
     al_register_event_source(queue, al_get_keyboard_event_source());
     al_register_event_source(queue, al_get_display_event_source(disp));
@@ -31,9 +56,6 @@ void test_function_alegro()
 
     bool done = false;
     bool redraw = true;
-
-    int i = 0;
-
     ALLEGRO_EVENT event;
 
     al_start_timer(timer);
@@ -49,10 +71,6 @@ void test_function_alegro()
             break;
 
         case ALLEGRO_EVENT_KEY_DOWN:
-            i++;
-            redraw = true;
-            break;
-
         case ALLEGRO_EVENT_DISPLAY_CLOSE:
             done = true;
             break;
@@ -64,19 +82,27 @@ void test_function_alegro()
         if (redraw && al_is_event_queue_empty(queue))
         {
             al_clear_to_color(al_map_rgb(0, 0, 0));
-            al_draw_text(font, al_map_rgb(255, 255, 255), 0, 0, 0, i);
+            al_draw_text(font, al_map_rgb(255, 255, 255), 0, 0, 0, "Hello world!");
+
+            al_draw_bitmap(mysha, 100, 100, 0);
+
+            al_draw_filled_triangle(35, 350, 85, 375, 35, 400, al_map_rgb_f(0, 1, 0));
+            al_draw_filled_rectangle(240, 260, 340, 340, al_map_rgba_f(0, 0, 0.5, 0.5));
+            al_draw_circle(450, 370, 30, al_map_rgb_f(1, 0, 1), 2);
+            al_draw_line(440, 110, 460, 210, al_map_rgb_f(1, 0, 0), 1);
+            al_draw_line(500, 220, 570, 200, al_map_rgb_f(1, 1, 0), 1);
+
             al_flip_display();
 
             redraw = false;
         }
     }
 
+    al_destroy_bitmap(mysha);
     al_destroy_font(font);
     al_destroy_display(disp);
     al_destroy_timer(timer);
     al_destroy_event_queue(queue);
-
-    return;
 }
 
 int main(int argc, char *argv[])
