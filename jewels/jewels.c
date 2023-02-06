@@ -8,6 +8,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include "libs/gameObjects.h"
+#include "libs/gameGraphics.h"
 
 // Allegro
 #include <allegro5/allegro5.h>
@@ -24,7 +26,7 @@ void must_init(bool test, const char *description)
     exit(1);
 }
 
-void test_function_alegro()
+void test_function_alegro(GameManager* gm)
 {
     must_init(al_init(), "allegro");
     must_init(al_install_keyboard(), "keyboard");
@@ -82,15 +84,15 @@ void test_function_alegro()
         if (redraw && al_is_event_queue_empty(queue))
         {
             al_clear_to_color(al_map_rgb(0, 0, 0));
-            al_draw_text(font, al_map_rgb(255, 255, 255), 0, 0, 0, "Hello world!");
+            //al_draw_text(font, al_map_rgb(255, 255, 255), 0, 0, 0, "Hello world!");
 
-            al_draw_bitmap(mysha, 100, 100, 0);
-
-            al_draw_filled_triangle(35, 350, 85, 375, 35, 400, al_map_rgb_f(0, 1, 0));
-            al_draw_filled_rectangle(240, 260, 340, 340, al_map_rgba_f(0, 0, 0.5, 0.5));
-            al_draw_circle(450, 370, 30, al_map_rgb_f(1, 0, 1), 2);
-            al_draw_line(440, 110, 460, 210, al_map_rgb_f(1, 0, 0), 1);
-            al_draw_line(500, 220, 570, 200, al_map_rgb_f(1, 1, 0), 1);
+            //al_draw_bitmap(mysha, 100, 100, 0);
+            drawTiles(gm->board);
+            //al_draw_filled_triangle(35, 350, 85, 375, 35, 400, al_map_rgb_f(0, 1, 0));
+            //al_draw_filled_rectangle(240, 260, 340, 340, al_map_rgba_f(0, 0, 0.5, 0.5));
+            //al_draw_circle(450, 370, 30, al_map_rgb_f(1, 0, 1), 2);
+            //al_draw_line(440, 110, 460, 210, al_map_rgb_f(1, 0, 0), 1);
+            //al_draw_line(500, 220, 570, 200, al_map_rgb_f(1, 1, 0), 1);
 
             al_flip_display();
 
@@ -108,7 +110,10 @@ void test_function_alegro()
 int main(int argc, char *argv[])
 {
     printf("Initializing!\n");
+    // Create a new game object
+    GameManager *gm = InitGameManager();
 
-    test_function_alegro();
+
+    test_function_alegro(gm);
     return 0;
 }
