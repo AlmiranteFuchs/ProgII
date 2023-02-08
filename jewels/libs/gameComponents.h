@@ -19,6 +19,7 @@ typedef struct {
     int angle;
     int angleSpeed;
     int visible;
+    int moving;
 } Transform;
 
 // Object sprite

@@ -16,3 +16,9 @@ ATTENTION: default value of option mesa_glthread overridden by environment.
 [2023-01-13T19:34:25Z ERROR mp4parse] Found 2 nul bytes in "\0\0"
 [2023-01-13T19:34:25Z ERROR mp4parse] Found 2 nul bytes in "\0\0"
 [2023-01-13T19:34:25Z ERROR mp4parse] Found 2 nul bytes in "\0\0"
+Tentando provedor de localização `geoclue2'...
+Usando provedor `geoclue2'.
+Usando o método `randr'.
+Esperando que a localização inicial esteja disponível...
+Unable to obtain GeoClue client path: O tempo limite foi alcançado.
+Não foi possível determinar a localização pelo provedor.

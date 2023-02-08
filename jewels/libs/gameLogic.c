@@ -5,9 +5,14 @@
 // Prototype
 GameManager *InitGameManager();
 void _initGameBoard(GameManager *gameManager);
-void _updateGameBoard(GameManager *gameManager, int i, int j);
+void _initGameBoardPiece(GameManager *gameManager, int i, int j);
 void _moveTiles(GameManager *gameManager);
+void _swapTiles(GameManager *gameManager, Tile *tile1, Tile *tile2);
 void _inputEvent(GameManager *gameManager);
+void _checkMatchs(GameManager *gameManager);
+int _check_matchs(GameManager *GameManager);
+void _destroyTiles(GameManager *gameManager);
+void _fallTiles(GameManager *gameManager);
 
 /**
  * // // // // ---- Public ---- // // // //
@@ -31,11 +36,18 @@ void DrawGame(GameManager *gm)
     drawUI();
 }
 
+int player_play = 0;
 // Calls to each time the game frames update
 void UpdateGame(GameManager *gameManager)
 {
     // Move tiles
     _moveTiles(gameManager);
+
+    // Check matchs
+    _checkMatchs(gameManager);
+
+    // Fall tiles
+    _fallTiles(gameManager);
 
     // Switch game events
     switch (gameManager->gameEvent)
@@ -44,6 +56,7 @@ void UpdateGame(GameManager *gameManager)
         _inputEvent(gameManager);
         gameManager->gameEvent = GAME_EVENT_NONE;
         break;
+
     default:
         break;
     }
@@ -85,7 +98,7 @@ void _swapTiles(GameManager *gm, Tile *tile1, Tile *tile2)
     // tile2->value = temp;
 
     // Change game state to block input
-    // gm->gameState = GAME_STATE_BLOCK_INPUT;
+    gm->gameState = GAME_STATE_BLOCK_INPUT;
 
     // Movement
     tile1->transform.dx = tile2->transform.x;
@@ -94,17 +107,21 @@ void _swapTiles(GameManager *gm, Tile *tile1, Tile *tile2)
     tile2->transform.dx = tile1->transform.x;
     tile2->transform.dy = tile1->transform.y;
 
+    tile1->transform.moving = 1;
+    tile2->transform.moving = 1;
 
-    // Swap pos on matrix
-    int tempX = tile1->real_posX;
-    int tempY = tile1->real_posY;
+    // Swap the tiles
+    Tile temp = *tile1;
+    *tile1 = *tile2;
+    *tile2 = temp;
 
-    tile1->real_posX = tile2->real_posX;
-    tile1->real_posY = tile2->real_posY;
-    
-    tile2->real_posX = tempX;
-    tile2->real_posY = tempY;
-        return;
+    // Update the selected tiles
+    gm->selectedTile = tile2;
+    gm->lastSelectedTile = tile1;
+
+    gm->lastSelectedTile->selected = 0;
+
+    return;
 }
 
 // Moves the tiles
@@ -118,49 +135,205 @@ void _moveTiles(GameManager *gm)
             // Selected tile
             Tile *tile = &gm->board[i][j];
 
-            // If moving
-            if (tile->transform.x != tile->transform.dx || tile->transform.y != tile->transform.dy)
+            if (tile->transform.moving)
             {
-                printf("Moving tile: %d %d\n", i, j);
-                // Move the tile
-                if (tile->transform.x < tile->transform.dx)
+                // If moving
+                if (tile->transform.x != tile->transform.dx || tile->transform.y != tile->transform.dy)
                 {
-                    tile->transform.x += 1;
-                }
-                else if (tile->transform.x > tile->transform.dx)
-                {
-                    tile->transform.x -= 1;
-                }
+                    // Move the tile
+                    if (tile->transform.x < tile->transform.dx)
+                    {
+                        tile->transform.x += tile->transform.velocity;
+                    }
+                    else if (tile->transform.x > tile->transform.dx)
+                    {
+                        tile->transform.x -= tile->transform.velocity;
+                    }
 
-                if (tile->transform.y < tile->transform.dy)
-                {
-                    tile->transform.y += 1;
-                }
-                else if (tile->transform.y > tile->transform.dy)
-                {
-                    tile->transform.y -= 1;
-                }
+                    if (tile->transform.y < tile->transform.dy)
+                    {
+                        tile->transform.y += tile->transform.velocity;
+                    }
+                    else if (tile->transform.y > tile->transform.dy)
+                    {
+                        tile->transform.y -= tile->transform.velocity;
+                    }
 
-                // // If the tile is in the destination
-                // if (tile->transform.x == tile->transform.dx && tile->transform.y == tile->transform.dy)
-                // {
-                //     // Change game state to allow input
-                //     gm->gameState = GAME_STATE_GAMEPLAY;
-                // }
-                // else
-                // {
-                //     // Change game state to block input
-                //     // gm->gameState = GAME_STATE_BLOCK_INPUT;
-                // }
+                    // if close enough
+                    if (abs(tile->transform.x - tile->transform.dx) < tile->transform.velocity)
+                    {
+                        tile->transform.x = tile->transform.dx;
+                    }
+                    if (abs(tile->transform.y - tile->transform.dy) < tile->transform.velocity)
+                    {
+                        tile->transform.y = tile->transform.dy;
+                    }
 
-                // Change game state to block input
-                // gm->gameState = GAME_STATE_BLOCK_INPUT;
+                    // Set velocity according to distance
+                    int distance = abs(tile->transform.x - tile->transform.dx) + abs(tile->transform.y - tile->transform.dy);
+                    tile->transform.velocity = (distance / 10) + 1.5;
+
+                    // Change game state to block input
+                    gm->gameState = GAME_STATE_BLOCK_INPUT;
+                }
+                else
+                {
+                    tile->transform.moving = 0;
+                    // Change game state to block input
+                    gm->gameState = GAME_STATE_GAMEPLAY;
+                }
             }
-            else
+        }
+    }
+}
+
+// Check for matchs
+void _checkMatchs(GameManager *gameManager)
+{
+    // Check matchs
+    if (gameManager->gameState != GAME_STATE_BLOCK_INPUT)
+    {
+        // If the game is not busy animating something
+        // Check matchs
+        int matchs = _check_matchs(gameManager);
+
+        if (matchs > 0)
+        {
+            // If there are matchs
+            // Add score
+            gameManager->score += matchs * 10;
+
+            // Destroy tiles
+            _destroyTiles(gameManager);
+
+            // Reset selected tiles
+            gameManager->selectedTile = NULL;
+            gameManager->lastSelectedTile = NULL;
+            player_play = 0;
+        }
+        else
+        {
+            // If there are no matchs
+            // Change game state to gameplay
+            gameManager->gameState = GAME_STATE_GAMEPLAY;
+
+            // If player played and there are no matchs
+            // Change game state to block input and switch tiles
+            if (player_play)
             {
-                // If not moving
-                // Change game state to allow input
-                gm->gameState = GAME_STATE_GAMEPLAY;
+                // Switch tiles
+                _swapTiles(gameManager, gameManager->selectedTile, gameManager->lastSelectedTile);
+
+                // Reset selected tiles
+                gameManager->selectedTile = NULL;
+                gameManager->lastSelectedTile = NULL;
+            }
+            player_play = 0;
+        }
+    }
+}
+int _check_matchs(GameManager *GameManager)
+{
+    int matchs = 0;
+    // Check for matchs
+    for (int i = 0; i < BOARD_WIDTH; i++)
+    {
+        for (int j = 0; j < BOARD_HEIGHT; j++)
+        {
+
+            if (GameManager->board[i][j].value == -1)
+            {
+                // ignore
+                continue;
+            }
+
+            // Check for horizontal matchs
+            if (i < BOARD_WIDTH - 2)
+            {
+
+                if (GameManager->board[i][j].value == GameManager->board[i + 1][j].value && GameManager->board[i][j].value == GameManager->board[i + 2][j].value)
+                {
+                    GameManager->board[i][j].value = -1;
+                    GameManager->board[i + 1][j].value = -1;
+                    GameManager->board[i + 2][j].value = -1;
+                    matchs++;
+                }
+            }
+
+            // Check for vertical matchs
+            if (j < BOARD_HEIGHT - 2)
+            {
+                if (GameManager->board[i][j].value == GameManager->board[i][j + 1].value && GameManager->board[i][j].value == GameManager->board[i][j + 2].value)
+                {
+                    GameManager->board[i][j].value = -1;
+                    GameManager->board[i][j + 1].value = -1;
+                    GameManager->board[i][j + 2].value = -1;
+                    matchs++;
+                }
+            }
+
+            // // Check for L matchs
+            // if (i < BOARD_WIDTH - 2 && j < BOARD_HEIGHT - 2)
+            // {
+            //     if (GameManager->board[i][j].value == GameManager->board[i + 1][j].value && GameManager->board[i][j].value == GameManager->board[i + 2][j + 1].value)
+            //     {
+            //         GameManager->board[i][j].selected = 1;
+            //         GameManager->board[i + 1][j].selected = 1;
+            //         GameManager->board[i + 2][j + 1].selected = 1;
+            //         matchs++;
+            //     }
+            // }
+        }
+    }
+    return matchs;
+}
+
+void _destroyTiles(GameManager *gameManager)
+{
+    // Destroy tiles
+    for (int i = 0; i < BOARD_WIDTH; i++)
+    {
+        for (int j = 0; j < BOARD_HEIGHT; j++)
+        {
+            if (gameManager->board[i][j].value == -1)
+            {
+                // If tile is selected
+                // Destroy tile
+                gameManager->board[i][j].sprite.path = NULL;
+                gameManager->board[i][j].transform.moving = 0;
+            }
+        }
+    }
+}
+
+void _fallTiles(GameManager *gameManager)
+{
+    // Fall tiles
+    for (int i = 0; i < BOARD_WIDTH; i++)
+    {
+        for (int j = 0; j < BOARD_HEIGHT; j++)
+        {
+
+            // If tile is not selected
+            // Check if there is a tile below
+            Tile *tile = &gameManager->board[i][j];
+            Tile *tileBelow = &gameManager->board[i][j + 1];
+
+            if(tile->value == -1)
+            {
+                continue;
+            }
+
+            if (tileBelow->value == -1)
+            {
+                // If there is a tile below
+                // Move tile to the tile below
+                tile->transform.moving = 1;
+                tile->transform.dx = tileBelow->transform.x;
+                tile->transform.dy = tileBelow->transform.y;
+                
+                
+                gameManager->board[i][j + 1] = *tile;
             }
         }
     }
@@ -168,7 +341,7 @@ void _moveTiles(GameManager *gm)
 
 // Creates a new tile
 // Updates the tiles on the game board
-void _updateGameBoard(GameManager *gameManager, int i, int j)
+void _initGameBoardPiece(GameManager *gameManager, int i, int j)
 {
     // Screen scale
     int screenScale = (SCREEN_HEIGHT / BOARD_WIDTH) - 5;
@@ -177,9 +350,10 @@ void _updateGameBoard(GameManager *gameManager, int i, int j)
     int tile_type = (rand() % 5) + 1;
     gameManager->board[i][j].transform.x = (i * screenScale) + OFFSET;
     gameManager->board[i][j].transform.y = (j * screenScale) + OFFSET;
-    gameManager->board[i][j].transform.velocity = 0.001;
+    gameManager->board[i][j].transform.velocity = 5;
     gameManager->board[i][j].transform.dx = gameManager->board[i][j].transform.x;
     gameManager->board[i][j].transform.dy = gameManager->board[i][j].transform.y;
+    gameManager->board[i][j].transform.moving = 0;
     gameManager->board[i][j].real_posX = i;
     gameManager->board[i][j].real_posY = j;
     gameManager->board[i][j].value = tile_type;
@@ -203,7 +377,7 @@ void _initGameBoard(GameManager *gameManager)
     {
         for (int j = 0; j < BOARD_HEIGHT; j++)
         {
-            _updateGameBoard(gameManager, i, j);
+            _initGameBoardPiece(gameManager, i, j);
         }
     }
 }
@@ -211,12 +385,9 @@ void _initGameBoard(GameManager *gameManager)
 // // // --- Events --- // // //
 void _inputEvent(GameManager *gm)
 {
-    printf("Game state= %d\n", gm->gameState);
     // Check if the game is in gameplay state
     if (gm->gameState == GAME_STATE_GAMEPLAY)
     {
-        printf("Gaming");
-        printf("Game state: %d\n", gm->gameState);
         int x = gm->mouseX;
         int y = gm->mouseY;
 
@@ -236,10 +407,11 @@ void _inputEvent(GameManager *gm)
             {
                 // If there is a selected tile
                 // Swap the tiles
+                // Print
+
                 _swapTiles(gm, tile, gm->selectedTile);
-                // Deselect the tile
                 gm->selectedTile->selected = 0;
-                gm->selectedTile = NULL;
+                player_play = 1;
             }
         }
     }

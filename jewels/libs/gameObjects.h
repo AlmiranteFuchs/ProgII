@@ -36,7 +36,6 @@ static char *const bitmapPaths[] =
 
 // Represents a single tile, a jewel
 #define TILE_SIZE 40
-#define TILE_SPEED 0.00001
 typedef struct
 {
     Transform transform;
@@ -46,6 +45,8 @@ typedef struct
     int real_posX;
     int real_posY;
 } Tile;
+
+
 
 
 
