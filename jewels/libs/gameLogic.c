@@ -43,11 +43,12 @@ void UpdateGame(GameManager *gameManager)
     // Move tiles
     _moveTiles(gameManager);
 
+    // Fall tiles
+    _fallTiles(gameManager);
+    
     // Check matchs
     _checkMatchs(gameManager);
 
-    // Fall tiles
-    _fallTiles(gameManager);
 
     // Switch game events
     switch (gameManager->gameEvent)
@@ -83,7 +84,6 @@ Tile *_checkClickOnTile(GameManager *gameManager, int x, int y)
     int j = (y - OFFSET) / screenScale;
 
     Tile *tile = &gameManager->board[i][j];
-    printf("Clicked on tile: %d %d, name of sprite: %s\n", i, j, tile->sprite.path);
 
     return &gameManager->board[i][j];
 }
@@ -137,41 +137,46 @@ void _moveTiles(GameManager *gm)
 
             if (tile->transform.moving)
             {
+
+                // Calc velocity
+                int final_velocity = tile->transform.acceleration * tile->transform.moving_t;
+                tile->transform.moving_t++;
+
                 // If moving
                 if (tile->transform.x != tile->transform.dx || tile->transform.y != tile->transform.dy)
                 {
                     // Move the tile
                     if (tile->transform.x < tile->transform.dx)
                     {
-                        tile->transform.x += tile->transform.velocity;
+                        tile->transform.x += final_velocity;
                     }
                     else if (tile->transform.x > tile->transform.dx)
                     {
-                        tile->transform.x -= tile->transform.velocity;
+                        tile->transform.x -= final_velocity;
                     }
 
                     if (tile->transform.y < tile->transform.dy)
                     {
-                        tile->transform.y += tile->transform.velocity;
+                        tile->transform.y += final_velocity;
                     }
                     else if (tile->transform.y > tile->transform.dy)
                     {
-                        tile->transform.y -= tile->transform.velocity;
+                        tile->transform.y -= final_velocity;
                     }
 
                     // if close enough
-                    if (abs(tile->transform.x - tile->transform.dx) < tile->transform.velocity)
+                    if (abs(tile->transform.x - tile->transform.dx) < final_velocity)
                     {
                         tile->transform.x = tile->transform.dx;
                     }
-                    if (abs(tile->transform.y - tile->transform.dy) < tile->transform.velocity)
+                    if (abs(tile->transform.y - tile->transform.dy) < final_velocity)
                     {
                         tile->transform.y = tile->transform.dy;
                     }
 
                     // Set velocity according to distance
                     int distance = abs(tile->transform.x - tile->transform.dx) + abs(tile->transform.y - tile->transform.dy);
-                    tile->transform.velocity = (distance / 10) + 1.5;
+                    final_velocity = (distance / 10) + 1.5;
 
                     // Change game state to block input
                     gm->gameState = GAME_STATE_BLOCK_INPUT;
@@ -179,6 +184,8 @@ void _moveTiles(GameManager *gm)
                 else
                 {
                     tile->transform.moving = 0;
+                    tile->transform.moving_t = 0;
+                    tile->falling = 0;
                     // Change game state to block input
                     gm->gameState = GAME_STATE_GAMEPLAY;
                 }
@@ -241,7 +248,7 @@ int _check_matchs(GameManager *GameManager)
         for (int j = 0; j < BOARD_HEIGHT; j++)
         {
 
-            if (GameManager->board[i][j].value == -1)
+            if (GameManager->board[i][j].value == -1 || GameManager->board[i][j].transform.moving)
             {
                 // ignore
                 continue;
@@ -299,7 +306,11 @@ void _destroyTiles(GameManager *gameManager)
             {
                 // If tile is selected
                 // Destroy tile
-                gameManager->board[i][j].sprite.path = NULL;
+                // gameManager->board[i][j].sprite.path = bitmapPaths[2];
+                gameManager->board[i][j].sprite.sprite_num = -1;
+                gameManager->board[i][j].value = -1;
+
+                // Debug only
                 gameManager->board[i][j].transform.moving = 0;
             }
         }
@@ -311,30 +322,27 @@ void _fallTiles(GameManager *gameManager)
     // Fall tiles
     for (int i = 0; i < BOARD_WIDTH; i++)
     {
-        for (int j = 0; j < BOARD_HEIGHT; j++)
+        // Down for
+        for (int j = BOARD_HEIGHT - 1; j > 0; j--)
         {
+            Tile *current_tile = &gameManager->board[i][j];
+            Tile *above_tile = &gameManager->board[i][j - 1];
 
-            // If tile is not selected
-            // Check if there is a tile below
-            Tile *tile = &gameManager->board[i][j];
-            Tile *tileBelow = &gameManager->board[i][j + 1];
-
-            if(tile->value == -1)
+            // If current tile is empty
+            if (current_tile->value == -1 && current_tile->transform.moving == 0 && above_tile->transform.moving == 0 && above_tile->value != -1)
             {
-                continue;
-            }
+                // Swap with the above
+                Tile *above_tile = &gameManager->board[i][j - 1];
 
-            if (tileBelow->value == -1)
-            {
-                // If there is a tile below
-                // Move tile to the tile below
-                tile->transform.moving = 1;
-                tile->transform.dx = tileBelow->transform.x;
-                tile->transform.dy = tileBelow->transform.y;
-                
-                
-                gameManager->board[i][j + 1] = *tile;
+                _swapTiles(gameManager, current_tile, above_tile);
+                gameManager->selectedTile = NULL;
+                gameManager->lastSelectedTile = NULL;
             }
+        }
+
+        if (gameManager->board[i][0].value == -1)
+        {
+            _initGameBoardPiece(gameManager, i, 0);
         }
     }
 }
@@ -347,17 +355,22 @@ void _initGameBoardPiece(GameManager *gameManager, int i, int j)
     int screenScale = (SCREEN_HEIGHT / BOARD_WIDTH) - 5;
 
     // Create a new tile
-    int tile_type = (rand() % 5) + 1;
+    int tile_type = (rand() % 4) + 1;
+    // Fisical Props
     gameManager->board[i][j].transform.x = (i * screenScale) + OFFSET;
     gameManager->board[i][j].transform.y = (j * screenScale) + OFFSET;
     gameManager->board[i][j].transform.velocity = 5;
+    gameManager->board[i][j].transform.acceleration = 1.0003;
+    gameManager->board[i][j].transform.moving_t = 0;
     gameManager->board[i][j].transform.dx = gameManager->board[i][j].transform.x;
     gameManager->board[i][j].transform.dy = gameManager->board[i][j].transform.y;
     gameManager->board[i][j].transform.moving = 0;
+
     gameManager->board[i][j].real_posX = i;
     gameManager->board[i][j].real_posY = j;
+    gameManager->board[i][j].falling = 0;
     gameManager->board[i][j].value = tile_type;
-    gameManager->board[i][j].sprite.path = bitmapPaths[tile_type];
+    gameManager->board[i][j].sprite.sprite_num = tile_type - 1;
     gameManager->board[i][j].sprite.height = 40;
     gameManager->board[i][j].sprite.width = 40;
     gameManager->board[i][j].selected = 0;

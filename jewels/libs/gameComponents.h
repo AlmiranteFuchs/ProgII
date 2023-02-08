@@ -16,6 +16,8 @@ typedef struct {
     int dx;
     int dy;
     int velocity;
+    int acceleration;
+    int moving_t;
     int angle;
     int angleSpeed;
     int visible;
@@ -27,7 +29,7 @@ typedef struct {
     int width;
     int height;
     int color;
-    char* path;
+    int sprite_num;
 } Sprite;
 
 // Object collider

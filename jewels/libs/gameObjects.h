@@ -21,6 +21,7 @@ enum Bitmaps
     GEM_4,
     GEM_5,
     GEM_6,
+    ITEM_21, // Empty space
 };
 
 static char *const bitmapPaths[] =
@@ -32,6 +33,7 @@ static char *const bitmapPaths[] =
         [GEM_4] = "resources/sprites/terraria_sprites/Gem_4.png",
         [GEM_5] = "resources/sprites/terraria_sprites/Gem_5.png",
         [GEM_6] = "resources/sprites/terraria_sprites/Gem_6.png",
+        [ITEM_21] = "resources/sprites/terraria_sprites/Item_21.png"
 };
 
 // Represents a single tile, a jewel
@@ -41,6 +43,7 @@ typedef struct
     Transform transform;
     Sprite sprite;
     int value;
+    int falling;
     int selected;
     int real_posX;
     int real_posY;
