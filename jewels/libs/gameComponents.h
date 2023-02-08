@@ -15,6 +15,7 @@ typedef struct {
     int y;
     int dx;
     int dy;
+    int velocity;
     int angle;
     int angleSpeed;
     int visible;

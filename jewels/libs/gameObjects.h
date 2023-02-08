@@ -9,46 +9,44 @@
 // Game objects
 // Jewels tile
 
-// Window size
-#define SCREEN_WIDTH 640
-#define SCREEN_HEIGHT 480
 
-// Game board
-#define BOARD_WIDTH 8
-#define BOARD_HEIGHT 8
 
-// Game states
-#define GAME_OVER 0
-#define GAME_RUNNING 1
-#define GAME_WON 2
+// Enum Bitmaps for path
+enum Bitmaps
+{
+    GEM_0,
+    GEM_1,
+    GEM_2,
+    GEM_3,
+    GEM_4,
+    GEM_5,
+    GEM_6,
+};
 
-// Tile sprite types
-#define TILE_SPRITES 5
+static char *const bitmapPaths[] =
+    {
+        [GEM_0] = "resources/sprites/terraria_sprites/Gem_0.png",
+        [GEM_1] = "resources/sprites/terraria_sprites/Gem_1.png",
+        [GEM_2] = "resources/sprites/terraria_sprites/Gem_2.png",
+        [GEM_3] = "resources/sprites/terraria_sprites/Gem_3.png",
+        [GEM_4] = "resources/sprites/terraria_sprites/Gem_4.png",
+        [GEM_5] = "resources/sprites/terraria_sprites/Gem_5.png",
+        [GEM_6] = "resources/sprites/terraria_sprites/Gem_6.png",
+};
 
 // Represents a single tile, a jewel
+#define TILE_SIZE 40
+#define TILE_SPEED 0.00001
 typedef struct
 {
     Transform transform;
     Sprite sprite;
     int value;
+    int selected;
+    int real_posX;
+    int real_posY;
 } Tile;
 
-// Game manager Object, game state and board
-typedef struct
-{
-    Tile board[BOARD_WIDTH][BOARD_HEIGHT];
-    int score;
-    int state;
-} GameManager;
-
-// Initialize game manager
-GameManager *InitGameManager();
-
-// Initialize game board
-void InitGameBoard(GameManager *gameManager);
-
-// Print game board
-void PrintGameBoard(GameManager *gameManager);
 
 
 #endif // GAMEOBJECTS_H

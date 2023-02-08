@@ -4,7 +4,7 @@ LDFLAGS = `pkg-config allegro-5 allegro_font-5 allegro_image-5 allegro_primitive
 
 CC = gcc
 
-objects = jewels.o gameObjects.o gameGraphics.o
+objects = jewels.o gameObjects.o gameGraphics.o gameLogic.o
 
 all: $(objects)
 	$(CC) -o jewels $(objects) $(LDFLAGS) $(EOPTION)
@@ -18,6 +18,8 @@ gameObjects.o: libs/gameObjects.c
 gameGraphics.o: libs/gameGraphics.c
 	$(CC) -c $(CFLAGS) libs/gameGraphics.c
 
+gameLogic.o: libs/gameLogic.c
+	$(CC) -c $(CFLAGS) libs/gameLogic.c
 
 #remove os arquivos temporários (mantém o executável)
 clean:

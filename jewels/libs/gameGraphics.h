@@ -8,12 +8,21 @@
 #include <allegro5/allegro_primitives.h>
 
 #include "gameObjects.h"
+#include "gameLogic.h" // Just for the board size
 
-#define TILE_SIZE 56
 
 // Draw the tiles, receives a matrix of tiles
 void drawTiles(Tile tiles[BOARD_WIDTH][BOARD_HEIGHT]);
 void drawTile(Tile tile);
+
+// Load the bitmaps
+void loadBitmaps();
+
+// Draw UI
+void drawUI();
+
+// Draw background 
+void drawBackground();
 
 
 #endif // GAME_GRAPHICS_H
