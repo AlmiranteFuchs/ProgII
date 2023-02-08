@@ -45,10 +45,9 @@ void UpdateGame(GameManager *gameManager)
 
     // Fall tiles
     _fallTiles(gameManager);
-    
+
     // Check matchs
     _checkMatchs(gameManager);
-
 
     // Switch game events
     switch (gameManager->gameEvent)
@@ -83,8 +82,6 @@ Tile *_checkClickOnTile(GameManager *gameManager, int x, int y)
     int i = (x - OFFSET) / screenScale;
     int j = (y - OFFSET) / screenScale;
 
-    Tile *tile = &gameManager->board[i][j];
-
     return &gameManager->board[i][j];
 }
 
@@ -109,6 +106,15 @@ void _swapTiles(GameManager *gm, Tile *tile1, Tile *tile2)
 
     tile1->transform.moving = 1;
     tile2->transform.moving = 1;
+
+    int temp_x1 = tile1->real_posX;
+    int temp_y1 = tile1->real_posY;
+
+    tile1->real_posX = tile2->real_posX;
+    tile2->real_posX = temp_x1;
+
+    tile1->real_posY = tile2->real_posY;
+    tile2->real_posY = temp_y1;
 
     // Swap the tiles
     Tile temp = *tile1;
@@ -355,7 +361,7 @@ void _initGameBoardPiece(GameManager *gameManager, int i, int j)
     int screenScale = (SCREEN_HEIGHT / BOARD_WIDTH) - 5;
 
     // Create a new tile
-    int tile_type = (rand() % 4) + 1;
+    int tile_type = (rand() % 5) + 1;
     // Fisical Props
     gameManager->board[i][j].transform.x = (i * screenScale) + OFFSET;
     gameManager->board[i][j].transform.y = (j * screenScale) + OFFSET;
@@ -422,9 +428,18 @@ void _inputEvent(GameManager *gm)
                 // Swap the tiles
                 // Print
 
-                _swapTiles(gm, tile, gm->selectedTile);
-                gm->selectedTile->selected = 0;
-                player_play = 1;
+                // Check distance between points
+                int distance_x = abs(tile->real_posX - gm->selectedTile->real_posX);
+                int distance_y = abs(tile->real_posY - gm->selectedTile->real_posY);
+
+                printf("%d %d\n", distance_x, distance_y);
+
+                if (!(abs(distance_x + distance_y) > 1))
+                {
+                    _swapTiles(gm, tile, gm->selectedTile);
+                    gm->selectedTile->selected = 0;
+                    player_play = 1;
+                }
             }
         }
     }
