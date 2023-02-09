@@ -19,7 +19,7 @@ void drawTile(Tile tile);
 void loadBitmaps();
 
 // Draw UI
-void drawUI();
+void drawUI(GameManager *gm);
 
 // Draw background 
 void drawBackground();

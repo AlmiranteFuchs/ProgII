@@ -8,9 +8,10 @@
 
 // Tile sprite types
 #define OFFSET 35
+#define OFFSET_Y 60 
 
 #define BOARD_WIDTH 8
-#define BOARD_HEIGHT 8
+#define BOARD_HEIGHT 9 // 9 bc one of them is for new line generating
 
 #include "gameObjects.h"
 #include <stdio.h>

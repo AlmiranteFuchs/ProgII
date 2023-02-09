@@ -1,9 +1,13 @@
 
 #include "gameGraphics.h"
+#include <allegro5/allegro_font.h>
+#include <allegro5/allegro_ttf.h>
 #include <stdio.h>
+#include <string.h>
 
 // Array of bitmaps
 static ALLEGRO_BITMAP *bitmaps[15];
+static ALLEGRO_FONT *font;
 
 void loadBitmaps()
 {
@@ -16,9 +20,12 @@ void loadBitmaps()
     bitmaps[6] = al_load_bitmap("resources/sprites/terraria_sprites/Gem_6.png");
     bitmaps[7] = al_load_bitmap("resources/sprites/terraria_sprites/Item_21.png");
 
-    //UI
+    // UI
     bitmaps[10] = al_load_bitmap("resources/sprites/terraria_sprites/UI/MapFrame.png");
     bitmaps[11] = al_load_bitmap("resources/sprites/terraria_sprites/UI/Splash_9_0.png");
+
+    // Font, i'm not renaming this function, but it loads graphical stuff anyway
+    font = al_load_ttf_font("resources/fonts/Terraria-Font/ANDYB.TTF", 40, 0);
 }
 
 void drawTile(Tile tile)
@@ -62,9 +69,20 @@ void drawBackground()
     al_draw_bitmap(bitmaps[11], 0, 0, 0);
 }
 
-void drawUI()
+void drawUI(GameManager *gm)
 {
     // Draw the UI, scale to 2x
     // al_draw_scaled_bitmap(bitmaps[6], 0, 0, 256, 263, 0, 0, (SCREEN_WIDTH/2)+ 100, SCREEN_HEIGHT+35 , 0);
     al_draw_bitmap(bitmaps[10], 0, 0, 0);
+
+    // Draw the score
+    // Position is hardcoded, but it's just a test
+    int score = gm->score;
+    char score_str[10];
+
+    char *score_str_format = "Score: %d";
+    sprintf(score_str, score_str_format, score);
+
+
+    al_draw_text(font, al_map_rgb(255, 255, 255), (SCREEN_WIDTH/2) * 1.5, 0, 0, score_str);
 }

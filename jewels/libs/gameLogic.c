@@ -33,7 +33,7 @@ void DrawGame(GameManager *gm)
     // Calls to graphics functions
     drawBackground();
     drawTiles(gm->board);
-    drawUI();
+    drawUI(gm);
 }
 
 int player_play = 0;
@@ -80,7 +80,7 @@ Tile *_checkClickOnTile(GameManager *gameManager, int x, int y)
     // The offset here is the offset of the board
     // Get the tile
     int i = (x - OFFSET) / screenScale;
-    int j = (y - OFFSET) / screenScale;
+    int j = (y - (OFFSET - OFFSET_Y)) / screenScale;
 
     return &gameManager->board[i][j];
 }
@@ -266,6 +266,14 @@ int _check_matchs(GameManager *GameManager)
 
                 if (GameManager->board[i][j].value == GameManager->board[i + 1][j].value && GameManager->board[i][j].value == GameManager->board[i + 2][j].value)
                 {
+                    if (GameManager->board[i + 3][j].value == GameManager->board[i][j].value)
+                    {
+                        GameManager->board[i + 3][j].value = 6;
+                        GameManager->board[i + 3][j].sprite.sprite_num = 6;
+
+                        matchs++;
+                    }
+
                     GameManager->board[i][j].value = -1;
                     GameManager->board[i + 1][j].value = -1;
                     GameManager->board[i + 2][j].value = -1;
@@ -278,6 +286,15 @@ int _check_matchs(GameManager *GameManager)
             {
                 if (GameManager->board[i][j].value == GameManager->board[i][j + 1].value && GameManager->board[i][j].value == GameManager->board[i][j + 2].value)
                 {
+
+                    if (GameManager->board[i][j + 3].value == GameManager->board[i][j].value)
+                    {
+                        GameManager->board[i][j + 3].value = 6;
+                        GameManager->board[i][j + 3].sprite.sprite_num = 6;
+
+                        matchs++;
+                    }
+
                     GameManager->board[i][j].value = -1;
                     GameManager->board[i][j + 1].value = -1;
                     GameManager->board[i][j + 2].value = -1;
@@ -340,7 +357,11 @@ void _fallTiles(GameManager *gameManager)
                 // Swap with the above
                 Tile *above_tile = &gameManager->board[i][j - 1];
 
+                current_tile->transform.moving_t += 5;
+                above_tile->transform.moving_t += 5;
+
                 _swapTiles(gameManager, current_tile, above_tile);
+
                 gameManager->selectedTile = NULL;
                 gameManager->lastSelectedTile = NULL;
             }
@@ -364,7 +385,7 @@ void _initGameBoardPiece(GameManager *gameManager, int i, int j)
     int tile_type = (rand() % 5) + 1;
     // Fisical Props
     gameManager->board[i][j].transform.x = (i * screenScale) + OFFSET;
-    gameManager->board[i][j].transform.y = (j * screenScale) + OFFSET;
+    gameManager->board[i][j].transform.y = (j * screenScale) + OFFSET - OFFSET_Y;
     gameManager->board[i][j].transform.velocity = 5;
     gameManager->board[i][j].transform.acceleration = 1.0003;
     gameManager->board[i][j].transform.moving_t = 0;

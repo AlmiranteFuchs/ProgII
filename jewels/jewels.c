@@ -15,8 +15,9 @@
 
 // Allegro
 #include <allegro5/allegro5.h>
-#include <allegro5/allegro_font.h>
 #include <allegro5/allegro_image.h>
+#include <allegro5/allegro_font.h>
+#include <allegro5/allegro_ttf.h>
 #include <allegro5/allegro_primitives.h>
 
 // Last selected tile
@@ -37,8 +38,12 @@ void test_function_alegro(GameManager *gm)
     must_init(al_install_keyboard(), "keyboard");
     must_init(al_install_mouse(), "Mouse");
     must_init(al_init_primitives_addon(), "primitives");
+    must_init(al_init_font_addon(), "font addon");
+    must_init(al_init_ttf_addon(), "ttf addon");
 
-    ALLEGRO_TIMER *timer = al_create_timer(1.0 / 30.0);
+
+
+    ALLEGRO_TIMER *timer = al_create_timer(1.0 / 60.0);
     must_init(timer, "timer");
 
     ALLEGRO_EVENT_QUEUE *queue = al_create_event_queue();
@@ -54,9 +59,7 @@ void test_function_alegro(GameManager *gm)
     ALLEGRO_DISPLAY *disp = al_create_display(SCREEN_WIDTH, SCREEN_HEIGHT + 35);
     must_init(disp, "display");
 
-    ALLEGRO_FONT *font = al_create_builtin_font();
-    must_init(font, "font");
-
+    // Images
     must_init(al_init_image_addon(), "image addon");
 
     loadBitmaps();
@@ -113,7 +116,6 @@ void test_function_alegro(GameManager *gm)
 
         if (redraw && al_is_event_queue_empty(queue))
         {
-            // al_draw_text(font, al_map_rgb(255, 255, 255), 0, 0, 0, "Hello world!");
 
             DrawGame(gm);
             // al_draw_filled_triangle(35, 350, 85, 375, 35, 400, al_map_rgb_f(0, 1, 0));
@@ -128,7 +130,7 @@ void test_function_alegro(GameManager *gm)
         }
     }
 
-    al_destroy_font(font);
+    //al_destroy_font(font); FIXME:
     al_destroy_display(disp);
     al_destroy_timer(timer);
     al_destroy_event_queue(queue);
