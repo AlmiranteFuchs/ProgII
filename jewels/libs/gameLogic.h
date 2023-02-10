@@ -41,8 +41,12 @@ typedef enum
 // Game manager Object, game state and board
 typedef struct
 {
+    // Game properties
     int score;
     int time;
+    int turn;
+    int level;
+
     GameState gameState; // Game state
     GameEvent gameEvent; // Game event
 

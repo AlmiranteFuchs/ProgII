@@ -213,8 +213,6 @@ void _checkMatchs(GameManager *gameManager)
         if (matchs > 0)
         {
             // If there are matchs
-            // Add score
-            gameManager->score += matchs * 10;
 
             // Destroy tiles
             _destroyTiles(gameManager);
@@ -263,56 +261,121 @@ int _check_matchs(GameManager *GameManager)
             // Check for horizontal matchs
             if (i < BOARD_WIDTH - 2)
             {
+                // Possible Tile Matches
+                int current_tile = GameManager->board[i][j].value;
+                int next_tile = GameManager->board[i + 1][j].value;
+                int next_next_tile = GameManager->board[i + 2][j].value;
+                int next_next_next_tile = GameManager->board[i + 3][j].value;
+                int next_next_next_next_tile = GameManager->board[i + 4][j].value;
 
-                if (GameManager->board[i][j].value == GameManager->board[i + 1][j].value && GameManager->board[i][j].value == GameManager->board[i + 2][j].value)
+                if (current_tile == next_tile && current_tile == next_next_tile)
                 {
-                    if (GameManager->board[i + 3][j].value == GameManager->board[i][j].value)
+                    // Destroy Tiles
+                    GameManager->board[i][j].value = -1;
+                    GameManager->board[i + 1][j].value = -1;
+                    GameManager->board[i + 2][j].value = -1;
+
+                    // If there is a 4th match
+                    if (next_next_tile == next_next_next_tile)
                     {
-                        GameManager->board[i + 3][j].value = 6;
-                        GameManager->board[i + 3][j].sprite.sprite_num = 6;
+                        // New special jewel
+                        GameManager->board[i + 2][j].value = 6;
+                        GameManager->board[i + 2][j].sprite.sprite_num = 6;
+
+                        // Clear 4th
+                        GameManager->board[i + 3][j].value = -1;
+                        GameManager->board[i + 3][j].sprite.sprite_num = -1;
+
+                        // If there is a 5th match
+                        if (next_next_next_next_tile == current_tile)
+                        {
+                            // New special jewel
+                            GameManager->board[i + 2][j].value = 6;
+                            GameManager->board[i + 2][j].sprite.sprite_num = 6;
+
+                            // Clear 5th
+                            GameManager->board[i + 4][j].value = -1;
+                            GameManager->board[i + 4][j].sprite.sprite_num = -1;
+
+                            matchs++;
+                        }
 
                         matchs++;
                     }
 
-                    GameManager->board[i][j].value = -1;
-                    GameManager->board[i + 1][j].value = -1;
-                    GameManager->board[i + 2][j].value = -1;
                     matchs++;
+                    // Calculate score
+                    int score = (matchs * 20);
+
+                    // If matchs are special type
+                    if (current_tile == 6)
+                    {
+                        score = score + (100 * matchs);
+                    }
+
+                    printf("Score: %d\n", GameManager->score);
+                    GameManager->score += score;
                 }
             }
 
             // Check for vertical matchs
             if (j < BOARD_HEIGHT - 2)
             {
-                if (GameManager->board[i][j].value == GameManager->board[i][j + 1].value && GameManager->board[i][j].value == GameManager->board[i][j + 2].value)
-                {
+                // Possible Tile Matches
+                int current_tile = GameManager->board[i][j].value;
+                int next_tile = GameManager->board[i][j + 1].value;
+                int next_next_tile = GameManager->board[i][j + 2].value;
+                int next_next_next_tile = GameManager->board[i][j + 3].value;
+                int next_next_next_next_tile = GameManager->board[i][j + 4].value;
 
-                    if (GameManager->board[i][j + 3].value == GameManager->board[i][j].value)
+                if (current_tile == next_tile && current_tile == next_next_tile)
+                {
+                    // Destroy Tiles
+                    GameManager->board[i][j].value = -1;
+                    GameManager->board[i][j + 1].value = -1;
+                    GameManager->board[i][j + 2].value = -1;
+
+                    // If there is a 4th match
+                    if (next_next_tile == next_next_next_tile)
                     {
-                        GameManager->board[i][j + 3].value = 6;
-                        GameManager->board[i][j + 3].sprite.sprite_num = 6;
+                        // New special jewel
+                        GameManager->board[i][j + 2].value = 6;
+                        GameManager->board[i][j + 2].sprite.sprite_num = 6;
+
+                        // Clear 4th
+                        GameManager->board[i][j + 3].value = -1;
+                        GameManager->board[i][j + 3].sprite.sprite_num = -1;
+
+                        // If there is a 5th match
+                        if (next_next_next_next_tile == current_tile)
+                        {
+                            // New special jewel
+                            GameManager->board[i][j + 2].value = 6;
+                            GameManager->board[i][j + 2].sprite.sprite_num = 6;
+
+                            // Clear 5th
+                            GameManager->board[i][j + 4].value = -1;
+                            GameManager->board[i][j + 4].sprite.sprite_num = -1;
+
+                            matchs++;
+                        }
 
                         matchs++;
                     }
 
-                    GameManager->board[i][j].value = -1;
-                    GameManager->board[i][j + 1].value = -1;
-                    GameManager->board[i][j + 2].value = -1;
                     matchs++;
+                    // Calculate score
+                    int score = (matchs * 20);
+
+                    // If matchs are special type
+                    if (current_tile == 6)
+                    {
+                        score = score + (100 * matchs);
+                    }
+                    printf("Score: %d\n", GameManager->score);
+                    GameManager->score += score;
                 }
             }
-
-            // // Check for L matchs
-            // if (i < BOARD_WIDTH - 2 && j < BOARD_HEIGHT - 2)
-            // {
-            //     if (GameManager->board[i][j].value == GameManager->board[i + 1][j].value && GameManager->board[i][j].value == GameManager->board[i + 2][j + 1].value)
-            //     {
-            //         GameManager->board[i][j].selected = 1;
-            //         GameManager->board[i + 1][j].selected = 1;
-            //         GameManager->board[i + 2][j + 1].selected = 1;
-            //         matchs++;
-            //     }
-            // }
         }
     }
     return matchs;
@@ -453,13 +516,15 @@ void _inputEvent(GameManager *gm)
                 int distance_x = abs(tile->real_posX - gm->selectedTile->real_posX);
                 int distance_y = abs(tile->real_posY - gm->selectedTile->real_posY);
 
-                printf("%d %d\n", distance_x, distance_y);
 
                 if (!(abs(distance_x + distance_y) > 1))
                 {
                     _swapTiles(gm, tile, gm->selectedTile);
                     gm->selectedTile->selected = 0;
                     player_play = 1;
+                    gm->turn++;
+
+                    printf("Turn: %d\n", gm->turn);
                 }
             }
         }

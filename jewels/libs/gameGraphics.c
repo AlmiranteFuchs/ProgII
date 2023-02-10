@@ -82,7 +82,13 @@ void drawUI(GameManager *gm)
 
     char *score_str_format = "Score: %d";
     sprintf(score_str, score_str_format, score);
-
-
     al_draw_text(font, al_map_rgb(255, 255, 255), (SCREEN_WIDTH/2) * 1.5, 0, 0, score_str);
+
+    // Draw the turn
+    char turn_str[10];
+    char *turn_str_format = "Turn: %d";
+    sprintf(turn_str, turn_str_format, gm->turn);
+    al_draw_text(font, al_map_rgb(255, 255, 255), (SCREEN_WIDTH/2) * 1.5, 50, 0, turn_str);
+
+
 }

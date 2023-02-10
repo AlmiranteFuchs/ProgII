@@ -95,7 +95,6 @@ void test_function_alegro(GameManager *gm)
             gm->mouseX = event.mouse.x;
             gm->mouseY = event.mouse.y;
 
-            printf("Game state: %d\n", gm->gameState);
             break;
 
         case ALLEGRO_EVENT_KEY_DOWN:
