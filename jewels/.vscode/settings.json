@@ -10,6 +10,7 @@
         "tuple": "c",
         "type_traits": "c",
         "utility": "c",
-        "allegro_ttf.h": "c"
+        "allegro_ttf.h": "c",
+        "gameobjects.h": "c"
     }
 }

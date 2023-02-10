@@ -90,5 +90,12 @@ void drawUI(GameManager *gm)
     sprintf(turn_str, turn_str_format, gm->turn);
     al_draw_text(font, al_map_rgb(255, 255, 255), (SCREEN_WIDTH/2) * 1.5, 50, 0, turn_str);
 
+    // Draw time 
+    char time_str[10];
+    char *time_str_format = "Time: %d";
+    int time_to_int = (int)gm->time;
+    sprintf(time_str, time_str_format, time_to_int);
+    al_draw_text(font, al_map_rgb(255, 255, 255), (SCREEN_WIDTH/2) * 1.5, 100, 0, time_str);
+
 
 }

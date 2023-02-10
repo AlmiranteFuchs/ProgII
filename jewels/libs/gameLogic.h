@@ -42,7 +42,7 @@ typedef struct
 {
     // Game properties
     int score;
-    int time;
+    float time;
     int turn;
     int level;
 
@@ -58,6 +58,11 @@ typedef struct
     Tile *selectedTile;
     Tile *lastSelectedTile;
     Audio *audio;
+
+    // Minigame
+    int minigame_active;
+    int minigame_time;
+    char *minigame_activation_sequence;
 
 } GameManager;
 

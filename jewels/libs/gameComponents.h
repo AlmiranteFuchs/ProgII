@@ -39,7 +39,7 @@ typedef struct {
     int paused;
     int stopped;
     char *path;
-    AudioPlayer *audioPlayer;
+    //AudioPlayer *audioPlayer;
 } Audio;
 
 // Object collider

@@ -6,15 +6,15 @@
 
 #define MAX_AUDIO 10
 
-typedef struct AudioPlayer {
-    ALLEGRO_SAMPLE *audio[MAX_AUDIO];
-    ALLEGRO_SAMPLE_INSTANCE *audioInstance[MAX_AUDIO];
-    int audioCount;
-} AudioPlayer;
+// typedef struct AudioPlayer {
+//     ALLEGRO_SAMPLE *audio[MAX_AUDIO];
+//     ALLEGRO_SAMPLE_INSTANCE *audioInstance[MAX_AUDIO];
+//     int audioCount;
+// } AudioPlayer;
 
 
-// Initializes the audio system with allegro
-void initAudio(AudioPlayer *audioPlayer);
-void playAudio(AudioPlayer *audioPlayer, int audioIndex);
-void stopAudio(AudioPlayer *audioPlayer, int audioIndex);
-void destroyAudio(AudioPlayer *audioPlayer);
+// // Initializes the audio system with allegro
+// void initAudio(AudioPlayer *audioPlayer);
+// void playAudio(AudioPlayer *audioPlayer, int audioIndex);
+// void stopAudio(AudioPlayer *audioPlayer, int audioIndex);
+// void destroyAudio(AudioPlayer *audioPlayer);

@@ -26,7 +26,7 @@ GameManager *InitGameManager()
     gameManager->gameState = GAME_STATE_GAMEPLAY; // TODO: Menu
 
     // Init audio
-    initAudio(&gameManager->audio);
+    // initAudio(&gameManager->audio);
 
     // Init game board
     _initGameBoard(gameManager);
@@ -66,6 +66,10 @@ void UpdateGame(GameManager *gameManager)
     default:
         break;
     }
+
+    // Update game time, game runs in 60 fps
+    gameManager->time = gameManager->time + (1/60.0f);
+    printf("Time: %f\n", gameManager->time);
 }
 /*
  * // // // // ---- Private ---- // // // //
@@ -521,7 +525,6 @@ void _inputEvent(GameManager *gm)
                 // Check distance between points
                 int distance_x = abs(tile->real_posX - gm->selectedTile->real_posX);
                 int distance_y = abs(tile->real_posY - gm->selectedTile->real_posY);
-
 
                 if (!(abs(distance_x + distance_y) > 1))
                 {
