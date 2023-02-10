@@ -8,7 +8,7 @@
 
 // Tile sprite types
 #define OFFSET 35
-#define OFFSET_Y 60 
+#define OFFSET_Y 60
 
 #define BOARD_WIDTH 8
 #define BOARD_HEIGHT 9 // 9 bc one of them is for new line generating
@@ -37,7 +37,6 @@ typedef enum
     GAME_STATE_EXIT,
 } GameState;
 
-
 // Game manager Object, game state and board
 typedef struct
 {
@@ -58,6 +57,7 @@ typedef struct
     Tile board[BOARD_WIDTH][BOARD_HEIGHT];
     Tile *selectedTile;
     Tile *lastSelectedTile;
+    Audio *audio;
 
 } GameManager;
 

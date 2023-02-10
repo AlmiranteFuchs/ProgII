@@ -32,6 +32,16 @@ typedef struct {
     int sprite_num;
 } Sprite;
 
+// Object audio player
+typedef struct {
+    int volume;
+    int playing;
+    int paused;
+    int stopped;
+    char *path;
+    AudioPlayer *audioPlayer;
+} Audio;
+
 // Object collider
 // typedef struct {
 //     int width;

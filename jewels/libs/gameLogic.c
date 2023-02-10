@@ -1,6 +1,7 @@
 
 #include "gameLogic.h"
 #include "gameGraphics.h"
+#include "gameAudio.h"
 
 // Prototype
 GameManager *InitGameManager();
@@ -23,6 +24,11 @@ GameManager *InitGameManager()
     GameManager *gameManager = (GameManager *)malloc(sizeof(GameManager));
     gameManager->score = 0;
     gameManager->gameState = GAME_STATE_GAMEPLAY; // TODO: Menu
+
+    // Init audio
+    initAudio(&gameManager->audio);
+
+    // Init game board
     _initGameBoard(gameManager);
     return gameManager;
 }
