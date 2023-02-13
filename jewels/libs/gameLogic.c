@@ -1,7 +1,7 @@
 
 #include "gameLogic.h"
 #include "gameGraphics.h"
-#include "gameAudio.h"
+
 
 // Prototype
 GameManager *InitGameManager();
@@ -21,12 +21,20 @@ void _fallTiles(GameManager *gameManager);
 // Create a new game object, Init game
 GameManager *InitGameManager()
 {
+    
     GameManager *gameManager = (GameManager *)malloc(sizeof(GameManager));
     gameManager->score = 0;
+    gameManager->turn = 0;
     gameManager->gameState = GAME_STATE_GAMEPLAY; // TODO: Menu
+    gameManager->gameEvent = GAME_EVENT_NONE;
 
     // Init audio
-    // initAudio(&gameManager->audio);
+    gameManager->audio.audio_num = AUDIO_MUSIC;
+    gameManager->audio.volume = 0.3f;
+    gameManager->audio.speed = 1.0f;
+    gameManager->audio.loop = 1;
+    gameManager->audio.playing = 1;
+    playAudio(&gameManager->audio);
 
     // Init game board
     _initGameBoard(gameManager);
@@ -68,8 +76,7 @@ void UpdateGame(GameManager *gameManager)
     }
 
     // Update game time, game runs in 60 fps
-    gameManager->time = gameManager->time + (1/60.0f);
-    printf("Time: %f\n", gameManager->time);
+    gameManager->time = gameManager->time + (1 / 60.0f);
 }
 /*
  * // // // // ---- Private ---- // // // //
@@ -280,6 +287,9 @@ int _check_matchs(GameManager *GameManager)
 
                 if (current_tile == next_tile && current_tile == next_next_tile)
                 {
+                    // Play sound
+                    playAudio(&GameManager->board[i][j].audioPlayer);
+
                     // Destroy Tiles
                     GameManager->board[i][j].value = -1;
                     GameManager->board[i + 1][j].value = -1;
@@ -340,6 +350,9 @@ int _check_matchs(GameManager *GameManager)
 
                 if (current_tile == next_tile && current_tile == next_next_tile)
                 {
+                    // Play sound
+                    playAudio(&GameManager->board[i][j].audioPlayer);
+
                     // Destroy Tiles
                     GameManager->board[i][j].value = -1;
                     GameManager->board[i][j + 1].value = -1;
@@ -474,6 +487,14 @@ void _initGameBoardPiece(GameManager *gameManager, int i, int j)
     gameManager->board[i][j].sprite.height = 40;
     gameManager->board[i][j].sprite.width = 40;
     gameManager->board[i][j].selected = 0;
+
+    // Sound
+    gameManager->board[i][j].audioPlayer.audio_num = 1;
+    gameManager->board[i][j].audioPlayer.loop = 0;
+    gameManager->board[i][j].audioPlayer.volume = 1.0f;
+    gameManager->board[i][j].audioPlayer.playing = 1;
+    gameManager->board[i][j].audioPlayer.speed = 1.0f;
+
     // TODO: Implement this later
     // if(j == 0)
     // {

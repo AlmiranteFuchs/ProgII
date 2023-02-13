@@ -10,7 +10,8 @@
 // The idea is to have a component based game object system
 
 // Object transform
-typedef struct {
+typedef struct
+{
     int x;
     int y;
     int dx;
@@ -25,7 +26,8 @@ typedef struct {
 } Transform;
 
 // Object sprite
-typedef struct {
+typedef struct
+{
     int width;
     int height;
     int color;
@@ -33,14 +35,15 @@ typedef struct {
 } Sprite;
 
 // Object audio player
-typedef struct {
-    int volume;
+typedef struct
+{
+    float volume;
+    float speed;
     int playing;
-    int paused;
-    int stopped;
-    char *path;
-    //AudioPlayer *audioPlayer;
-} Audio;
+    int loop;
+    int audio_num;
+    // AudioPlayer *audioPlayer;
+} AudioPlayer;
 
 // Object collider
 // typedef struct {
@@ -49,8 +52,5 @@ typedef struct {
 //     int x;
 //     int y;
 // } Collider;
-
-
-
 
 #endif // GAMECOMPONENTS_H

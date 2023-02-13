@@ -11,7 +11,6 @@
 #include "libs/gameObjects.h"
 #include "libs/gameGraphics.h"
 #include "libs/gameLogic.h"
-#include "libs/gameLogic.h"
 
 // Allegro
 #include <allegro5/allegro5.h>
@@ -42,7 +41,6 @@ void test_function_alegro(GameManager *gm)
     must_init(al_init_ttf_addon(), "ttf addon");
 
 
-
     ALLEGRO_TIMER *timer = al_create_timer(1.0 / 60.0);
     must_init(timer, "timer");
 
@@ -59,10 +57,10 @@ void test_function_alegro(GameManager *gm)
     ALLEGRO_DISPLAY *disp = al_create_display(SCREEN_WIDTH, SCREEN_HEIGHT + 35);
     must_init(disp, "display");
 
-    // Images
+    // Images TODO: Migrate this to gameGraphics
     must_init(al_init_image_addon(), "image addon");
-
     loadBitmaps();
+
 
     al_register_event_source(queue, al_get_keyboard_event_source());
     al_register_event_source(queue, al_get_display_event_source(disp));
@@ -138,6 +136,8 @@ void test_function_alegro(GameManager *gm)
 int main(int argc, char *argv[])
 {
     printf("Initializing!\n");
+    // Audio
+    initAudio();
     // Create a new game object
     GameManager *gm = InitGameManager();
 

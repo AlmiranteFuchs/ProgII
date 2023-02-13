@@ -15,6 +15,7 @@
 
 #include "gameObjects.h"
 #include <stdio.h>
+#include "gameAudio.h"
 
 // Enum game events
 typedef enum
@@ -57,7 +58,7 @@ typedef struct
     Tile board[BOARD_WIDTH][BOARD_HEIGHT];
     Tile *selectedTile;
     Tile *lastSelectedTile;
-    Audio *audio;
+    AudioPlayer audio;
 
     // Minigame
     int minigame_active;

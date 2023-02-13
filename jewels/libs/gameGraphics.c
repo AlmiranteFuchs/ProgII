@@ -23,6 +23,7 @@ void loadBitmaps()
     // UI
     bitmaps[10] = al_load_bitmap("resources/sprites/terraria_sprites/UI/MapFrame.png");
     bitmaps[11] = al_load_bitmap("resources/sprites/terraria_sprites/UI/Splash_9_0.png");
+    bitmaps[12] = al_load_bitmap("resources/sprites/terraria_sprites/UI/foreground.png");
 
     // Font, i'm not renaming this function, but it loads graphical stuff anyway
     font = al_load_ttf_font("resources/fonts/Terraria-Font/ANDYB.TTF", 40, 0);
@@ -66,7 +67,13 @@ void drawTiles(Tile tiles[BOARD_WIDTH][BOARD_HEIGHT])
 
 void drawBackground()
 {
+    // Far background
     al_draw_bitmap(bitmaps[11], 0, 0, 0);
+
+    // Foreground
+    al_draw_bitmap(bitmaps[12], 0, 240, 0);
+    // Draw again in the right side
+    al_draw_bitmap(bitmaps[12], 1026, 240, 0);
 }
 
 void drawUI(GameManager *gm)
