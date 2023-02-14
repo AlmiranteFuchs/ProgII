@@ -2,7 +2,6 @@
 #include "gameLogic.h"
 #include "gameGraphics.h"
 
-
 // Prototype
 GameManager *InitGameManager();
 void _initGameBoard(GameManager *gameManager);
@@ -14,6 +13,8 @@ void _checkMatchs(GameManager *gameManager);
 int _check_matchs(GameManager *GameManager);
 void _destroyTiles(GameManager *gameManager);
 void _fallTiles(GameManager *gameManager);
+void _initTransformDefault(Transform *transform);
+void _moveForeground(GameManager *gm);
 
 /**
  * // // // // ---- Public ---- // // // //
@@ -21,7 +22,7 @@ void _fallTiles(GameManager *gameManager);
 // Create a new game object, Init game
 GameManager *InitGameManager()
 {
-    
+
     GameManager *gameManager = (GameManager *)malloc(sizeof(GameManager));
     gameManager->score = 0;
     gameManager->turn = 0;
@@ -38,15 +39,50 @@ GameManager *InitGameManager()
 
     // Init game board
     _initGameBoard(gameManager);
+
+    // Init background
+    gameManager->background.Transform.x = 0;
+    gameManager->background.Transform.y = 0;
+    gameManager->background.Transform.dy = 0;
+    gameManager->background.Transform.dx = 0;
+    gameManager->background.Transform.visible = 1;
+    gameManager->background.sprite.sprite_num = UI_BACKGROUND_12;
+    gameManager->background.sprite.width = 1920;
+    gameManager->background.sprite.height = 1080;
+
+    // Init foreground
+    int offset_y = 240;
+    for (int i = 0; i < 3; i++)
+    {
+        _initTransformDefault(&gameManager->foregrounds[i].Transform);
+        gameManager->foregrounds[i].Transform.x = 1026 * i;
+        gameManager->foregrounds[i].Transform.y = offset_y;
+    }
+
     return gameManager;
+}
+
+void _initTransformDefault(Transform *transform)
+{
+    transform->x = 0;
+    transform->y = 0;
+    transform->dx = 0;
+    transform->dy = 0;
+    transform->acceleration = 1;
+    transform->angle = 0;
+    transform->angleSpeed = 0;
+    transform->moving = 0;
+    transform->moving_t = 0;
+    transform->velocity = 1;
+    transform->visible = 1;
 }
 
 // Call to draw the game
 void DrawGame(GameManager *gm)
 {
     // Calls to graphics functions
-    drawBackground();
-    drawTiles(gm->board);
+    drawBackground(gm);
+    drawTiles(gm);
     drawUI(gm);
 }
 
@@ -74,6 +110,9 @@ void UpdateGame(GameManager *gameManager)
     default:
         break;
     }
+
+    // Move foreground
+    _moveForeground(gameManager);
 
     // Update game time, game runs in 60 fps
     gameManager->time = gameManager->time + (1 / 60.0f);
@@ -456,6 +495,24 @@ void _fallTiles(GameManager *gameManager)
         if (gameManager->board[i][0].value == -1)
         {
             _initGameBoardPiece(gameManager, i, 0);
+        }
+    }
+}
+
+
+// Moves the foreground in loop
+void _moveForeground(GameManager *gm)
+{
+    // Keep moving the 3 foregrounds
+    for (int i = 0; i < 3; i++)
+    {
+        gm->foregrounds[i].Transform.x -= 1;
+
+        // If the foreground is out of the screen
+        if (gm->foregrounds[i].Transform.x < -SCREEN_WIDTH)
+        {
+            // Move it to the right
+            gm->foregrounds[i].Transform.x = SCREEN_WIDTH;
         }
     }
 }

@@ -25,4 +25,10 @@ typedef struct
     AudioPlayer audioPlayer;
 } Tile;
 
+// Moving foreground
+typedef struct{
+    Transform Transform;
+    Sprite sprite;
+} SimpleObject;
+
 #endif // GAMEOBJECTS_H

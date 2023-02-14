@@ -59,7 +59,7 @@ void test_function_alegro(GameManager *gm)
 
     // Images TODO: Migrate this to gameGraphics
     must_init(al_init_image_addon(), "image addon");
-    loadBitmaps();
+    initGraphics(gm);
 
 
     al_register_event_source(queue, al_get_keyboard_event_source());

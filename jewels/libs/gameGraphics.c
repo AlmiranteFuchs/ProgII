@@ -1,37 +1,30 @@
 
 #include "gameGraphics.h"
-#include <allegro5/allegro_font.h>
-#include <allegro5/allegro_ttf.h>
 #include <stdio.h>
 #include <string.h>
 
-// Array of bitmaps
-static ALLEGRO_BITMAP *bitmaps[15];
-static ALLEGRO_FONT *font;
-
-void loadBitmaps()
+void initGraphics(GameManager *gm)
 {
-    bitmaps[0] = al_load_bitmap("resources/sprites/terraria_sprites/Gem_0.png");
-    bitmaps[1] = al_load_bitmap("resources/sprites/terraria_sprites/Gem_1.png");
-    bitmaps[2] = al_load_bitmap("resources/sprites/terraria_sprites/Gem_2.png");
-    bitmaps[3] = al_load_bitmap("resources/sprites/terraria_sprites/Gem_3.png");
-    bitmaps[4] = al_load_bitmap("resources/sprites/terraria_sprites/Gem_4.png");
-    bitmaps[5] = al_load_bitmap("resources/sprites/terraria_sprites/Gem_5.png");
-    bitmaps[6] = al_load_bitmap("resources/sprites/terraria_sprites/Gem_6.png");
-    bitmaps[7] = al_load_bitmap("resources/sprites/terraria_sprites/Item_21.png");
+    gm->bitmaps[0] = al_load_bitmap(bitmapPaths[GEM_0]);
+    gm->bitmaps[1] = al_load_bitmap(bitmapPaths[GEM_1]);
+    gm->bitmaps[2] = al_load_bitmap(bitmapPaths[GEM_2]);
+    gm->bitmaps[3] = al_load_bitmap(bitmapPaths[GEM_3]);
+    gm->bitmaps[4] = al_load_bitmap(bitmapPaths[GEM_4]);
+    gm->bitmaps[5] = al_load_bitmap(bitmapPaths[GEM_5]);
+    gm->bitmaps[6] = al_load_bitmap(bitmapPaths[GEM_6]);
+    gm->bitmaps[7] = al_load_bitmap(bitmapPaths[ITEM_10]);
 
     // UI
-    bitmaps[10] = al_load_bitmap("resources/sprites/terraria_sprites/UI/MapFrame.png");
-    bitmaps[11] = al_load_bitmap("resources/sprites/terraria_sprites/UI/Splash_9_0.png");
-    bitmaps[12] = al_load_bitmap("resources/sprites/terraria_sprites/UI/foreground.png");
+    gm->bitmaps[10] = al_load_bitmap(bitmapPaths[UI_MAPFRAME_11]);
+    gm->bitmaps[11] = al_load_bitmap(bitmapPaths[UI_BACKGROUND_12]);
+    gm->bitmaps[12] = al_load_bitmap(bitmapPaths[UI_FOREGROUND_13]);
 
     // Font, i'm not renaming this function, but it loads graphical stuff anyway
-    font = al_load_ttf_font("resources/fonts/Terraria-Font/ANDYB.TTF", 40, 0);
+    gm->font = al_load_ttf_font("resources/fonts/Terraria-Font/ANDYB.TTF", 40, 0);
 }
 
-void drawTile(Tile tile)
+void drawTile(Tile tile, GameManager *gm)
 {
-    // printf("Drawing tile at %d, %d\n", tile.transform.x, tile.transform.y);
     //  Testing only, draw a rectangle
     // int tile_s = TILE_SIZE;
     // al_draw_filled_rectangle(tile.transform.x, tile.transform.y, tile.transform.x + tile_s, tile.transform.y + tile_s, al_map_rgb(255, 0, 0));
@@ -42,7 +35,7 @@ void drawTile(Tile tile)
     // If selected, draw bitmap bigger
     if (tile.selected == 1)
     {
-        al_draw_scaled_bitmap(bitmaps[tile.sprite.sprite_num], 0, 0, TILE_SIZE, TILE_SIZE, tile.transform.x - 2, tile.transform.y - 2, 45, 45, 0);
+        al_draw_scaled_bitmap(gm->bitmaps[tile.sprite.sprite_num], 0, 0, TILE_SIZE, TILE_SIZE, tile.transform.x - 2, tile.transform.y - 2, 45, 45, 0);
         return;
     }
 
@@ -50,37 +43,42 @@ void drawTile(Tile tile)
     if (tile.sprite.sprite_num != -1)
     {
         // Draw the tile using bitmap
-        al_draw_bitmap(bitmaps[tile.sprite.sprite_num], tile.transform.x, tile.transform.y, 0);
+        al_draw_bitmap(gm->bitmaps[tile.sprite.sprite_num], tile.transform.x, tile.transform.y, 0);
     }
 }
 
-void drawTiles(Tile tiles[BOARD_WIDTH][BOARD_HEIGHT])
+void drawTiles(GameManager *gm)
 {
     for (int i = 0; i < BOARD_WIDTH; i++)
     {
         for (int j = 0; j < BOARD_HEIGHT; j++)
         {
-            drawTile(tiles[i][j]);
+            drawTile(gm->board[i][j], gm);
         }
     }
 }
 
-void drawBackground()
+void drawBackground(GameManager *gm)
 {
     // Far background
-    al_draw_bitmap(bitmaps[11], 0, 0, 0);
+    al_draw_bitmap(gm->bitmaps[UI_BACKGROUND_12], 0, 0, 0);
 
-    // Foreground
-    al_draw_bitmap(bitmaps[12], 0, 240, 0);
-    // Draw again in the right side
-    al_draw_bitmap(bitmaps[12], 1026, 240, 0);
+    // For all the foreground
+    for (int i = 0; i < 3; i++)
+    {
+        // gm->foregrounds[i]
+        if (gm->foregrounds[i].Transform.visible == 1)
+        {
+            al_draw_bitmap(gm->bitmaps[UI_FOREGROUND_13], gm->foregrounds[i].Transform.x, gm->foregrounds[i].Transform.y, 0);
+        }
+    }
 }
 
 void drawUI(GameManager *gm)
 {
     // Draw the UI, scale to 2x
     // al_draw_scaled_bitmap(bitmaps[6], 0, 0, 256, 263, 0, 0, (SCREEN_WIDTH/2)+ 100, SCREEN_HEIGHT+35 , 0);
-    al_draw_bitmap(bitmaps[10], 0, 0, 0);
+    al_draw_bitmap(gm->bitmaps[10], 0, 0, 0);
 
     // Draw the score
     // Position is hardcoded, but it's just a test
@@ -89,20 +87,18 @@ void drawUI(GameManager *gm)
 
     char *score_str_format = "Score: %d";
     sprintf(score_str, score_str_format, score);
-    al_draw_text(font, al_map_rgb(255, 255, 255), (SCREEN_WIDTH/2) * 1.5, 0, 0, score_str);
+    al_draw_text(gm->font, al_map_rgb(255, 255, 255), (SCREEN_WIDTH / 2) * 1.5, 0, 0, score_str);
 
     // Draw the turn
     char turn_str[10];
     char *turn_str_format = "Turn: %d";
     sprintf(turn_str, turn_str_format, gm->turn);
-    al_draw_text(font, al_map_rgb(255, 255, 255), (SCREEN_WIDTH/2) * 1.5, 50, 0, turn_str);
+    al_draw_text(gm->font, al_map_rgb(255, 255, 255), (SCREEN_WIDTH / 2) * 1.5, 50, 0, turn_str);
 
-    // Draw time 
+    // Draw time
     char time_str[10];
     char *time_str_format = "Time: %d";
     int time_to_int = (int)gm->time;
     sprintf(time_str, time_str_format, time_to_int);
-    al_draw_text(font, al_map_rgb(255, 255, 255), (SCREEN_WIDTH/2) * 1.5, 100, 0, time_str);
-
-
+    al_draw_text(gm->font, al_map_rgb(255, 255, 255), (SCREEN_WIDTH / 2) * 1.5, 100, 0, time_str);
 }

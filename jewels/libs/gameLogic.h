@@ -13,9 +13,13 @@
 #define BOARD_WIDTH 8
 #define BOARD_HEIGHT 9 // 9 bc one of them is for new line generating
 
-#include "gameObjects.h"
 #include <stdio.h>
+#include "gameObjects.h"
 #include "gameAudio.h"
+#include "allegro5/allegro5.h"
+#include "allegro5/allegro_image.h"
+#include <allegro5/allegro_font.h>
+#include <allegro5/allegro_ttf.h>
 
 // Enum game events
 typedef enum
@@ -60,10 +64,18 @@ typedef struct
     Tile *lastSelectedTile;
     AudioPlayer audio;
 
+    // Simple Cenary objects
+    SimpleObject background;
+    SimpleObject foregrounds[3];
+    
     // Minigame
     int minigame_active;
     int minigame_time;
     char *minigame_activation_sequence;
+
+    // Allegro objects
+    ALLEGRO_FONT *font;
+    ALLEGRO_BITMAP *bitmaps[15];
 
 } GameManager;
 
