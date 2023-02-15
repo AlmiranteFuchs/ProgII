@@ -14,7 +14,7 @@ int _check_matchs(GameManager *GameManager);
 void _destroyTiles(GameManager *gameManager);
 void _fallTiles(GameManager *gameManager);
 void _initTransformDefault(Transform *transform);
-void _moveForeground(GameManager *gm);
+void _manageCenary(GameManager *gm);
 
 /**
  * // // // // ---- Public ---- // // // //
@@ -52,11 +52,22 @@ GameManager *InitGameManager()
 
     // Init foreground
     int offset_y = 240;
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < FOREGROUNDS; i++)
     {
         _initTransformDefault(&gameManager->foregrounds[i].Transform);
         gameManager->foregrounds[i].Transform.x = 1026 * i;
         gameManager->foregrounds[i].Transform.y = offset_y;
+        gameManager->foregrounds[i].active = 1;
+        gameManager->foregrounds[i].direction = 0;
+    }
+
+    // Init cenary objects
+    for (int i = 0; i < CENARY_OBJS; i++)
+    {
+        SimpleObject *object = &gameManager->cenaryObjects[i];
+        _initTransformDefault(&object->Transform);
+        object->active = 0;
+        object->Transform.visible = 0;
     }
 
     return gameManager;
@@ -84,6 +95,8 @@ void DrawGame(GameManager *gm)
     drawBackground(gm);
     drawTiles(gm);
     drawUI(gm);
+
+    drawMinigame(gm);
 }
 
 int player_play = 0;
@@ -111,8 +124,8 @@ void UpdateGame(GameManager *gameManager)
         break;
     }
 
-    // Move foreground
-    _moveForeground(gameManager);
+    // Manage the cenary
+    _manageCenary(gameManager);
 
     // Update game time, game runs in 60 fps
     gameManager->time = gameManager->time + (1 / 60.0f);
@@ -499,23 +512,103 @@ void _fallTiles(GameManager *gameManager)
     }
 }
 
-
 // Moves the foreground in loop
 void _moveForeground(GameManager *gm)
 {
     // Keep moving the 3 foregrounds
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < FOREGROUNDS; i++)
     {
-        gm->foregrounds[i].Transform.x -= 1;
+        SimpleObject *foreground = &gm->foregrounds[i];
+        foreground->Transform.x -= foreground->Transform.velocity;
 
         // If the foreground is out of the screen
-        if (gm->foregrounds[i].Transform.x < -SCREEN_WIDTH)
+        if (foreground->Transform.x < -SCREEN_WIDTH)
         {
             // Move it to the right
-            gm->foregrounds[i].Transform.x = SCREEN_WIDTH;
+            foreground->Transform.x = SCREEN_WIDTH;
         }
     }
 }
+
+// Manage elements in the cenary
+void _manageCenary(GameManager *gm)
+{
+    // Move the foreground
+    _moveForeground(gm);
+
+    for (int i = 0; i < CENARY_OBJS; i++)
+    {
+        SimpleObject *object = &gm->cenaryObjects[i];
+
+        // If the object is not active
+        if (!object->active)
+        {
+
+            // 0.1 chance to spawn, clouds
+            if (rand() % 1000000 < 500)
+            {
+                // Decide type of object to spawn
+                object->cenary_type = CENARY_CLOUDS;
+
+                // Spawn the object
+                object->active = 1;
+                object->Transform.visible = 1;
+
+                // Set y of object
+                object->Transform.y = (rand() % SCREEN_HEIGHT) - 250;
+
+                // Set Sprite
+                object->sprite.sprite_num = C_CLOUD_0;
+            }
+            else if (rand() % 1000000 < 100)
+            {
+                // Spawn as object
+                object->cenary_type = CENARY_OBJECTS;
+
+                // Spawn the object
+                object->active = 1;
+                object->Transform.visible = 1;
+
+                // Set y of object
+                object->Transform.y = 530;
+
+                // Set Sprite
+                object->sprite.sprite_num = ITEM_10;
+            }
+
+            // An object was spawned
+            if (object->active)
+            {
+                // Move
+                // Choose a direction, 0 left 1 right
+                object->direction = (rand() % 2) ? 1 : -1;
+                if (object->direction == 1)
+                    object->Transform.velocity = 1;
+                else
+                    object->Transform.velocity = -2;
+                // Choose a random position outside the screen
+                if (object->direction == 1)
+                    object->Transform.x = -300;
+                else
+                    object->Transform.x = SCREEN_WIDTH;
+            }
+        }
+        else
+        {
+            // Move the object based on direction
+            object->Transform.x += object->Transform.velocity;
+            // If the object is out of the screen
+            if (object->Transform.x > SCREEN_WIDTH || object->Transform.x < -300)
+            {
+                // Deactivate the object
+                object->active = 0;
+                object->Transform.visible = 0;
+            }
+        }
+    }
+}
+
+// Moves other elements in loop
 
 // Creates a new tile
 // Updates the tiles on the game board

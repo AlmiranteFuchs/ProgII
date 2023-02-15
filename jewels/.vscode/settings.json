@@ -11,6 +11,10 @@
         "type_traits": "c",
         "utility": "c",
         "allegro_ttf.h": "c",
-        "gameobjects.h": "c"
+        "gameobjects.h": "c",
+        "gamelogic.h": "c",
+        "gameaudio.h": "c",
+        "gamecomponents.h": "c",
+        "algif.h": "c"
     }
 }

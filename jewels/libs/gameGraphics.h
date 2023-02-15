@@ -11,6 +11,7 @@
 #include "gameLogic.h" // Just for the board size
 
 // Enum for bitmap paths, and font lol
+#define BITMAP_MAX 20
 typedef enum
 {
     GEM_0,
@@ -26,24 +27,27 @@ typedef enum
     UI_MAPFRAME_11,
     UI_BACKGROUND_12,
     UI_FOREGROUND_13,
-    F_TERRARIA_14
+    F_TERRARIA_14,
+    C_CLOUD_0,
+    C_CLOUD_1,
 
 } BitmapPath;
 
 static char *const bitmapPaths[] =
     {
-        [GEM_0] = "resources/sprites/terraria_sprites/Gem_0.png",
-        [GEM_1] = "resources/sprites/terraria_sprites/Gem_1.png",
-        [GEM_2] = "resources/sprites/terraria_sprites/Gem_2.png",
-        [GEM_3] = "resources/sprites/terraria_sprites/Gem_3.png",
-        [GEM_4] = "resources/sprites/terraria_sprites/Gem_4.png",
-        [GEM_5] = "resources/sprites/terraria_sprites/Gem_5.png",
-        [GEM_6] = "resources/sprites/terraria_sprites/Gem_6.png",
-        [ITEM_10] = "resources/sprites/terraria_sprites/Item_21.png",
+        [GEM_0] = "resources/sprites/terraria_sprites/gems/Gem_0.png",
+        [GEM_1] = "resources/sprites/terraria_sprites/gems/Gem_1.png",
+        [GEM_2] = "resources/sprites/terraria_sprites/gems/Gem_2.png",
+        [GEM_3] = "resources/sprites/terraria_sprites/gems/Gem_3.png",
+        [GEM_4] = "resources/sprites/terraria_sprites/gems/Gem_4.png",
+        [GEM_5] = "resources/sprites/terraria_sprites/gems/Gem_5.png",
+        [GEM_6] = "resources/sprites/terraria_sprites/gems/Gem_6.png",
+        [ITEM_10] = "resources/sprites/terraria_sprites/gems/Item_21.png",
         [UI_MAPFRAME_11] = "resources/sprites/terraria_sprites/UI/MapFrame.png",
         [UI_BACKGROUND_12] = "resources/sprites/terraria_sprites/UI/Splash_9_0.png",
         [UI_FOREGROUND_13] = "resources/sprites/terraria_sprites/UI/foreground.png",
-        [F_TERRARIA_14] = "resources/fonts/Terraria-Font/ANDYB.TTF"};
+        [F_TERRARIA_14] = "resources/fonts/Terraria-Font/ANDYB.TTF",
+        [C_CLOUD_0] = "resources/sprites/terraria_sprites/cenary/clouds/Cloud_0.png"};
 
 // Draw the tiles, receives a matrix of tiles
 void drawTiles(GameManager *gm);
@@ -57,5 +61,7 @@ void drawUI(GameManager *gm);
 
 // Draw background
 void drawBackground(GameManager *gm);
+
+void drawMinigame(GameManager *gm);
 
 #endif // GAME_GRAPHICS_H

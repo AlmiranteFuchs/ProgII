@@ -25,10 +25,20 @@ typedef struct
     AudioPlayer audioPlayer;
 } Tile;
 
+// Enum for cenary
+typedef enum
+{
+    CENARY_CLOUDS,
+    CENARY_OBJECTS,
+} Cenary;
 // Moving foreground
-typedef struct{
+typedef struct
+{
     Transform Transform;
     Sprite sprite;
+    int direction; // 0 = left, 1 = right
+    int active;
+    Cenary cenary_type;
 } SimpleObject;
 
 #endif // GAMEOBJECTS_H

@@ -20,6 +20,7 @@
 #include "allegro5/allegro_image.h"
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
+#include "algif.h"
 
 // Enum game events
 typedef enum
@@ -42,7 +43,11 @@ typedef enum
     GAME_STATE_EXIT,
 } GameState;
 
+#define FOREGROUNDS 3
+#define CENARY_OBJS 5
+
 // Game manager Object, game state and board
+
 typedef struct
 {
     // Game properties
@@ -66,8 +71,9 @@ typedef struct
 
     // Simple Cenary objects
     SimpleObject background;
-    SimpleObject foregrounds[3];
-    
+    SimpleObject foregrounds[FOREGROUNDS];
+    SimpleObject cenaryObjects[CENARY_OBJS];
+
     // Minigame
     int minigame_active;
     int minigame_time;
@@ -75,7 +81,8 @@ typedef struct
 
     // Allegro objects
     ALLEGRO_FONT *font;
-    ALLEGRO_BITMAP *bitmaps[15];
+    ALLEGRO_BITMAP *bitmaps[35];
+    ALGIF_ANIMATION* gifmaps[1];
 
 } GameManager;
 

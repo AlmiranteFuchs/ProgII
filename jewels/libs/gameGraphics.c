@@ -18,9 +18,13 @@ void initGraphics(GameManager *gm)
     gm->bitmaps[10] = al_load_bitmap(bitmapPaths[UI_MAPFRAME_11]);
     gm->bitmaps[11] = al_load_bitmap(bitmapPaths[UI_BACKGROUND_12]);
     gm->bitmaps[12] = al_load_bitmap(bitmapPaths[UI_FOREGROUND_13]);
+    gm->bitmaps[14] = al_load_bitmap(bitmapPaths[C_CLOUD_0]);
 
     // Font, i'm not renaming this function, but it loads graphical stuff anyway
     gm->font = al_load_ttf_font("resources/fonts/Terraria-Font/ANDYB.TTF", 40, 0);
+
+    // gif
+    gm->gifmaps[0] = algif_load_animation("resources/sprites/terraria_sprites/minigame/player.gif");
 }
 
 void drawTile(Tile tile, GameManager *gm)
@@ -63,13 +67,33 @@ void drawBackground(GameManager *gm)
     // Far background
     al_draw_bitmap(gm->bitmaps[UI_BACKGROUND_12], 0, 0, 0);
 
+    // For all the cenary clouds
+    for (int i = 0; i < CENARY_OBJS; i++)
+    {
+        // gm->foregrounds[i]
+        if (gm->cenaryObjects[i].Transform.visible == 1 && gm->cenaryObjects[i].cenary_type == CENARY_CLOUDS)
+        {
+            al_draw_bitmap(gm->bitmaps[gm->cenaryObjects[i].sprite.sprite_num], gm->cenaryObjects[i].Transform.x, gm->cenaryObjects[i].Transform.y, 0);
+        }
+    }
+
     // For all the foreground
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < FOREGROUNDS; i++)
     {
         // gm->foregrounds[i]
         if (gm->foregrounds[i].Transform.visible == 1)
         {
             al_draw_bitmap(gm->bitmaps[UI_FOREGROUND_13], gm->foregrounds[i].Transform.x, gm->foregrounds[i].Transform.y, 0);
+        }
+    }
+
+     // For all the cenary object
+     for (int i = 0; i < CENARY_OBJS; i++)
+    {
+        // gm->foregrounds[i]
+        if (gm->cenaryObjects[i].Transform.visible == 1 && gm->cenaryObjects[i].cenary_type == CENARY_OBJECTS)
+        {
+            al_draw_bitmap(gm->bitmaps[gm->cenaryObjects[i].sprite.sprite_num], gm->cenaryObjects[i].Transform.x, gm->cenaryObjects[i].Transform.y, 0);
         }
     }
 }
@@ -101,4 +125,8 @@ void drawUI(GameManager *gm)
     int time_to_int = (int)gm->time;
     sprintf(time_str, time_str_format, time_to_int);
     al_draw_text(gm->font, al_map_rgb(255, 255, 255), (SCREEN_WIDTH / 2) * 1.5, 100, 0, time_str);
+}
+
+void drawMinigame(GameManager *gm){
+    al_draw_bitmap(algif_get_bitmap(gm->gifmaps[0], al_get_time()), 1000, 505, 0);
 }
