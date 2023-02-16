@@ -163,7 +163,8 @@ GameManager *InitGameManager()
     gm->boss.Transform.x = 300;
     gm->boss.Transform.y = 300;
 
-    gm->boss.internal_count = 300;
+    gm->boss.internal_count = 0;
+    gm->minigame_time = 300;
     gm->boss.sprite.sprite_num = BOSS_0;
 
     gm->boss.audio.audio_num = AUDIO_BOSS;
@@ -172,7 +173,6 @@ GameManager *InitGameManager()
     gm->boss.audio.speed = 1.0f;
     gm->boss.audio.volume = 1.0f;
 
-    gm->minigame_time = 0;
 
     printf("Done initializing game manager\n");
 
@@ -194,18 +194,50 @@ void DestroyGameManager(GameManager *gm)
 // Call to draw the game
 void DrawGame(GameManager *gm)
 {
-    // Calls to graphics functions
     drawBackground(gm);
-    drawTiles(gm);
-    drawUI(gm);
-
-    drawMinigame(gm);
+    if (gm->gameState == GAME_STATE_BLOCK_INPUT || gm->gameState == GAME_STATE_GAMEPLAY || gm->gameState == GAME_STATE_NONE)
+    {
+        drawMinigame(gm);
+        drawTiles(gm);
+        drawUI(gm);
+    }
+    if (gm->gameState == GAME_STATE_GAMEOVER)
+    {
+        drawGameOver(gm);
+        printf("Game over\n");
+    }
+    // Calls to graphics functions
 }
 
 int player_play = 0;
 // Calls to each time the game frames update
 void UpdateGame(GameManager *gameManager)
 {
+    // Manage the cenary
+    _manageCenary(gameManager);
+
+    // Manage the minigame
+    _manageMinigame(gameManager);
+
+    // Check minigame activation
+    _checkMinigameActivation(gameManager);
+
+    if(gameManager->gameState == GAME_STATE_GAMEOVER)
+    {
+        if(gameManager->key == 82)
+        {
+            //restarts the game
+            gameManager->gameState = GAME_STATE_GAMEPLAY;
+            gameManager->gameEvent = GAME_EVENT_NONE;
+            gameManager->score = 0;
+            gameManager->turn = 0;
+            gameManager->minigame_active = 0;
+            gameManager->minigame_time = 0;
+            _initGameBoard(gameManager);
+        }
+        return;
+    }
+
     // Move tiles
     _moveTiles(gameManager);
 
@@ -226,15 +258,6 @@ void UpdateGame(GameManager *gameManager)
     default:
         break;
     }
-
-    // Manage the cenary
-    _manageCenary(gameManager);
-
-    // Manage the minigame
-    _manageMinigame(gameManager);
-
-    // Check minigame activation
-    _checkMinigameActivation(gameManager);
 
     // Update game time, game runs in 60 fps
     gameManager->time = gameManager->time + (1 / 60.0f);
@@ -672,7 +695,7 @@ void _manageCenary(GameManager *gm)
                 object->sprite.sprite_num = C_CLOUD_0;
             }
             // 0.01 chance to spawn, rabbits
-            else if (rand() % 10000 < 100)
+            else if (rand() % 1000000 < 100)
             {
                 // Choose a direction, 0 left 1 right
                 object->direction = (rand() % 2) ? 1 : -1;
@@ -809,6 +832,18 @@ void _manageMinigame(GameManager *gm)
         gm->boss.Transform.visible = 0;
         gm->minigame_time = 0;
         local_score_minigame = 0;
+    }
+
+    // If close enought to player
+    if (abs(gm->boss.Transform.x - player_x) < 40 && abs(gm->boss.Transform.y - player_y) < 40)
+    {
+        // Reset minigame
+        gm->minigame_active = 0;
+        gm->boss.Transform.visible = 0;
+        gm->minigame_time = 0;
+        local_score_minigame = 0;
+
+        gm->gameState = GAME_STATE_GAMEOVER;
     }
 }
 

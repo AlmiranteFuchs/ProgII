@@ -159,3 +159,41 @@ void drawMinigame(GameManager *gm)
 
     }
 }
+
+void drawGameOver(GameManager *gm)
+{
+    // Draw the game over screen
+    // Position is hardcoded, but it's just a test
+    int score = gm->score;
+    char score_str[10];
+
+    char *score_str_format = "Score: %d";
+    sprintf(score_str, score_str_format, score);
+    al_draw_text(gm->font, al_map_rgb(255, 255, 255), (SCREEN_WIDTH / 2) * 1.5, 0, 0, score_str);
+
+    // Draw Gameover text
+    char text[100];
+    char *text_format = "You were slain!";
+    sprintf(text, text_format);
+    // Text in red
+    al_draw_text(gm->font, al_map_rgb(204, 0, 0), (SCREEN_WIDTH/2) -100, SCREEN_HEIGHT/2, 0, text);
+}
+
+void drawHelp(GameManager *gm)
+{
+    // Draw the help screen
+    // Position is hardcoded, but it's just a test
+    int score = gm->score;
+    char score_str[10];
+
+    char *score_str_format = "Score: %d";
+    sprintf(score_str, score_str_format, score);
+    al_draw_text(gm->font, al_map_rgb(255, 255, 255), (SCREEN_WIDTH / 2) * 1.5, 0, 0, score_str);
+
+    // Draw Gameover text
+    char text[100];
+    char *text_format = "Help!";
+    sprintf(text, text_format);
+    // Text in red
+    al_draw_text(gm->font, al_map_rgb(255, 0, 0), 0, SCREEN_HEIGHT, 0, text);
+}

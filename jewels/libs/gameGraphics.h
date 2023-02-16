@@ -66,4 +66,7 @@ void drawBackground(GameManager *gm);
 
 void drawMinigame(GameManager *gm);
 
+// Draw GameOver
+void drawGameOver(GameManager *gm);
+
 #endif // GAME_GRAPHICS_H
