@@ -69,4 +69,7 @@ void drawMinigame(GameManager *gm);
 // Draw GameOver
 void drawGameOver(GameManager *gm);
 
+// Draw the menu
+void drawMenu(GameManager *gm);
+
 #endif // GAME_GRAPHICS_H

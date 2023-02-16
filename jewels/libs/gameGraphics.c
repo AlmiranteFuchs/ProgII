@@ -130,18 +130,25 @@ void drawUI(GameManager *gm)
     sprintf(score_str, score_str_format, score);
     al_draw_text(gm->font, al_map_rgb(255, 255, 255), (SCREEN_WIDTH / 2) * 1.5, 0, 0, score_str);
 
+    // Draw the highscore
+    int highscore = gm->highscore;
+    char highscore_str[50];
+    char *highscore_str_format = "Highscore: %d";
+    sprintf(highscore_str, highscore_str_format, highscore);
+    al_draw_text(gm->font, al_map_rgb(255, 255, 255), (SCREEN_WIDTH / 2) * 1.5, 50, 0, highscore_str);
+
     // Draw the turn
     char turn_str[10];
     char *turn_str_format = "Turn: %d";
     sprintf(turn_str, turn_str_format, gm->turn);
-    al_draw_text(gm->font, al_map_rgb(255, 255, 255), (SCREEN_WIDTH / 2) * 1.5, 50, 0, turn_str);
+    al_draw_text(gm->font, al_map_rgb(255, 255, 255), (SCREEN_WIDTH / 2) * 1.5, 100, 0, turn_str);
 
     // Draw time
     char time_str[10];
     char *time_str_format = "Time: %d";
     int time_to_int = (int)gm->time;
     sprintf(time_str, time_str_format, time_to_int);
-    al_draw_text(gm->font, al_map_rgb(255, 255, 255), (SCREEN_WIDTH / 2) * 1.5, 100, 0, time_str);
+    al_draw_text(gm->font, al_map_rgb(255, 255, 255), (SCREEN_WIDTH / 2) * 1.5, 150, 0, time_str);
 }
 
 void drawMinigame(GameManager *gm)
@@ -196,4 +203,21 @@ void drawHelp(GameManager *gm)
     sprintf(text, text_format);
     // Text in red
     al_draw_text(gm->font, al_map_rgb(255, 0, 0), 0, SCREEN_HEIGHT, 0, text);
+}
+
+void drawMenu(GameManager* gm){
+    // Draw the menu screen, with instructions how to playte
+
+    // Draw the menu screen
+    // Position is hardcoded, but it's just a test
+    char* text = "Press any key to start";
+    char* text2= "Press H for help";
+    char* text3= "Press ESC to exit";
+    char* text4= "Click on the jewels to swap them! match 3 or more to get points!";
+
+    // Text in white
+    al_draw_text(gm->font, al_map_rgb(255, 255, 255), (50), SCREEN_HEIGHT/2, 0, text);
+    al_draw_text(gm->font, al_map_rgb(255, 255, 255), (50), SCREEN_HEIGHT/2 + 50, 0, text2);
+    al_draw_text(gm->font, al_map_rgb(255, 255, 255), (50), SCREEN_HEIGHT/2 + 100, 0, text3);
+    al_draw_text(gm->font, al_map_rgb(255, 255, 255), (50), SCREEN_HEIGHT/2 + 150, 0, text4);
 }

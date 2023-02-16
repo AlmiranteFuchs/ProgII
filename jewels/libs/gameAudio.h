@@ -11,6 +11,7 @@ typedef enum
     AUDIO_MUSIC,
     AUDIO_MATCH,
     AUDIO_BOSS,
+    AUDIO_MUSIC_MINIGAME,
     AUDIO_SWAP,
     AUDIO_SELECT,
     AUDIO_SCORE
@@ -20,7 +21,8 @@ static char *const audioPaths[] =
     {
         [AUDIO_MUSIC] = "resources/audio/music/w_day_m.wav",
         [AUDIO_MATCH] = "resources/audio/SFX/match.wav",
-        [AUDIO_BOSS] = "resources/audio/SFX/boss.wav"
+        [AUDIO_BOSS] = "resources/audio/SFX/boss.wav",
+        [AUDIO_MUSIC_MINIGAME] = "resources/audio/music/boss_m.wav",
 
 };
 //          [AUDIO_MATCH] = "assets/audio/match.wav",
@@ -32,5 +34,6 @@ static char *const audioPaths[] =
 void initAudio(GameManager *gm);
 void destroyAudio(GameManager *gm);
 void playAudio(GameManager *gm, AudioPlayer *audio);
+void stopAudio();
 
 #endif // GAMEAUDIO_H

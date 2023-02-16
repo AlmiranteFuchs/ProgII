@@ -23,6 +23,7 @@ void _initTransformDefault(Transform *transform);
 void _manageCenary(GameManager *gm);
 void _manageMinigame(GameManager *gm);
 void _checkMinigameActivation(GameManager *gm);
+void _manageHighScore(GameManager *gm);
 
 /**
  * // // // // ---- Private Initializes ---- // // // //
@@ -54,12 +55,16 @@ void _initTransformDefault(Transform *transform)
     transform->visible = 1;
 }
 
+int last_pressed = 0;
+
 /**
  * // // // // ---- Public ---- // // // //
  */
 // Create a new game object, Init game
 GameManager *InitGameManager()
 {
+
+    srand(time(NULL));
 
     GameManager *gm = (GameManager *)malloc(sizeof(GameManager));
 
@@ -105,7 +110,7 @@ GameManager *InitGameManager()
 
     gm->score = 0;
     gm->turn = 0;
-    gm->gameState = GAME_STATE_GAMEPLAY; // TODO: Menu
+    gm->gameState = GAME_STATE_MENU; // TODO: Menu
     gm->gameEvent = GAME_EVENT_NONE;
     gm->minigame_active = 0;
     // Minigame sequence
@@ -173,7 +178,6 @@ GameManager *InitGameManager()
     gm->boss.audio.speed = 1.0f;
     gm->boss.audio.volume = 1.0f;
 
-
     printf("Done initializing game manager\n");
 
     return gm;
@@ -201,10 +205,19 @@ void DrawGame(GameManager *gm)
         drawTiles(gm);
         drawUI(gm);
     }
-    if (gm->gameState == GAME_STATE_GAMEOVER)
+    else if (gm->gameState == GAME_STATE_GAMEOVER)
     {
         drawGameOver(gm);
         printf("Game over\n");
+    }
+    else if (gm->gameState == GAME_STATE_MENU)
+    {
+        drawMenu(gm);
+        if (gm->key != last_pressed)
+        {
+            last_pressed = gm->key;
+            gm->gameState = GAME_STATE_GAMEPLAY;
+        }
     }
     // Calls to graphics functions
 }
@@ -222,11 +235,14 @@ void UpdateGame(GameManager *gameManager)
     // Check minigame activation
     _checkMinigameActivation(gameManager);
 
-    if(gameManager->gameState == GAME_STATE_GAMEOVER)
+    if (gameManager->gameState == GAME_STATE_GAMEOVER)
     {
-        if(gameManager->key == 82)
+        if (gameManager->key == 82)
         {
-            //restarts the game
+            // restarts the game
+            //  Play minigame music
+            stopAudio();
+            gameManager->audio.audio_num = AUDIO_MUSIC;
             gameManager->gameState = GAME_STATE_GAMEPLAY;
             gameManager->gameEvent = GAME_EVENT_NONE;
             gameManager->score = 0;
@@ -234,6 +250,7 @@ void UpdateGame(GameManager *gameManager)
             gameManager->minigame_active = 0;
             gameManager->minigame_time = 0;
             _initGameBoard(gameManager);
+            playAudio(gameManager, &gameManager->audio);
         }
         return;
     }
@@ -258,6 +275,13 @@ void UpdateGame(GameManager *gameManager)
     default:
         break;
     }
+
+    if (gameManager->key == 8)
+    {
+        gameManager->gameState = GAME_STATE_MENU;
+    }
+
+    _manageHighScore(gameManager);
 
     // Update game time, game runs in 60 fps
     gameManager->time = gameManager->time + (1 / 60.0f);
@@ -514,6 +538,13 @@ int _check_matchs(GameManager *GameManager)
                     if (current_tile == 6)
                     {
                         score = score + (100 * matchs);
+
+                        // Destroy all tiles on the same row
+                        for (int k = 0; k < BOARD_WIDTH; k++)
+                        {
+                            GameManager->board[k][j].value = -1;
+                            GameManager->board[k][j].sprite.sprite_num = -1;
+                        }
                     }
 
                     printf("Score: %d\n", GameManager->score);
@@ -577,6 +608,13 @@ int _check_matchs(GameManager *GameManager)
                     if (current_tile == 6)
                     {
                         score = score + (100 * matchs);
+
+                        // Destroy all tiles on the same row
+                        for (int k = 0; k < BOARD_HEIGHT; k++)
+                        {
+                            GameManager->board[i][k].value = -1;
+                            GameManager->board[i][k].sprite.sprite_num = -1;
+                        }
                     }
                     printf("Score: %d\n", GameManager->score);
                     GameManager->score += score;
@@ -832,6 +870,9 @@ void _manageMinigame(GameManager *gm)
         gm->boss.Transform.visible = 0;
         gm->minigame_time = 0;
         local_score_minigame = 0;
+        stopAudio();
+        gm->audio.audio_num = AUDIO_MUSIC;
+        playAudio(gm, &gm->audio);
     }
 
     // If close enought to player
@@ -844,11 +885,11 @@ void _manageMinigame(GameManager *gm)
         local_score_minigame = 0;
 
         gm->gameState = GAME_STATE_GAMEOVER;
+        stopAudio();
     }
 }
 
 int count = 0;
-int last_pressed = 0;
 void _checkMinigameActivation(GameManager *gm)
 {
     // Get key pressed by user, check against the key sequence
@@ -878,7 +919,11 @@ void _checkMinigameActivation(GameManager *gm)
             last_pressed = 0;
             printf("Minigame activated\n");
 
+            // Play minigame music
+            stopAudio();
+            gm->audio.audio_num = AUDIO_MUSIC_MINIGAME;
             playAudio(gm, &gm->boss.audio);
+            playAudio(gm, &gm->audio);
         }
         else
         {
@@ -893,6 +938,28 @@ void _checkMinigameActivation(GameManager *gm)
         printf("Wrong key\n");
         count = 0;
     }
+}
+
+void _manageHighScore(GameManager *gm)
+{
+    // If the score is higher than the high score
+    if (gm->score > gm->highscore)
+    {
+        // Update high score
+        gm->highscore = gm->score;
+
+        // Write to file
+        FILE *fp;
+        fp = fopen("highscore", "w");
+        fprintf(fp, "%d", gm->highscore);
+        fclose(fp);
+    }
+
+    // Read high score from file
+    FILE *fp;
+    fp = fopen("highscore", "r");
+    fscanf(fp, "%d", &gm->highscore);
+    fclose(fp);
 }
 
 // Creates a new tile
