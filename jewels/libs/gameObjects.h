@@ -5,7 +5,6 @@
 #define GAMEOBJECTS_H
 
 #include "gameComponents.h"
-#include "gameAudio.h"
 
 // Game objects
 // Jewels tile
@@ -29,8 +28,10 @@ typedef struct
 typedef enum
 {
     CENARY_CLOUDS,
+    CENARY_FOREGROUND,
     CENARY_OBJECTS,
 } Cenary;
+
 // Moving foreground
 typedef struct
 {
@@ -40,5 +41,14 @@ typedef struct
     int active;
     Cenary cenary_type;
 } SimpleObject;
+
+// Boss
+typedef struct
+{
+    Transform Transform;
+    Sprite sprite;
+    float internal_count;
+    AudioPlayer audio;
+} Boss;
 
 #endif // GAMEOBJECTS_H

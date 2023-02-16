@@ -12,15 +12,15 @@
 // Object transform
 typedef struct
 {
-    int x;
-    int y;
-    int dx;
-    int dy;
-    int velocity;
-    int acceleration;
+    float x;
+    float y;
+    float dx;
+    float dy;
+    float velocity;
+    float acceleration;
     int moving_t;
-    int angle;
-    int angleSpeed;
+    float angle;
+    float angleSpeed;
     int visible;
     int moving;
 } Transform;
@@ -30,7 +30,6 @@ typedef struct
 {
     int width;
     int height;
-    int color;
     int sprite_num;
 } Sprite;
 

@@ -7,8 +7,8 @@
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_primitives.h>
 
+#include "gameLogic.h"
 #include "gameObjects.h"
-#include "gameLogic.h" // Just for the board size
 
 // Enum for bitmap paths, and font lol
 #define BITMAP_MAX 20
@@ -21,15 +21,13 @@ typedef enum
     GEM_4,
     GEM_5,
     GEM_6,
-    ITEM_10,
-    EMPTY_8,
-    EMPTY_9,
-    UI_MAPFRAME_11,
-    UI_BACKGROUND_12,
-    UI_FOREGROUND_13,
-    F_TERRARIA_14,
+    UI_MAPFRAME_0,
+    UI_BACKGROUND_0,
+    UI_FOREGROUND_0,
+    F_TERRARIA_0,
     C_CLOUD_0,
     C_CLOUD_1,
+    BOSS_0
 
 } BitmapPath;
 
@@ -42,12 +40,13 @@ static char *const bitmapPaths[] =
         [GEM_4] = "resources/sprites/terraria_sprites/gems/Gem_4.png",
         [GEM_5] = "resources/sprites/terraria_sprites/gems/Gem_5.png",
         [GEM_6] = "resources/sprites/terraria_sprites/gems/Gem_6.png",
-        [ITEM_10] = "resources/sprites/terraria_sprites/gems/Item_21.png",
-        [UI_MAPFRAME_11] = "resources/sprites/terraria_sprites/UI/MapFrame.png",
-        [UI_BACKGROUND_12] = "resources/sprites/terraria_sprites/UI/Splash_9_0.png",
-        [UI_FOREGROUND_13] = "resources/sprites/terraria_sprites/UI/foreground.png",
-        [F_TERRARIA_14] = "resources/fonts/Terraria-Font/ANDYB.TTF",
-        [C_CLOUD_0] = "resources/sprites/terraria_sprites/cenary/clouds/Cloud_0.png"};
+        [UI_MAPFRAME_0] = "resources/sprites/terraria_sprites/UI/MapFrame.png",
+        [UI_BACKGROUND_0] = "resources/sprites/terraria_sprites/UI/Splash_9_0.png",
+        [UI_FOREGROUND_0] = "resources/sprites/terraria_sprites/UI/foreground.png",
+        [F_TERRARIA_0] = "resources/fonts/Terraria-Font/ANDYB.TTF",
+        [C_CLOUD_0] = "resources/sprites/terraria_sprites/cenary/clouds/Cloud_0.png",
+        [C_CLOUD_1] = "resources/sprites/terraria_sprites/cenary/clouds/Cloud_1.png",
+        [BOSS_0] = "resources/sprites/terraria_sprites/minigame/NPC_35.png"};
 
 // Draw the tiles, receives a matrix of tiles
 void drawTiles(GameManager *gm);
@@ -55,6 +54,9 @@ void drawTile(Tile tile, GameManager *gm);
 
 // Load the bitmaps
 void initGraphics(GameManager *gm);
+
+// Destroy the bitmaps
+void destroyGraphics(GameManager *gm);
 
 // Draw UI
 void drawUI(GameManager *gm);

@@ -4,7 +4,7 @@ LDFLAGS = `pkg-config allegro-5 allegro_font-5 allegro_image-5 allegro_primitive
 
 CC = gcc
 
-objects = jewels.o gameObjects.o gameGraphics.o gameLogic.o gameAudio.o algif.o gif.o lzw.o bitmap.o
+objects = jewels.o gameGraphics.o gameLogic.o gameAudio.o algif.o gif.o lzw.o bitmap.o
 
 all: $(objects)
 	$(CC) -o jewels $(objects) $(LDFLAGS) $(EOPTION)

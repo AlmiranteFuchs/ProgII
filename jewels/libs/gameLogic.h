@@ -1,7 +1,13 @@
 // Author: B. Fuchs
+#include "gameGraphics.h"
+#include "gameObjects.h"
+#include "gameAudio.h"
 
 #ifndef GAMELOGIC_H
 #define GAMELOGIC_H
+
+// ???????????
+// Fuck me
 
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 576
@@ -13,13 +19,20 @@
 #define BOARD_WIDTH 8
 #define BOARD_HEIGHT 9 // 9 bc one of them is for new line generating
 
+#define FOREGROUNDS 3
+#define CENARY_OBJS 5
+#define BITMAPS_COUNT 14
+#define GIFMAPS_COUNT 3
+#define AUDIO_COUNT 3
+
 #include <stdio.h>
-#include "gameObjects.h"
-#include "gameAudio.h"
+
 #include "allegro5/allegro5.h"
 #include "allegro5/allegro_image.h"
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
+#include <allegro5/allegro_audio.h>
+#include <allegro5/allegro_acodec.h>
 #include "algif.h"
 
 // Enum game events
@@ -43,9 +56,6 @@ typedef enum
     GAME_STATE_EXIT,
 } GameState;
 
-#define FOREGROUNDS 3
-#define CENARY_OBJS 5
-
 // Game manager Object, game state and board
 
 typedef struct
@@ -62,6 +72,7 @@ typedef struct
     // Event driven
     int mouseX;
     int mouseY;
+    int key;
 
     // Game objects
     Tile board[BOARD_WIDTH][BOARD_HEIGHT];
@@ -73,23 +84,33 @@ typedef struct
     SimpleObject background;
     SimpleObject foregrounds[FOREGROUNDS];
     SimpleObject cenaryObjects[CENARY_OBJS];
+    Boss boss;
 
     // Minigame
     int minigame_active;
     int minigame_time;
-    char *minigame_activation_sequence;
+    // Minigame activation sequence
+    int minigame_sequence[3];
 
     // Allegro objects
+    ALLEGRO_EVENT event;
+    ALLEGRO_TIMER *timer;
+    ALLEGRO_EVENT_QUEUE *queue;
+    ALLEGRO_DISPLAY *disp;
     ALLEGRO_FONT *font;
-    ALLEGRO_BITMAP *bitmaps[35];
-    ALGIF_ANIMATION* gifmaps[1];
-
+    ALLEGRO_BITMAP *bitmaps[BITMAPS_COUNT];
+    ALGIF_ANIMATION *gifmaps[GIFMAPS_COUNT];
+    ALLEGRO_SAMPLE *audioSamples[AUDIO_COUNT];
+    
 } GameManager;
 
 // // // -- Public -- // // //
 
 // Initialize game
 GameManager *InitGameManager();
+
+// Destroy game
+void DestroyGameManager(GameManager *gameManager);
 
 // Update game
 void UpdateGame(GameManager *gameManager);

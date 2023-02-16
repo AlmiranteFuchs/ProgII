@@ -15,6 +15,11 @@
         "gamelogic.h": "c",
         "gameaudio.h": "c",
         "gamecomponents.h": "c",
-        "algif.h": "c"
+        "algif.h": "c",
+        "numeric": "c",
+        "allegro_acodec.h": "c",
+        "allegro_audio.h": "c",
+        "allegro_image.h": "c",
+        "allegro_primitives.h": "c"
     }
 }
