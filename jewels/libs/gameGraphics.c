@@ -13,6 +13,7 @@ void initGraphics(GameManager *gm)
     gm->bitmaps[GEM_4] = al_load_bitmap(bitmapPaths[GEM_4]);
     gm->bitmaps[GEM_5] = al_load_bitmap(bitmapPaths[GEM_5]);
     gm->bitmaps[GEM_6] = al_load_bitmap(bitmapPaths[GEM_6]);
+    gm->bitmaps[BOLDER] = al_load_bitmap(bitmapPaths[BOLDER]);
 
     // UI
     gm->bitmaps[UI_MAPFRAME_0] = al_load_bitmap(bitmapPaths[UI_MAPFRAME_0]);
@@ -149,6 +150,12 @@ void drawUI(GameManager *gm)
     int time_to_int = (int)gm->time;
     sprintf(time_str, time_str_format, time_to_int);
     al_draw_text(gm->font, al_map_rgb(255, 255, 255), (SCREEN_WIDTH / 2) * 1.5, 150, 0, time_str);
+
+    // Draw level
+    char level_str[10];
+    char *level_str_format = "Level: %d";
+    sprintf(level_str, level_str_format, gm->level);
+    al_draw_text(gm->font, al_map_rgb(255, 255, 255), (SCREEN_WIDTH / 2) * 1.5, 200, 0, level_str);
 }
 
 void drawMinigame(GameManager *gm)
@@ -186,24 +193,6 @@ void drawGameOver(GameManager *gm)
     al_draw_text(gm->font, al_map_rgb(204, 0, 0), (SCREEN_WIDTH/2) -100, SCREEN_HEIGHT/2, 0, text);
 }
 
-void drawHelp(GameManager *gm)
-{
-    // Draw the help screen
-    // Position is hardcoded, but it's just a test
-    int score = gm->score;
-    char score_str[10];
-
-    char *score_str_format = "Score: %d";
-    sprintf(score_str, score_str_format, score);
-    al_draw_text(gm->font, al_map_rgb(255, 255, 255), (SCREEN_WIDTH / 2) * 1.5, 0, 0, score_str);
-
-    // Draw Gameover text
-    char text[100];
-    char *text_format = "Help!";
-    sprintf(text, text_format);
-    // Text in red
-    al_draw_text(gm->font, al_map_rgb(255, 0, 0), 0, SCREEN_HEIGHT, 0, text);
-}
 
 void drawMenu(GameManager* gm){
     // Draw the menu screen, with instructions how to playte
@@ -214,10 +203,14 @@ void drawMenu(GameManager* gm){
     char* text2= "Press H for help";
     char* text3= "Press ESC to exit";
     char* text4= "Click on the jewels to swap them! match 3 or more to get points!";
+    char* text5= "Author: Bruno Fuchs Santos da Silva";
 
     // Text in white
     al_draw_text(gm->font, al_map_rgb(255, 255, 255), (50), SCREEN_HEIGHT/2, 0, text);
     al_draw_text(gm->font, al_map_rgb(255, 255, 255), (50), SCREEN_HEIGHT/2 + 50, 0, text2);
     al_draw_text(gm->font, al_map_rgb(255, 255, 255), (50), SCREEN_HEIGHT/2 + 100, 0, text3);
     al_draw_text(gm->font, al_map_rgb(255, 255, 255), (50), SCREEN_HEIGHT/2 + 150, 0, text4);
+
+    // Bottom
+    al_draw_text(gm->font, al_map_rgb(255, 255, 255), (50), SCREEN_HEIGHT - 50, 0, text5);
 }

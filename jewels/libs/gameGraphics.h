@@ -11,7 +11,6 @@
 #include "gameObjects.h"
 
 // Enum for bitmap paths, and font lol
-#define BITMAP_MAX 20
 typedef enum
 {
     GEM_0,
@@ -21,6 +20,7 @@ typedef enum
     GEM_4,
     GEM_5,
     GEM_6,
+    BOLDER,
     UI_MAPFRAME_0,
     UI_BACKGROUND_0,
     UI_FOREGROUND_0,
@@ -40,6 +40,7 @@ static char *const bitmapPaths[] =
         [GEM_4] = "resources/sprites/terraria_sprites/gems/Gem_4.png",
         [GEM_5] = "resources/sprites/terraria_sprites/gems/Gem_5.png",
         [GEM_6] = "resources/sprites/terraria_sprites/gems/Gem_6.png",
+        [BOLDER] = "resources/sprites/terraria_sprites/gems/Projectile_99.png",
         [UI_MAPFRAME_0] = "resources/sprites/terraria_sprites/UI/MapFrame.png",
         [UI_BACKGROUND_0] = "resources/sprites/terraria_sprites/UI/Splash_9_0.png",
         [UI_FOREGROUND_0] = "resources/sprites/terraria_sprites/UI/foreground.png",

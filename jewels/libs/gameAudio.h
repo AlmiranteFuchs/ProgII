@@ -12,9 +12,10 @@ typedef enum
     AUDIO_MATCH,
     AUDIO_BOSS,
     AUDIO_MUSIC_MINIGAME,
-    AUDIO_SWAP,
+    AUDIO_BOMB,
     AUDIO_SELECT,
-    AUDIO_SCORE
+    AUDIO_DESELECT,
+    AUDIO_LEVEL_UP,
 } AudioPath;
 
 static char *const audioPaths[] =
@@ -23,6 +24,11 @@ static char *const audioPaths[] =
         [AUDIO_MATCH] = "resources/audio/SFX/match.wav",
         [AUDIO_BOSS] = "resources/audio/SFX/boss.wav",
         [AUDIO_MUSIC_MINIGAME] = "resources/audio/music/boss_m.wav",
+        [AUDIO_BOMB] = "resources/audio/SFX/col_reset.wav",
+        [AUDIO_SELECT] = "resources/audio/SFX/select.wav",
+        [AUDIO_DESELECT] = "resources/audio/SFX/deselect.wav",
+        [AUDIO_LEVEL_UP] = "resources/audio/SFX/lvl_up.wav",
+
 
 };
 //          [AUDIO_MATCH] = "assets/audio/match.wav",

@@ -24,6 +24,8 @@ void _manageCenary(GameManager *gm);
 void _manageMinigame(GameManager *gm);
 void _checkMinigameActivation(GameManager *gm);
 void _manageHighScore(GameManager *gm);
+void _manageLevel(GameManager *gm);
+void _check_no_moves(GameManager *gm);
 
 /**
  * // // // // ---- Private Initializes ---- // // // //
@@ -109,6 +111,7 @@ GameManager *InitGameManager()
     printf("Audio loaded\n");
 
     gm->score = 0;
+    gm->level = 1;
     gm->turn = 0;
     gm->gameState = GAME_STATE_MENU; // TODO: Menu
     gm->gameEvent = GAME_EVENT_NONE;
@@ -264,6 +267,9 @@ void UpdateGame(GameManager *gameManager)
     // Check matchs
     _checkMatchs(gameManager);
 
+    // Check for game over, not working properly
+    //_check_no_moves(gameManager);
+
     // Switch game events
     switch (gameManager->gameEvent)
     {
@@ -282,6 +288,8 @@ void UpdateGame(GameManager *gameManager)
     }
 
     _manageHighScore(gameManager);
+
+    _manageLevel(gameManager);
 
     // Update game time, game runs in 60 fps
     gameManager->time = gameManager->time + (1 / 60.0f);
@@ -476,7 +484,7 @@ int _check_matchs(GameManager *GameManager)
         for (int j = 0; j < BOARD_HEIGHT; j++)
         {
 
-            if (GameManager->board[i][j].value == -1 || GameManager->board[i][j].transform.moving)
+            if (GameManager->board[i][j].value == -1 || GameManager->board[i][j].transform.moving || GameManager->board[i][j].value == BOLDER + 1)
             {
                 // ignore
                 continue;
@@ -494,9 +502,6 @@ int _check_matchs(GameManager *GameManager)
 
                 if (current_tile == next_tile && current_tile == next_next_tile)
                 {
-                    // Play sound
-                    playAudio(GameManager, &GameManager->board[i][j].audioPlayer);
-
                     // Destroy Tiles
                     GameManager->board[i][j].value = -1;
                     GameManager->board[i + 1][j].value = -1;
@@ -545,6 +550,13 @@ int _check_matchs(GameManager *GameManager)
                             GameManager->board[k][j].value = -1;
                             GameManager->board[k][j].sprite.sprite_num = -1;
                         }
+                        // Play sound of special match
+                        GameManager->board[i][j].audioPlayer.audio_num = AUDIO_BOMB;
+                    }
+                    if (matchs > 0)
+                    {
+                        playAudio(GameManager, &GameManager->board[i][j].audioPlayer);
+                        GameManager->board[i][j].audioPlayer.audio_num = AUDIO_MATCH;
                     }
 
                     printf("Score: %d\n", GameManager->score);
@@ -564,9 +576,6 @@ int _check_matchs(GameManager *GameManager)
 
                 if (current_tile == next_tile && current_tile == next_next_tile)
                 {
-                    // Play sound
-                    playAudio(GameManager, &GameManager->board[i][j].audioPlayer);
-
                     // Destroy Tiles
                     GameManager->board[i][j].value = -1;
                     GameManager->board[i][j + 1].value = -1;
@@ -615,7 +624,16 @@ int _check_matchs(GameManager *GameManager)
                             GameManager->board[i][k].value = -1;
                             GameManager->board[i][k].sprite.sprite_num = -1;
                         }
+
+                        // Play sound of special match
+                        GameManager->board[i][j].audioPlayer.audio_num = AUDIO_BOMB;
                     }
+                    if (matchs > 0)
+                    {
+                        playAudio(GameManager, &GameManager->board[i][j].audioPlayer);
+                        GameManager->board[i][j].audioPlayer.audio_num = AUDIO_MATCH;
+                    }
+
                     printf("Score: %d\n", GameManager->score);
                     GameManager->score += score;
                 }
@@ -678,6 +696,82 @@ void _fallTiles(GameManager *gameManager)
         {
             _initGameBoardPiece(gameManager, i, 0);
         }
+    }
+}
+
+// Check for no more moves
+void _check_no_moves(GameManager *gm)
+{
+    // Checks if theres no more matches on the board
+    int no_moves = 1;
+
+    for (int i = 0; i < BOARD_WIDTH; i++)
+    {
+        for (int j = 0; j < BOARD_HEIGHT; j++)
+        {
+            if(gm->board[i][j].transform.moving == 1 || gm->board[i][j].value == -1 || gm->board[i][j].value == BOLDER + 1)
+            {
+                continue;
+            }
+
+            // Horizontal
+            if (i < BOARD_WIDTH - 2)
+            {
+                // Values
+                int current_tile = gm->board[i][j].value;
+                int next_tile = gm->board[i][j + 1].value;
+                int next_next_next_tile = gm->board[i][j + 3].value;
+
+                // Check if the first 2 are the same
+                if (current_tile == next_tile)
+                {
+                    // Check if the third have a equal value on the right
+                    if (next_next_next_tile == current_tile)
+                    {
+                        no_moves = 0;
+                    }
+
+                    // Check if the third have a equal value on below
+                    int below = gm->board[i + 1][j + 2].value;
+                    if (below == current_tile)
+                    {
+                        no_moves = 0;
+                    }
+                }
+            }
+
+            // Vertical
+            if (j < BOARD_HEIGHT - 2)
+            {
+                // Values
+                int current_tile = gm->board[i][j].value;
+                int next_tile = gm->board[i + 1][j].value;
+                int next_next_next_tile = gm->board[i + 3][j].value;
+
+                // Check if the first 2 are the same
+                if (current_tile == next_tile)
+                {
+                    // Check if the third have a equal value on the right
+                    if (next_next_next_tile == current_tile)
+                    {
+                        no_moves = 0;
+                    }
+
+                    // Check if the third have a equal value on below
+                    int below = gm->board[i + 2][j + 1].value;
+                    if (below == current_tile)
+                    {
+                        no_moves = 0;
+                    }
+                }
+            }
+        }
+    }
+
+    if (no_moves)
+    {
+        printf("No more moves\n");
+        //gm->gameState = GAME_STATE_GAMEOVER;
     }
 }
 
@@ -942,6 +1036,12 @@ void _checkMinigameActivation(GameManager *gm)
 
 void _manageHighScore(GameManager *gm)
 {
+    // Read high score from file
+    FILE *fp;
+    fp = fopen("highscore", "r");
+    fscanf(fp, "%d", &gm->highscore);
+    fclose(fp);
+
     // If the score is higher than the high score
     if (gm->score > gm->highscore)
     {
@@ -954,14 +1054,34 @@ void _manageHighScore(GameManager *gm)
         fprintf(fp, "%d", gm->highscore);
         fclose(fp);
     }
-
-    // Read high score from file
-    FILE *fp;
-    fp = fopen("highscore", "r");
-    fscanf(fp, "%d", &gm->highscore);
-    fclose(fp);
 }
 
+void _manageLevel(GameManager *gm)
+{
+    // Every 1000 points increase level
+    if (gm->score > (gm->level * 2.5) * 300)
+    {
+        gm->level++;
+
+        // Play sound
+        gm->audio.audio_num = AUDIO_LEVEL_UP;
+        gm->audio.loop = 0;
+        gm->audio.volume = 2.5f;
+        playAudio(gm, &gm->audio);
+
+        // Resets
+        gm->audio.loop = 1;
+        gm->audio.volume = 0.3f;
+        gm->audio.audio_num = AUDIO_MUSIC;
+
+        // reset board
+        // Reset the level for the _initGameBoard function, so it will create a new board with no bolder tiles
+        int level = gm->level;
+        gm->level = 1;
+        _initGameBoard(gm);
+        gm->level = level;
+    }
+}
 // Creates a new tile
 // Updates the tiles on the game board
 void _initGameBoardPiece(GameManager *gameManager, int i, int j)
@@ -971,6 +1091,52 @@ void _initGameBoardPiece(GameManager *gameManager, int i, int j)
 
     // Create a new tile
     int tile_type = (rand() % 5) + 1;
+    int final_tile_type = tile_type;
+    // Based on level check if should spawn a bolder
+    // Level 1 0%, Level 2 10%, Level 3 20%, Level 4 30%, Level 5 40%, Level 6 > 50%
+    switch (gameManager->level)
+    {
+    case 1:
+        break;
+
+    // 10 %
+    case 2:
+        if (rand() % 20 == 0)
+        {
+            final_tile_type = BOLDER + 1;
+        }
+        break;
+    // 20%
+    case 3:
+        if (rand() % 15 == 0)
+        {
+            final_tile_type = BOLDER + 1;
+        }
+        break;
+    // 30%
+    case 4:
+        if (rand() % 10 == 0)
+        {
+            final_tile_type = BOLDER + 1;
+        }
+        break;
+    // 40%
+    case 5:
+        if (rand() % 5 == 0)
+        {
+            final_tile_type = BOLDER + 1;
+        }
+        break;
+        // 50%
+
+    default:
+        if (rand() % 4 == 0)
+        {
+            final_tile_type = BOLDER + 1;
+        }
+        break;
+    }
+
     // Fisical Props
     gameManager->board[i][j].transform.x = (i * screenScale) + OFFSET;
     gameManager->board[i][j].transform.y = (j * screenScale) + OFFSET - OFFSET_Y;
@@ -985,8 +1151,8 @@ void _initGameBoardPiece(GameManager *gameManager, int i, int j)
     gameManager->board[i][j].real_posX = i; // This is the real position of the tile, used for the board, not really necessary but it helps
     gameManager->board[i][j].real_posY = j; // This is the real position of the tile, used for the board, not really necessary but it helps
     gameManager->board[i][j].falling = 0;
-    gameManager->board[i][j].value = tile_type;
-    gameManager->board[i][j].sprite.sprite_num = tile_type - 1;
+    gameManager->board[i][j].value = final_tile_type;
+    gameManager->board[i][j].sprite.sprite_num = final_tile_type - 1;
     gameManager->board[i][j].sprite.height = 40;
     gameManager->board[i][j].sprite.width = 40;
     gameManager->board[i][j].selected = 0;
@@ -1022,7 +1188,7 @@ void _inputEvent(GameManager *gm)
         // Mouse is clicked
         // Check if click is on a tile
         Tile *tile = _checkClickOnTile(gm, x, y);
-        if (tile != NULL)
+        if (tile != NULL && tile->value != BOLDER + 1)
         {
             // If there is no selected tile
             if (gm->selectedTile == NULL)
@@ -1030,12 +1196,15 @@ void _inputEvent(GameManager *gm)
                 // Select the tile
                 gm->selectedTile = tile;
                 tile->selected = 1;
+
+                tile->audioPlayer.audio_num = AUDIO_SELECT;
+                playAudio(gm, &tile->audioPlayer);
+                tile->audioPlayer.audio_num = AUDIO_MATCH;
             }
             else
             {
                 // If there is a selected tile
                 // Swap the tiles
-                // Print
 
                 // Check distance between points
                 int distance_x = abs(tile->real_posX - gm->selectedTile->real_posX);
@@ -1049,6 +1218,15 @@ void _inputEvent(GameManager *gm)
                     gm->turn++;
 
                     printf("Turn: %d\n", gm->turn);
+                }
+                else
+                {
+                    gm->selectedTile->selected = 0;
+                    gm->selectedTile = NULL;
+
+                    tile->audioPlayer.audio_num = AUDIO_DESELECT;
+                    playAudio(gm, &tile->audioPlayer);
+                    tile->audioPlayer.audio_num = AUDIO_MATCH;
                 }
             }
         }

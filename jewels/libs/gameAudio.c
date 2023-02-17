@@ -9,6 +9,10 @@ void initAudio(GameManager *gm)
     gm->audioSamples[1] = al_load_sample(audioPaths[AUDIO_MATCH]);
     gm->audioSamples[2] = al_load_sample(audioPaths[AUDIO_BOSS]);
     gm->audioSamples[3] = al_load_sample(audioPaths[AUDIO_MUSIC_MINIGAME]);
+    gm->audioSamples[4] = al_load_sample(audioPaths[AUDIO_BOMB]);
+    gm->audioSamples[5] = al_load_sample(audioPaths[AUDIO_SELECT]);
+    gm->audioSamples[6] = al_load_sample(audioPaths[AUDIO_DESELECT]);
+    gm->audioSamples[7] = al_load_sample(audioPaths[AUDIO_LEVEL_UP]);
 }
 
 void playAudio(GameManager *gm, AudioPlayer *audio)

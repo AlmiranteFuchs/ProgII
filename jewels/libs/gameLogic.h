@@ -21,9 +21,9 @@
 
 #define FOREGROUNDS 3
 #define CENARY_OBJS 5
-#define BITMAPS_COUNT 14
+#define BITMAPS_COUNT 15
 #define GIFMAPS_COUNT 3
-#define AUDIO_COUNT 4
+#define AUDIO_COUNT 8
 
 #include <stdio.h>
 
